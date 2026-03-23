@@ -63,7 +63,7 @@
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-sm text-muted">Assigned to Me</p>
-                    <p class="text-2xl font-bold text-text mt-1">{{ \App\Models\Issue::query()->where('assigned_to', auth()->id())->where('status', 'open')->count() }}</p>
+                    <p class="text-2xl font-bold text-text mt-1">{{ \App\Models\Issue::query()->where('assigned_to_user_id', auth()->id())->where('status', 'open')->count() }}</p>
                 </div>
                 <div class="w-12 h-12 rounded-lg bg-warning/20 flex items-center justify-center">
                     <svg class="w-6 h-6 text-warning" fill="none" stroke="currentColor" viewBox="0 0 24 24">

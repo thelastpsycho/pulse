@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Reports;
 
+use App\Models\IssueCategory;
 use App\Services\ReportService;
 use Livewire\Component;
 
@@ -9,8 +10,10 @@ class Monthly extends Component
 {
     public int $selectedYear;
     public int $selectedMonth;
+    public ?int $selectedCategoryId = null;
     public array $availableYears = [];
     public array $availableMonths = [];
+    public array $availableCategories = [];
 
     public array $reportData = [];
 
@@ -30,13 +33,23 @@ class Monthly extends Component
             $this->availableMonths[$i] = now()->setDateTime($this->selectedYear, $i, 1, 0, 0)->format('F');
         }
 
+        // Load available categories
+        $this->availableCategories = IssueCategory::orderBy('name')
+            ->get()
+            ->pluck('name', 'id')
+            ->toArray();
+
         $this->loadReport();
     }
 
     public function loadReport(): void
     {
         $reportService = app(ReportService::class);
-        $this->reportData = $reportService->monthlyReport($this->selectedYear, $this->selectedMonth);
+        $this->reportData = $reportService->monthlyReport(
+            $this->selectedYear,
+            $this->selectedMonth,
+            $this->selectedCategoryId
+        );
     }
 
     public function updatedSelectedYear(): void
@@ -49,12 +62,18 @@ class Monthly extends Component
         $this->loadReport();
     }
 
+    public function updatedSelectedCategoryId(): void
+    {
+        $this->loadReport();
+    }
+
     public function render()
     {
         return view('livewire.reports.monthly', [
             'report' => $this->reportData,
             'availableYears' => $this->availableYears,
             'availableMonths' => $this->availableMonths,
+            'availableCategories' => $this->availableCategories,
         ])->layout('layouts.app')->title('Monthly Report');
     }
 }

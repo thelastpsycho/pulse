@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\LogbookExportController;
 use App\Http\Controllers\ProfileController;
 use App\Livewire\Issues\Form;
 use App\Livewire\Issues\Index;
@@ -10,6 +11,8 @@ use App\Livewire\Admin\IssueTypes\Form as IssueTypeForm;
 use App\Livewire\Admin\IssueTypes\Index as IssueTypeIndex;
 use App\Livewire\Admin\Users\Form as UserForm;
 use App\Livewire\Admin\Users\Index as UserIndex;
+use App\Livewire\Admin\Roles\Form as RoleForm;
+use App\Livewire\Admin\Roles\Index as RoleIndex;
 use App\Livewire\Reports\Index as ReportsIndex;
 use App\Livewire\Reports\Monthly;
 use App\Livewire\Reports\Yearly;
@@ -49,6 +52,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/monthly', Monthly::class)->name('monthly');
         Route::get('/yearly', Yearly::class)->name('yearly');
         Route::get('/logbook', Logbook::class)->name('logbook');
+        Route::get('/logbook/export', [LogbookExportController::class, 'export'])->name('logbook.export');
     });
 
     // Graphs
@@ -71,6 +75,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::get('/', UserIndex::class)->name('index');
             Route::get('/create', UserForm::class)->name('create');
             Route::get('/{user}/edit', UserForm::class)->name('edit');
+        });
+
+        // Roles
+        Route::prefix('roles')->name('roles.')->group(function () {
+            Route::get('/', RoleIndex::class)->name('index');
+            Route::get('/create', RoleForm::class)->name('create');
+            Route::get('/{role}/edit', RoleForm::class)->name('edit');
         });
 
         // Departments

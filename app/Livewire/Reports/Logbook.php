@@ -20,12 +20,8 @@ class Logbook extends Component
     public Collection $departments;
     public Collection $issueTypes;
 
-    protected ReportService $reportService;
-
     public function mount(): void
     {
-        $this->reportService = app(ReportService::class);
-
         // Set default date range (current month)
         $this->dateFrom = now()->startOfMonth()->format('Y-m-d');
         $this->dateTo = now()->endOfMonth()->format('Y-m-d');
@@ -56,7 +52,18 @@ class Logbook extends Component
             $filters['status'] = $this->status;
         }
 
-        $this->issues = $this->reportService->logbookReport($filters);
+        $this->issues = app(ReportService::class)->logbookReport($filters);
+    }
+
+    public function getExportUrl(): string
+    {
+        return route('reports.logbook.export', array_filter([
+            'date_from' => $this->dateFrom,
+            'date_to' => $this->dateTo,
+            'department_id' => $this->departmentId,
+            'issue_type_id' => $this->issueTypeId,
+            'status' => $this->status,
+        ]));
     }
 
     public function updatedDateFrom(): void

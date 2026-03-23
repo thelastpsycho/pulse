@@ -14,7 +14,9 @@ class Issue extends Model
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
+        'title',
         'description',
+        'location',
         'name',
         'room_number',
         'checkin_date',
@@ -33,7 +35,6 @@ class Issue extends Model
         'assigned_to_user_id',
         'closed_at',
         'closed_by_user_id',
-        'issue', // Legacy column for title
     ];
 
     protected function casts(): array
@@ -45,22 +46,6 @@ class Issue extends Model
             'closed_at' => 'datetime',
             'recovery_cost' => 'integer',
         ];
-    }
-
-    /**
-     * Get the title of the issue (uses 'issue' column).
-     */
-    public function getTitleAttribute(): string
-    {
-        return $this->attributes['issue'] ?? '';
-    }
-
-    /**
-     * Set the title of the issue (sets 'issue' column).
-     */
-    public function setTitleAttribute(string $value): void
-    {
-        $this->attributes['issue'] = $value;
     }
 
     /**

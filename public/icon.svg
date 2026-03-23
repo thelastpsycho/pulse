@@ -1,0 +1,24 @@
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  <g fill="#CDA574">
+    <path d="
+      M260 120
+      C180 120 130 190 130 256
+      C130 340 190 400 260 400
+      C310 400 350 380 375 350
+      L335 330
+      C315 350 290 360 260 360
+      C210 360 170 320 170 256
+      C170 195 210 155 260 155
+      L260 120
+    "/>
+    <path d="
+      M240 256
+      L290 256
+      L310 230
+      L335 290
+      L360 240
+      L380 256
+    " stroke="#CDA574" stroke-width="18" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    <circle cx="410" cy="256" r="12"/>
+  </g>
+</svg>

@@ -429,14 +429,6 @@ All routes use Laravel 12 conventions + middleware.
 - GET `/graph/issues`
 - GET `/statistic`
 
-### API
-- GET `/api/users`
-- GET `/api/cars` (feature flag)
-- GET `/api/expenses` (feature flag)
-- GET `/api/rents` (feature flag)
-- GET `/api/reports/month`
-- GET `/api/reports/year`
-
 > Match legacy names where feasible to reduce friction. :contentReference[oaicite:16]{index=16}
 
 ---

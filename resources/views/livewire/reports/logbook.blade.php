@@ -7,12 +7,12 @@
                 <p class="text-muted">Printable list of issues with filtering options</p>
             </div>
             <div class="flex items-center gap-3">
-                <button onclick="window.print()" class="btn btn-secondary">
+                <a href="{{ $this->getExportUrl() }}" target="_blank" class="btn btn-primary">
                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                     </svg>
-                    Print
-                </button>
+                    Export PDF
+                </a>
                 <a href="{{ route('reports.index') }}" class="btn btn-secondary">
                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
@@ -23,7 +23,7 @@
         </div>
 
         <!-- Filters -->
-        <div class="card mb-6" data-no-print>
+        <div class="card mb-6">
             <div class="p-4">
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
                     <div>
@@ -106,12 +106,13 @@
                             <tr class="border-b border-border">
                                 <th class="px-4 py-3 text-left text-xs font-medium text-muted uppercase tracking-wider">ID</th>
                                 <th class="px-4 py-3 text-left text-xs font-medium text-muted uppercase tracking-wider">Title</th>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-muted uppercase tracking-wider">Departments</th>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-muted uppercase tracking-wider">Type</th>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-muted uppercase tracking-wider">Priority</th>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-muted uppercase tracking-wider">Status</th>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-muted uppercase tracking-wider">Created</th>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-muted uppercase tracking-wider">Closed</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-muted uppercase tracking-wider">Name</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-muted uppercase tracking-wider">Room</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-muted uppercase tracking-wider">Check-in</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-muted uppercase tracking-wider">Check-out</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-muted uppercase tracking-wider">Source</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-muted uppercase tracking-wider">Nationality</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-muted uppercase tracking-wider">Recovery Cost</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-border">
@@ -126,36 +127,19 @@
                                             @endif
                                         </div>
                                     </td>
-                                    <td class="px-4 py-3">
-                                        <div class="flex flex-wrap gap-1">
-                                            @foreach($issue->departments as $dept)
-                                                <span class="badge badge-muted text-xs">{{ $dept->name }}</span>
-                                            @endforeach
-                                        </div>
-                                    </td>
-                                    <td class="px-4 py-3">
-                                        @foreach($issue->issueTypes as $type)
-                                            <span class="badge badge-muted text-xs">{{ $type->name }}</span>
-                                        @endforeach
-                                    </td>
-                                    <td class="px-4 py-3">
-                                        @if($issue->priority)
-                                            <span class="badge badge-{{ $issue->priority === 'urgent' ? 'danger' : ($issue->priority === 'high' ? 'warning' : 'muted') }} text-xs">
-                                                {{ ucfirst($issue->priority) }}
-                                            </span>
+                                    <td class="px-4 py-3 text-sm text-text">{{ $issue->name ?? '-' }}</td>
+                                    <td class="px-4 py-3 text-sm text-text">{{ $issue->room_number ?? '-' }}</td>
+                                    <td class="px-4 py-3 text-sm text-muted">{{ $issue->checkin_date?->format('M d, Y') ?? '-' }}</td>
+                                    <td class="px-4 py-3 text-sm text-muted">{{ $issue->checkout_date?->format('M d, Y') ?? '-' }}</td>
+                                    <td class="px-4 py-3 text-sm text-text">{{ $issue->source ?? '-' }}</td>
+                                    <td class="px-4 py-3 text-sm text-text">{{ $issue->nationality ?? '-' }}</td>
+                                    <td class="px-4 py-3 text-sm text-text">
+                                        @if($issue->recovery_cost !== null)
+                                            {{ number_format($issue->recovery_cost) }}
                                         @else
-                                            <span class="text-xs text-muted">-</span>
+                                            -
                                         @endif
                                     </td>
-                                    <td class="px-4 py-3">
-                                        @if($issue->closed_at)
-                                            <span class="badge badge-accent text-xs">Closed</span>
-                                        @else
-                                            <span class="badge badge-warning text-xs">Open</span>
-                                        @endif
-                                    </td>
-                                    <td class="px-4 py-3 text-sm text-muted">{{ $issue->created_at?->format('M d, Y') }}</td>
-                                    <td class="px-4 py-3 text-sm text-muted">{{ $issue->closed_at?->format('M d, Y') ?? '-' }}</td>
                                 </tr>
                             @endforeach
                         </tbody>
@@ -171,29 +155,5 @@
                 </div>
             @endif
         </div>
-
-        <!-- Print Styles -->
-        <style>
-            @media print {
-                [data-no-print] {
-                    display: none !important;
-                }
-                body {
-                    background: white;
-                    color: black;
-                }
-                .card {
-                    border: 1px solid #ddd;
-                    box-shadow: none;
-                }
-                table {
-                    font-size: 10pt;
-                }
-                a {
-                    color: black;
-                    text-decoration: none;
-                }
-            }
-        </style>
     </div>
 </div>

@@ -52,7 +52,7 @@
                                 <div class="flex items-center gap-1">
                                     Name
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ $this->sortIcon('name') }}"/>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ $this->getSortIcon('name') }}"/>
                                     </svg>
                                 </div>
                             </th>
@@ -64,7 +64,7 @@
                                 <div class="flex items-center gap-1">
                                     Issues
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ $this->sortIcon('issues_count') }}"/>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ $this->getSortIcon('issues_count') }}"/>
                                     </svg>
                                 </div>
                             </th>

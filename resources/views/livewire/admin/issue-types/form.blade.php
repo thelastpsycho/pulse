@@ -38,6 +38,23 @@
                         <x-input-error :messages="$errors->get('description')" class="mt-2" />
                     </div>
 
+                    <!-- Category -->
+                    <div>
+                        <x-input-label for="issue_category_id" value="Category *" />
+                        <select
+                            id="issue_category_id"
+                            wire:model="issue_category_id"
+                            class="mt-1 block w-full bg-surface-2 border border-border text-text rounded-lg px-3 py-2 focus:border-primary focus:ring-primary"
+                            required
+                        >
+                            <option value="">Select a category</option>
+                            @foreach($this->issueCategories as $id => $label)
+                                <option value="{{ $id }}">{{ $label }}</option>
+                            @endforeach
+                        </select>
+                        <x-input-error :messages="$errors->get('issue_category_id')" class="mt-2" />
+                    </div>
+
                     <!-- Default Severity -->
                     <div>
                         <x-input-label for="default_severity" value="Default Severity *" />

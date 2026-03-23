@@ -26,6 +26,15 @@
                             @endforeach
                         </select>
                     </div>
+                    <div>
+                        <x-input-label for="category" value="Category" />
+                        <select id="category" wire:model.live="selectedCategoryId" class="mt-1 bg-surface-2 border border-border text-text rounded-lg px-3 py-2 focus:border-primary focus:ring-primary">
+                            <option value="">All Categories</option>
+                            @foreach($availableCategories as $id => $name)
+                                <option value="{{ $id }}">{{ $name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
                 </div>
             </div>
         </div>

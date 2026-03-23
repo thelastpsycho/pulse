@@ -33,6 +33,23 @@ class Show extends Component
         $this->issue = $issue->load(['departments', 'issueTypes', 'createdBy', 'assignedTo', 'comments.user']);
     }
 
+    public function openCloseModal(): void
+    {
+        $this->showCloseModal = true;
+    }
+
+    public function openReopenModal(): void
+    {
+        $this->showReopenModal = true;
+    }
+
+    public function closeModals(): void
+    {
+        $this->showCloseModal = false;
+        $this->showReopenModal = false;
+        $this->closeNote = null;
+    }
+
     public function render()
     {
         $activityLog = $this->issueService->getActivityLog($this->issue);
@@ -51,7 +68,7 @@ class Show extends Component
         IssueComment::create([
             'issue_id' => $this->issue->id,
             'user_id' => auth()->id(),
-            'comment' => $this->comment,
+            'body' => $this->comment,
         ]);
 
         $this->comment = '';
@@ -65,12 +82,10 @@ class Show extends Component
         $this->authorize('close', $this->issue);
 
         $this->issueService->close($this->issue, $this->closeNote);
-        $this->issue->load(['departments', 'issueTypes', 'createdBy', 'assignedTo']);
-        $this->showCloseModal = false;
-        $this->closeNote = null;
+        $this->issue = $this->issue->fresh()->load(['departments', 'issueTypes', 'createdBy', 'assignedTo', 'comments.user']);
+        $this->closeModals();
 
         session()->flash('success', 'Issue closed successfully.');
-        $this->dispatch('issue-closed');
     }
 
     public function reopenIssue(): void
@@ -78,11 +93,10 @@ class Show extends Component
         $this->authorize('reopen', $this->issue);
 
         $this->issueService->reopen($this->issue);
-        $this->issue->load(['departments', 'issueTypes', 'createdBy', 'assignedTo']);
-        $this->showReopenModal = false;
+        $this->issue = $this->issue->fresh()->load(['departments', 'issueTypes', 'createdBy', 'assignedTo', 'comments.user']);
+        $this->closeModals();
 
         session()->flash('success', 'Issue reopened successfully.');
-        $this->dispatch('issue-reopened');
     }
 
     public function deleteComment(IssueComment $comment): void

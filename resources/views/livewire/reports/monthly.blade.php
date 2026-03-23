@@ -34,6 +34,15 @@
                             @endforeach
                         </select>
                     </div>
+                    <div>
+                        <x-input-label for="category" value="Category" />
+                        <select id="category" wire:model.live="selectedCategoryId" class="mt-1 bg-surface-2 border border-border text-text rounded-lg px-3 py-2 focus:border-primary focus:ring-primary">
+                            <option value="">All Categories</option>
+                            @foreach($availableCategories as $id => $name)
+                                <option value="{{ $id }}">{{ $name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
                 </div>
             </div>
         </div>
@@ -81,7 +90,7 @@
                                         <span class="text-sm text-text">{{ $department }}</span>
                                         <div class="flex items-center gap-2">
                                             <div class="w-32 h-2 bg-surface-2 rounded-full overflow-hidden">
-                                                <div class="h-full bg-primary rounded-full" style="width: {{ ($count / $report['total_issues']) * 100 }}%"></div>
+                                                <div class="h-full bg-primary rounded-full" style="width: {{ ($count / max($report['total_issues'], 1)) * 100 }}%"></div>
                                             </div>
                                             <span class="text-sm font-medium text-text w-8 text-right">{{ $count }}</span>
                                         </div>
@@ -107,7 +116,7 @@
                                         <span class="text-sm text-text">{{ $type }}</span>
                                         <div class="flex items-center gap-2">
                                             <div class="w-32 h-2 bg-surface-2 rounded-full overflow-hidden">
-                                                <div class="h-full bg-accent rounded-full" style="width: {{ ($count / $report['total_issues']) * 100 }}%"></div>
+                                                <div class="h-full bg-accent rounded-full" style="width: {{ ($count / max($report['total_issues'], 1)) * 100 }}%"></div>
                                             </div>
                                             <span class="text-sm font-medium text-text w-8 text-right">{{ $count }}</span>
                                         </div>
@@ -119,30 +128,6 @@
                         @endif
                     </div>
                 </div>
-
-                <!-- By Severity -->
-                @if($report['by_severity']->count() > 0)
-                    <div class="card">
-                        <div class="px-6 py-4 border-b border-border">
-                            <h3 class="font-semibold text-text">By Severity</h3>
-                        </div>
-                        <div class="p-6">
-                            <div class="space-y-3">
-                                @foreach($report['by_severity'] as $severity => $count)
-                                    <div class="flex items-center justify-between">
-                                        <span class="text-sm text-text capitalize">{{ $severity }}</span>
-                                        <div class="flex items-center gap-2">
-                                            <div class="w-32 h-2 bg-surface-2 rounded-full overflow-hidden">
-                                                <div class="h-full rounded-full {{ $severity === 'urgent' ? 'bg-danger' : ($severity === 'high' ? 'bg-warning' : 'bg-muted') }}" style="width: {{ ($count / $report['total_issues']) * 100 }}%"></div>
-                                            </div>
-                                            <span class="text-sm font-medium text-text w-8 text-right">{{ $count }}</span>
-                                        </div>
-                                    </div>
-                                @endforeach
-                            </div>
-                        </div>
-                    </div>
-                @endif
 
                 <!-- Status Distribution -->
                 <div class="card">

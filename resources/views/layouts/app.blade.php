@@ -6,11 +6,13 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
-        <title>{{ config('app.name', 'DM-Log') }}</title>
+        <title>{{ config('app.name', 'GuestPulse!') }}</title>
+        <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
 
-        <!-- Fonts -->
-        <link rel="preconnect" href="https://fonts.bunny.net">
-        <link href="https://fonts.bunny.net/css?family=inter:400,500,600,700&display=swap" rel="stylesheet" />
+        <!-- Fonts - Modern, clean pairing -->
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
         <!-- Livewire Styles -->
         @livewireStyles
@@ -20,110 +22,133 @@
     </head>
     <body class="font-sans antialiased">
         <div class="flex min-h-screen bg-background">
+            <!-- Mobile Backdrop -->
+            <div x-show="$store.sidebar.isOpen"
+                 x-transition:enter="transition-opacity ease-linear duration-300"
+                 x-transition:enter-start="opacity-0"
+                 x-transition:enter-end="opacity-100"
+                 x-transition:leave="transition-opacity ease-linear duration-300"
+                 x-transition:leave-start="opacity-100"
+                 x-transition:leave-end="opacity-0"
+                 class="fixed inset-0 z-40 bg-black/50 lg:hidden"
+                 @click="$store.sidebar.close()"
+                 style="display: none;"></div>
+
             <!-- Sidebar -->
-            <aside class="fixed inset-y-0 left-0 z-50 w-64 bg-surface border-r border-border transition-transform duration-300 lg:translate-x-0"
+            <aside x-data="{ closeNav() { this.$store.sidebar.close(); } }" class="fixed inset-y-0 left-0 z-50 w-64 bg-surface border-r border-border lg:sticky lg:top-0 lg:h-screen lg:translate-x-0 transition-transform duration-300 flex flex-col"
                    :class="$store.sidebar.isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'">
 
                 <!-- Logo -->
-                <div class="flex items-center justify-between h-16 px-6 border-b border-border">
-                    <a href="{{ route('dashboard') }}" class="flex items-center gap-2">
-                        <svg class="w-8 h-8 text-primary" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
-                        </svg>
-                        <span class="text-xl font-bold text-text">DM-Log</span>
+                <div class="h-16 flex items-center px-6 border-b border-border">
+                    <a href="{{ route('dashboard') }}" @click="closeNav" class="flex items-center gap-3">
+                        <img src="{{ asset('images/logo/guestpulse_horizontal_logo.svg') }}" alt="GuestPulse!" class="h-14 w-auto">
                     </a>
-                    <button @click="$store.sidebar.close()" class="lg:hidden text-muted hover:text-text">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <button @click="$store.sidebar.close()" class="ml-auto lg:hidden p-2 -mr-2 text-muted hover:text-text">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                         </svg>
                     </button>
                 </div>
 
                 <!-- Navigation -->
-                <nav class="flex-1 px-4 py-6 space-y-1 overflow-y-auto">
-                    <!-- Issues -->
+                <nav class="flex-1 px-4 py-6 space-y-6 overflow-y-auto mobile-nav">
                     @can('issues.view')
-                    <div class="space-y-1">
-                        <p class="px-2 text-xs font-semibold text-muted uppercase tracking-wider">Issues</p>
+                    <div>
                         <a href="{{ route('issues.index') }}"
-                           class="nav-link {{ request()->routeIs('issues.*') ? 'active' : '' }}">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                           class="nav-link {{ request()->routeIs('issues.*') ? 'active' : '' }}"
+                           @click="closeNav">
+                            <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
                             </svg>
-                            <span>All Issues</span>
+                            <span>Issues</span>
                         </a>
                     </div>
                     @endcan
 
-                    <!-- Reports -->
                     @canany(['reports.view', 'reports.monthly', 'reports.yearly', 'reports.logbook'])
-                    <div class="mt-6 space-y-1">
-                        <p class="px-2 text-xs font-semibold text-muted uppercase tracking-wider">Reports</p>
-                        @can('reports.view')
+                    @can('reports.view')
+                    <div>
                         <a href="{{ route('reports.index') }}"
-                           class="nav-link {{ request()->routeIs('reports.*') ? 'active' : '' }}">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                           class="nav-link {{ request()->routeIs('reports.*') ? 'active' : '' }}"
+                           @click="closeNav">
+                            <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                             </svg>
                             <span>Reports</span>
                         </a>
-                        @endcan
                     </div>
+                    @endcan
                     @endcanany
 
-                    <!-- Insights -->
-                    @canany(['graphs.view', 'statistics.view'])
-                    <div class="mt-6 space-y-1">
-                        <p class="px-2 text-xs font-semibold text-muted uppercase tracking-wider">Insights</p>
-                        @can('graphs.view')
+                    @can('graphs.view')
+                    <div>
                         <a href="{{ route('graphs.index') }}"
-                           class="nav-link {{ request()->routeIs('graphs.*') ? 'active' : '' }}">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"/>
+                           class="nav-link {{ request()->routeIs('graphs.*') ? 'active' : '' }}"
+                           @click="closeNav">
+                            <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"/>
                             </svg>
                             <span>Graphs</span>
                         </a>
-                        @endcan
-                        @can('statistics.view')
+                    </div>
+                    @endcan
+
+                    @can('statistics.view')
+                    <div>
                         <a href="{{ route('statistics.index') }}"
-                           class="nav-link {{ request()->routeIs('statistics.*') ? 'active' : '' }}">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"/>
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z"/>
+                           class="nav-link {{ request()->routeIs('statistics.*') ? 'active' : '' }}"
+                           @click="closeNav">
+                            <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z"/>
                             </svg>
                             <span>Statistics</span>
                         </a>
-                        @endcan
                     </div>
-                    @endcanany
+                    @endcan
 
-                    <!-- Admin -->
                     @canany(['admin.users.view', 'admin.departments.view', 'admin.issue-types.view', 'admin.roles.view'])
-                    <div class="mt-6 space-y-1">
-                        <p class="px-2 text-xs font-semibold text-muted uppercase tracking-wider">Admin</p>
+                    <div class="pt-4 border-t border-border">
+                        <p class="px-3 mb-2 text-xs font-semibold text-muted uppercase tracking-wide">Admin</p>
                         @can('admin.users.view')
                         <a href="{{ route('admin.users.index') }}"
-                           class="nav-link {{ request()->routeIs('admin.users.*') ? 'active' : '' }}">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
+                           class="nav-link {{ request()->routeIs('admin.users.*') ? 'active' : '' }}"
+                           @click="closeNav">
+                            <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
                             </svg>
                             <span>Users</span>
                         </a>
                         @endcan
+
+                        @can('admin.roles.view')
+                        <a href="{{ route('admin.roles.index') }}"
+                           class="nav-link {{ request()->routeIs('admin.roles.*') ? 'active' : '' }}"
+                           @click="closeNav">
+                            <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                            </svg>
+                            <span>Roles</span>
+                        </a>
+                        @endcan
+
                         @can('admin.departments.view')
                         <a href="{{ route('admin.departments.index') }}"
-                           class="nav-link {{ request()->routeIs('admin.departments.*') ? 'active' : '' }}">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                           class="nav-link {{ request()->routeIs('admin.departments.*') ? 'active' : '' }}"
+                           @click="closeNav">
+                            <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
                             </svg>
                             <span>Departments</span>
                         </a>
                         @endcan
+
                         @can('admin.issue-types.view')
                         <a href="{{ route('admin.issue-types.index') }}"
-                           class="nav-link {{ request()->routeIs('admin.issue-types.*') ? 'active' : '' }}">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
+                           class="nav-link {{ request()->routeIs('admin.issue-types.*') ? 'active' : '' }}"
+                           @click="closeNav">
+                            <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
                             </svg>
                             <span>Issue Types</span>
                         </a>
@@ -135,21 +160,21 @@
                 <!-- User Section -->
                 <div class="p-4 border-t border-border">
                     <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary font-semibold">
+                        <div class="w-9 h-9 rounded-full bg-primary/20 flex items-center justify-center text-primary text-sm font-semibold">
                             {{ auth()->user()->name[0] }}
                         </div>
                         <div class="flex-1 min-w-0">
                             <p class="text-sm font-medium text-text truncate">{{ auth()->user()->name }}</p>
-                            <p class="text-xs text-muted truncate">{{ auth()->user()->roles->first()->name ?? 'User' }}</p>
+                            <p class="text-xs text-muted capitalize">{{ auth()->user()->roles->first()->name ?? 'User' }}</p>
                         </div>
                     </div>
                 </div>
             </aside>
 
             <!-- Main Content -->
-            <div class="flex-1 lg:ml-64">
+            <main class="flex-1 min-w-0">
                 <!-- Topbar -->
-                <header class="sticky top-0 z-40 bg-surface/80 backdrop-blur-md border-b border-border">
+                <header class="sticky top-0 z-30 bg-surface/80 backdrop-blur-md border-b border-border">
                     <div class="flex items-center justify-between h-16 px-4 sm:px-6">
                         <!-- Left: Menu Toggle + Breadcrumb -->
                         <div class="flex items-center gap-4">
@@ -175,13 +200,13 @@
                             </button>
 
                             <!-- Theme Toggle -->
-                            <button @click="$store.theme.toggle()"
+                            <button onclick="window.toggleTheme()"
                                     class="p-2 rounded-lg text-muted hover:text-text hover:bg-surface-2 transition-smooth"
                                     title="Toggle theme">
-                                <svg x-show="$store.theme.isDark()" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg class="theme-icon-dark w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
                                 </svg>
-                                <svg x-show="!$store.theme.isDark()" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="display: none;">
+                                <svg class="theme-icon-light w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
                                 </svg>
                             </button>
@@ -214,18 +239,35 @@
                 </header>
 
                 <!-- Page Content -->
-                <main class="p-4 sm:p-6 lg:p-8">
+                <div class="p-4 sm:p-6 lg:p-8">
                     {{ $slot }}
-                </main>
-            </div>
+                </div>
+            </main>
         </div>
 
         <style>
             .nav-link {
-                @apply flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-muted hover:text-text hover:bg-surface-2 transition-smooth;
+                display: flex;
+                align-items: center;
+                gap: 0.75rem;
+                width: 100%;
+                padding: 0.625rem 0.75rem;
+                border-radius: 0.5rem;
+                font-size: 15px;
+                font-weight: 500;
+                color: rgb(var(--muted) / 1);
+                transition: color 0.15s, background-color 0.15s;
+            }
+            .nav-link:hover {
+                color: rgb(var(--text) / 1);
+                background-color: rgb(var(--surface-2) / 1);
             }
             .nav-link.active {
-                @apply bg-primary/20 text-primary;
+                background-color: rgb(var(--primary) / 1);
+                color: rgb(var(--primary-foreground) / 1);
+            }
+            .nav-link svg {
+                flex-shrink: 0;
             }
         </style>
 
@@ -297,31 +339,12 @@
         </div>
 
         <!-- Livewire Scripts -->
-        <script src="{{ asset('vendor/livewire/livewire.js') }}" defer></script>
-
-        <!-- Alpine.js Stores (must be defined before Alpine initializes) -->
+        <script src="{{ asset('vendor/livewire/livewire.js') }}"></script>
         <script>
-            // Use Alpine's init event to define stores before it processes the DOM
-            document.addEventListener('alpine:init', () => {
-                // Theme management store
-                Alpine.store('theme', {
-                    toggle() {
-                        if (document.documentElement.classList.contains('dark')) {
-                            document.documentElement.classList.remove('dark');
-                            document.documentElement.classList.add('light');
-                            localStorage.setItem('theme', 'light');
-                        } else {
-                            document.documentElement.classList.remove('light');
-                            document.documentElement.classList.add('dark');
-                            localStorage.setItem('theme', 'dark');
-                        }
-                    },
-                    isDark() {
-                        return document.documentElement.classList.contains('dark');
-                    }
-                });
-
-                // Sidebar state store
+            // Define Alpine stores BEFORE Alpine initializes the DOM
+            // This must run synchronously after Livewire loads
+            if (typeof Alpine !== 'undefined') {
+                // Sidebar store
                 Alpine.store('sidebar', {
                     isOpen: false,
                     toggle() {
@@ -334,7 +357,28 @@
                         this.isOpen = true;
                     }
                 });
-            });
+            }
+        </script>
+        <script>
+            // Global theme toggle function
+            window.toggleTheme = function() {
+                const isDark = document.documentElement.classList.contains('dark');
+                if (isDark) {
+                    document.documentElement.classList.remove('dark');
+                    document.documentElement.classList.add('light');
+                    localStorage.setItem('theme', 'light');
+                } else {
+                    document.documentElement.classList.remove('light');
+                    document.documentElement.classList.add('dark');
+                    localStorage.setItem('theme', 'dark');
+                }
+                // Update icons visibility using Tailwind's hidden class
+                const darkIcons = document.querySelectorAll('.theme-icon-dark');
+                const lightIcons = document.querySelectorAll('.theme-icon-light');
+                const shouldBeDark = document.documentElement.classList.contains('dark');
+                darkIcons.forEach(icon => icon.classList.toggle('hidden', !shouldBeDark));
+                lightIcons.forEach(icon => icon.classList.toggle('hidden', shouldBeDark));
+            };
         </script>
 
         <!-- Keyboard Shortcuts Script -->

@@ -3,6 +3,8 @@
 namespace App\Livewire\Admin\IssueTypes;
 
 use App\Models\IssueType;
+use App\Models\IssueCategory;
+use Livewire\Attributes\Computed;
 use Livewire\Component;
 
 class Form extends Component
@@ -12,6 +14,7 @@ class Form extends Component
     public string $name = '';
     public ?string $description = null;
     public string $default_severity = 'medium';
+    public ?int $issue_category_id = null;
 
     public bool $isEditing = false;
 
@@ -23,6 +26,7 @@ class Form extends Component
             $this->name = $issueType->name;
             $this->description = $issueType->description;
             $this->default_severity = $issueType->default_severity;
+            $this->issue_category_id = $issueType->issue_category_id;
 
             $this->authorize('update', $issueType);
         } else {
@@ -46,6 +50,7 @@ class Form extends Component
                 'name' => $this->name,
                 'description' => $this->description,
                 'default_severity' => $this->default_severity,
+                'issue_category_id' => $this->issue_category_id,
             ]);
 
             session()->flash('success', 'Issue type updated successfully.');
@@ -54,6 +59,7 @@ class Form extends Component
                 'name' => $this->name,
                 'description' => $this->description,
                 'default_severity' => $this->default_severity,
+                'issue_category_id' => $this->issue_category_id,
             ]);
 
             session()->flash('success', 'Issue type created successfully.');
@@ -73,6 +79,7 @@ class Form extends Component
             'name' => ['required', 'string', 'max:255', $this->isEditing ? 'unique:issue_types,name,' . $this->issueType->id : 'unique:issue_types,name'],
             'description' => ['nullable', 'string'],
             'default_severity' => ['required', 'in:urgent,high,medium,low'],
+            'issue_category_id' => ['required', 'exists:issue_categories,id'],
         ];
     }
 
@@ -95,4 +102,13 @@ class Form extends Component
             'low' => 'badge-muted',
         ];
     }
+
+    #[Computed]
+    public function issueCategories(): array
+    {
+        return IssueCategory::orderBy('label')
+            ->pluck('label', 'id')
+            ->toArray();
+    }
 }
+

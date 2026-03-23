@@ -2,13 +2,16 @@
 
 namespace App\Livewire\Reports;
 
+use App\Models\IssueCategory;
 use App\Services\ReportService;
 use Livewire\Component;
 
 class Yearly extends Component
 {
     public int $selectedYear;
+    public ?int $selectedCategoryId = null;
     public array $availableYears = [];
+    public array $availableCategories = [];
 
     public array $reportData = [];
 
@@ -22,16 +25,30 @@ class Yearly extends Component
             $this->availableYears[$year] = $year;
         }
 
+        // Load available categories
+        $this->availableCategories = IssueCategory::orderBy('name')
+            ->get()
+            ->pluck('name', 'id')
+            ->toArray();
+
         $this->loadReport();
     }
 
     public function loadReport(): void
     {
         $reportService = app(ReportService::class);
-        $this->reportData = $reportService->yearlyReport($this->selectedYear);
+        $this->reportData = $reportService->yearlyReport(
+            $this->selectedYear,
+            $this->selectedCategoryId
+        );
     }
 
     public function updatedSelectedYear(): void
+    {
+        $this->loadReport();
+    }
+
+    public function updatedSelectedCategoryId(): void
     {
         $this->loadReport();
     }
@@ -41,6 +58,7 @@ class Yearly extends Component
         return view('livewire.reports.yearly', [
             'report' => $this->reportData,
             'availableYears' => $this->availableYears,
+            'availableCategories' => $this->availableCategories,
         ])->layout('layouts.app')->title('Yearly Report');
     }
 }

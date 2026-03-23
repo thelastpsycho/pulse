@@ -1,0 +1,28 @@
+<svg width="800" height="300" viewBox="0 0 800 300" xmlns="http://www.w3.org/2000/svg">
+  <g fill="#CDA574">
+    <path d="
+      M150 60
+      C90 60 50 120 50 160
+      C50 220 100 260 150 260
+      C185 260 215 245 235 220
+      L210 205
+      C195 220 175 230 150 230
+      C115 230 85 200 85 160
+      C85 120 115 90 150 90
+      L150 60
+    "/>
+    <path d="
+      M140 160
+      L180 160
+      L195 140
+      L210 185
+      L230 145
+      L245 160
+    " stroke="#CDA574" stroke-width="12" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    <circle cx="265" cy="160" r="7"/>
+  </g>
+
+  <text x="320" y="185" font-size="64" font-family="Arial, Helvetica, sans-serif" fill="#CDA574" font-weight="600">
+    GuestPulse!
+  </text>
+</svg>

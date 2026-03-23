@@ -14,8 +14,7 @@ return new class extends Migration
         if (!Schema::hasTable('issue_comments')) {
             Schema::create('issue_comments', function (Blueprint $table) {
                 $table->id();
-                $table->unsignedInteger('issue_id');
-                $table->foreign('issue_id')->references('id')->on('issues')->onDelete('cascade');
+                $table->foreignId('issue_id')->constrained('issues')->cascadeOnDelete();
                 $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
                 $table->text('body');
                 $table->timestamps();

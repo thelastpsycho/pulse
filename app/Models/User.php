@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -67,7 +66,7 @@ class User extends Authenticatable
     public function permissions(): BelongsToMany
     {
         return $this->belongsToMany(Permission::class, 'permission_role', 'role_id', 'permission_id')
-            ->join('role_user', 'role_user.role_id', '=', 'permission_role.role_id')
+            ->join('role_user', 'permission_role.role_id', '=', 'role_user.role_id')
             ->where('role_user.user_id', $this->id);
     }
 
@@ -129,6 +128,14 @@ class User extends Authenticatable
                 $query->where('name', $permission);
             })
             ->exists();
+    }
+
+    /**
+     * Check if user has a specific permission (alias for authorization).
+     */
+    public function hasCanPermission(string $permission): bool
+    {
+        return $this->hasPermission($permission);
     }
 
     /**

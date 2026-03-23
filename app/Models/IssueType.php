@@ -2,15 +2,20 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class IssueType extends Model
 {
+    use HasFactory;
     protected $fillable = [
         'name',
-        'severity_default',
+        'default_severity',
+        'description',
         'is_active',
+        'issue_category_id',
     ];
 
     protected function casts(): array
@@ -27,5 +32,13 @@ class IssueType extends Model
     {
         return $this->belongsToMany(Issue::class, 'issue_issue_type')
             ->withTimestamps();
+    }
+
+    /**
+     * Get the category that this issue type belongs to.
+     */
+    public function issueCategory(): BelongsTo
+    {
+        return $this->belongsTo(IssueCategory::class);
     }
 }

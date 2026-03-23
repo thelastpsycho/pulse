@@ -16,10 +16,13 @@ class PermissionsSeeder extends Seeder
     {
         $permissions = [
             // Issues
-            ['name' => 'issues.view', 'description' => 'View issues'],
+            ['name' => 'issues.view', 'description' => 'View any issues'],
+            ['name' => 'issues.view.own', 'description' => 'View own issues'],
             ['name' => 'issues.create', 'description' => 'Create new issues'],
-            ['name' => 'issues.update', 'description' => 'Update issues'],
-            ['name' => 'issues.delete', 'description' => 'Delete issues'],
+            ['name' => 'issues.update', 'description' => 'Update any issues'],
+            ['name' => 'issues.update.own', 'description' => 'Update own issues'],
+            ['name' => 'issues.delete', 'description' => 'Delete any issues'],
+            ['name' => 'issues.delete.own', 'description' => 'Delete own issues'],
             ['name' => 'issues.close', 'description' => 'Close issues'],
             ['name' => 'issues.reopen', 'description' => 'Reopen closed issues'],
             ['name' => 'issues.export', 'description' => 'Export issues to PDF'],
@@ -33,7 +36,10 @@ class PermissionsSeeder extends Seeder
 
             // Roles
             ['name' => 'admin.roles.view', 'description' => 'View roles'],
-            ['name' => 'admin.roles.update', 'description' => 'Assign roles to users'],
+            ['name' => 'admin.roles.create', 'description' => 'Create roles'],
+            ['name' => 'admin.roles.update', 'description' => 'Update roles'],
+            ['name' => 'admin.roles.delete', 'description' => 'Delete roles'],
+            ['name' => 'admin.roles.assign', 'description' => 'Assign roles to users'],
 
             // Permissions
             ['name' => 'admin.permissions.view', 'description' => 'View permissions'],
@@ -89,8 +95,10 @@ class PermissionsSeeder extends Seeder
         if ($staff) {
             $staffPermissions = Permission::whereIn('name', [
                 'issues.view',
+                'issues.view.own',
                 'issues.create',
                 'issues.update',
+                'issues.update.own',
                 'issues.close',
                 'issues.reopen',
                 'reports.view',

@@ -19,8 +19,10 @@ class DatabaseSeeder extends Seeder
             RolesSeeder::class,
             PermissionsSeeder::class,
             DepartmentsSeeder::class,
+            IssueCategorySeeder::class,
             IssueTypesSeeder::class,
             UsersSeeder::class,
+            IssueSeeder::class,
         ]);
     }
 }

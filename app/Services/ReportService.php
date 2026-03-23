@@ -11,61 +11,259 @@ use Illuminate\Support\Facades\DB;
 class ReportService
 {
     /**
-     * Get monthly report data.
+     * Get report data by date range.
      */
-    public function monthlyReport(?int $year = null, ?int $month = null): array
+    public function dateRangeReport(?string $dateFrom = null, ?string $dateTo = null, ?int $categoryId = null): array
     {
-        $year = $year ?? now()->year;
-        $month = $month ?? now()->month;
+        $dateFrom = $dateFrom ?? now()->subMonth()->format('Y-m-d');
+        $dateTo = $dateTo ?? now()->format('Y-m-d');
 
-        $query = Issue::whereYear('created_at', $year)
-            ->whereMonth('created_at', $month);
+        $query = Issue::whereDate('issue_date', '>=', $dateFrom)
+            ->whereDate('issue_date', '<=', $dateTo);
+
+        if ($categoryId) {
+            $query->whereHas('issueTypes', function ($q) use ($categoryId) {
+                $q->where('issue_category_id', $categoryId);
+            });
+        }
 
         $totalIssues = $query->count();
 
-        $byStatus = Issue::whereYear('created_at', $year)
-            ->whereMonth('created_at', $month)
+        $byStatusQuery = DB::table('issues')
+            ->whereDate('issue_date', '>=', $dateFrom)
+            ->whereDate('issue_date', '<=', $dateTo)
+            ->whereNull('deleted_at');
+
+        if ($categoryId) {
+            $byStatusQuery
+                ->join('issue_issue_type as iit', 'issues.id', '=', 'iit.issue_id')
+                ->join('issue_types as it', 'iit.issue_type_id', '=', 'it.id')
+                ->where('it.issue_category_id', $categoryId);
+        }
+
+        $byStatus = $byStatusQuery
             ->selectRaw('
                 CASE
-                    WHEN closed_at IS NOT NULL THEN "closed"
+                    WHEN issues.closed_at IS NOT NULL THEN "closed"
                     ELSE "open"
                 END as status,
                 COUNT(*) as count
             ')
-            ->groupBy('status')
+            ->groupByRaw('CASE WHEN issues.closed_at IS NOT NULL THEN "closed" ELSE "open" END')
             ->pluck('count', 'status');
 
-        $byDepartment = Issue::whereYear('created_at', $year)
-            ->whereMonth('created_at', $month)
+        $byPriorityQuery = DB::table('issues')
+            ->whereDate('issue_date', '>=', $dateFrom)
+            ->whereDate('issue_date', '<=', $dateTo)
+            ->whereNull('deleted_at');
+
+        if ($categoryId) {
+            $byPriorityQuery
+                ->join('issue_issue_type as iit', 'issues.id', '=', 'iit.issue_id')
+                ->join('issue_types as it', 'iit.issue_type_id', '=', 'it.id')
+                ->where('it.issue_category_id', $categoryId);
+        }
+
+        $byPriority = $byPriorityQuery
+            ->selectRaw('priority, COUNT(*) as count')
+            ->groupBy('priority')
+            ->orderByDesc('count')
+            ->pluck('count', 'priority');
+
+        $byDepartmentQuery = DB::table('issues')
+            ->whereDate('issue_date', '>=', $dateFrom)
+            ->whereDate('issue_date', '<=', $dateTo)
+            ->whereNull('deleted_at')
             ->selectRaw('d.name, COUNT(*) as count')
             ->join('department_issue as di', 'issues.id', '=', 'di.issue_id')
-            ->join('departments as d', 'di.department_id', '=', 'd.id')
+            ->join('departments as d', 'di.department_id', '=', 'd.id');
+
+        if ($categoryId) {
+            $byDepartmentQuery
+                ->join('issue_issue_type as iit2', 'issues.id', '=', 'iit2.issue_id')
+                ->join('issue_types as it2', 'iit2.issue_type_id', '=', 'it2.id')
+                ->where('it2.issue_category_id', $categoryId);
+        }
+
+        $byDepartment = $byDepartmentQuery
             ->groupBy('d.id', 'd.name')
             ->orderByDesc('count')
             ->pluck('count', 'd.name');
 
-        $byIssueType = Issue::whereYear('created_at', $year)
-            ->whereMonth('created_at', $month)
+        $byIssueTypeQuery = DB::table('issues')
+            ->whereDate('issue_date', '>=', $dateFrom)
+            ->whereDate('issue_date', '<=', $dateTo)
+            ->whereNull('deleted_at')
             ->selectRaw('it.name, COUNT(*) as count')
             ->join('issue_issue_type as iit', 'issues.id', '=', 'iit.issue_id')
-            ->join('issue_types as it', 'iit.issue_type_id', '=', 'it.id')
+            ->join('issue_types as it', 'iit.issue_type_id', '=', 'it.id');
+
+        if ($categoryId) {
+            $byIssueTypeQuery->where('it.issue_category_id', $categoryId);
+        }
+
+        $byIssueType = $byIssueTypeQuery
             ->groupBy('it.id', 'it.name')
             ->orderByDesc('count')
             ->pluck('count', 'it.name');
 
-        $avgCloseTime = Issue::whereYear('created_at', $year)
-            ->whereMonth('created_at', $month)
-            ->whereNotNull('closed_at')
-            ->selectRaw('AVG(TIMESTAMPDIFF(HOUR, created_at, closed_at)) as avg_hours')
+        $byCategoryQuery = DB::table('issues')
+            ->whereDate('issue_date', '>=', $dateFrom)
+            ->whereDate('issue_date', '<=', $dateTo)
+            ->whereNull('deleted_at')
+            ->selectRaw('ic.label, COUNT(*) as count')
+            ->join('issue_issue_type as iit', 'issues.id', '=', 'iit.issue_id')
+            ->join('issue_types as it', 'iit.issue_type_id', '=', 'it.id')
+            ->join('issue_categories as ic', 'it.issue_category_id', '=', 'ic.id')
+            ->groupBy('ic.id', 'ic.label')
+            ->orderByDesc('count');
+
+        $byCategory = $byCategoryQuery->pluck('count', 'ic.label');
+
+        $avgCloseTimeQuery = DB::table('issues')
+            ->whereDate('issue_date', '>=', $dateFrom)
+            ->whereDate('issue_date', '<=', $dateTo)
+            ->whereNull('deleted_at')
+            ->whereNotNull('closed_at');
+
+        if ($categoryId) {
+            $avgCloseTimeQuery
+                ->join('issue_issue_type as iit', 'issues.id', '=', 'iit.issue_id')
+                ->join('issue_types as it', 'iit.issue_type_id', '=', 'it.id')
+                ->where('it.issue_category_id', $categoryId);
+        }
+
+        $avgCloseTime = $avgCloseTimeQuery
+            ->selectRaw('AVG(TIMESTAMPDIFF(HOUR, issues.created_at, issues.closed_at)) as avg_hours')
             ->value('avg_hours');
 
-        $bySeverity = Issue::whereYear('created_at', $year)
-            ->whereMonth('created_at', $month)
-            ->selectRaw('severity, COUNT(*) as count')
-            ->whereNotNull('severity')
-            ->groupBy('severity')
+        // Daily trend
+        $dailyTrendQuery = DB::table('issues')
+            ->whereDate('issue_date', '>=', $dateFrom)
+            ->whereDate('issue_date', '<=', $dateTo)
+            ->whereNull('deleted_at')
+            ->selectRaw('issue_date, COUNT(*) as count')
+            ->groupBy('issue_date')
+            ->orderBy('issue_date');
+
+        if ($categoryId) {
+            $dailyTrendQuery
+                ->join('issue_issue_type as iit', 'issues.id', '=', 'iit.issue_id')
+                ->join('issue_types as it', 'iit.issue_type_id', '=', 'it.id')
+                ->where('it.issue_category_id', $categoryId);
+        }
+
+        $dailyTrend = $dailyTrendQuery->pluck('count', 'issue_date');
+
+        return [
+            'date_from' => $dateFrom,
+            'date_to' => $dateTo,
+            'total_issues' => $totalIssues,
+            'by_status' => $byStatus,
+            'by_priority' => $byPriority,
+            'by_department' => $byDepartment,
+            'by_issue_type' => $byIssueType,
+            'by_category' => $byCategory,
+            'daily_trend' => $dailyTrend,
+            'avg_close_time_hours' => round($avgCloseTime ?? 0, 2),
+            'category_id' => $categoryId,
+        ];
+    }
+
+    /**
+     * Get monthly report data.
+     */
+    public function monthlyReport(?int $year = null, ?int $month = null, ?int $categoryId = null): array
+    {
+        $year = $year ?? now()->year;
+        $month = $month ?? now()->month;
+
+        $query = Issue::whereYear('issues.created_at', $year)
+            ->whereMonth('issues.created_at', $month);
+
+        if ($categoryId) {
+            $query->whereHas('issueTypes', function ($q) use ($categoryId) {
+                $q->where('issue_category_id', $categoryId);
+            });
+        }
+
+        $totalIssues = $query->count();
+
+        $byStatusQuery = DB::table('issues')
+            ->whereYear('issues.created_at', $year)
+            ->whereMonth('issues.created_at', $month)
+            ->whereNull('issues.deleted_at');
+
+        if ($categoryId) {
+            $byStatusQuery
+                ->join('issue_issue_type as iit', 'issues.id', '=', 'iit.issue_id')
+                ->join('issue_types as it', 'iit.issue_type_id', '=', 'it.id')
+                ->where('it.issue_category_id', $categoryId);
+        }
+
+        $byStatus = $byStatusQuery
+            ->selectRaw('
+                CASE
+                    WHEN issues.closed_at IS NOT NULL THEN "closed"
+                    ELSE "open"
+                END as status,
+                COUNT(*) as count
+            ')
+            ->groupByRaw('CASE WHEN issues.closed_at IS NOT NULL THEN "closed" ELSE "open" END')
+            ->pluck('count', 'status');
+
+        $byDepartmentQuery = DB::table('issues')
+            ->whereYear('issues.created_at', $year)
+            ->whereMonth('issues.created_at', $month)
+            ->whereNull('issues.deleted_at')
+            ->selectRaw('d.name, COUNT(*) as count')
+            ->join('department_issue as di', 'issues.id', '=', 'di.issue_id')
+            ->join('departments as d', 'di.department_id', '=', 'd.id');
+
+        if ($categoryId) {
+            $byDepartmentQuery
+                ->join('issue_issue_type as iit2', 'issues.id', '=', 'iit2.issue_id')
+                ->join('issue_types as it2', 'iit2.issue_type_id', '=', 'it2.id')
+                ->where('it2.issue_category_id', $categoryId);
+        }
+
+        $byDepartment = $byDepartmentQuery
+            ->groupBy('d.id', 'd.name')
             ->orderByDesc('count')
-            ->pluck('count', 'severity');
+            ->pluck('count', 'd.name');
+
+        $byIssueTypeQuery = DB::table('issues')
+            ->whereYear('issues.created_at', $year)
+            ->whereMonth('issues.created_at', $month)
+            ->whereNull('issues.deleted_at')
+            ->selectRaw('it.name, COUNT(*) as count')
+            ->join('issue_issue_type as iit', 'issues.id', '=', 'iit.issue_id')
+            ->join('issue_types as it', 'iit.issue_type_id', '=', 'it.id');
+
+        if ($categoryId) {
+            $byIssueTypeQuery->where('it.issue_category_id', $categoryId);
+        }
+
+        $byIssueType = $byIssueTypeQuery
+            ->groupBy('it.id', 'it.name')
+            ->orderByDesc('count')
+            ->pluck('count', 'it.name');
+
+        $avgCloseTimeQuery = DB::table('issues')
+            ->whereYear('issues.created_at', $year)
+            ->whereMonth('issues.created_at', $month)
+            ->whereNotNull('issues.closed_at');
+
+        if ($categoryId) {
+            $avgCloseTimeQuery
+                ->join('issue_issue_type as iit', 'issues.id', '=', 'iit.issue_id')
+                ->join('issue_types as it', 'iit.issue_type_id', '=', 'it.id')
+                ->where('it.issue_category_id', $categoryId);
+        }
+
+        $avgCloseTime = $avgCloseTimeQuery
+            ->selectRaw('AVG(TIMESTAMPDIFF(HOUR, issues.created_at, issues.closed_at)) as avg_hours')
+            ->value('avg_hours');
 
         return [
             'year' => $year,
@@ -76,65 +274,113 @@ class ReportService
             'by_department' => $byDepartment,
             'by_issue_type' => $byIssueType,
             'avg_close_time_hours' => round($avgCloseTime ?? 0, 2),
-            'by_severity' => $bySeverity,
+            'category_id' => $categoryId,
         ];
     }
 
     /**
      * Get yearly report data.
      */
-    public function yearlyReport(?int $year = null): array
+    public function yearlyReport(?int $year = null, ?int $categoryId = null): array
     {
         $year = $year ?? now()->year;
 
-        $issues = Issue::whereYear('created_at', $year);
+        $issuesQuery = Issue::whereYear('created_at', $year);
 
-        $totalIssues = $issues->count();
+        if ($categoryId) {
+            $issuesQuery->whereHas('issueTypes', function ($q) use ($categoryId) {
+                $q->where('issue_category_id', $categoryId);
+            });
+        }
 
-        $byMonth = Issue::whereYear('created_at', $year)
+        $totalIssues = $issuesQuery->count();
+
+        $byMonthQuery = Issue::whereYear('created_at', $year);
+
+        if ($categoryId) {
+            $byMonthQuery->whereHas('issueTypes', function ($q) use ($categoryId) {
+                $q->where('issue_category_id', $categoryId);
+            });
+        }
+
+        $byMonth = $byMonthQuery
             ->selectRaw('MONTH(created_at) as month, COUNT(*) as count')
             ->groupBy('month')
             ->orderBy('month')
             ->pluck('count', 'month');
 
-        $byStatus = Issue::whereYear('created_at', $year)
+        $byStatusQuery = DB::table('issues')
+            ->whereYear('issues.created_at', $year)
+            ->whereNull('issues.deleted_at');
+
+        if ($categoryId) {
+            $byStatusQuery
+                ->join('issue_issue_type as iit', 'issues.id', '=', 'iit.issue_id')
+                ->join('issue_types as it', 'iit.issue_type_id', '=', 'it.id')
+                ->where('it.issue_category_id', $categoryId);
+        }
+
+        $byStatus = $byStatusQuery
             ->selectRaw('
                 CASE
-                    WHEN closed_at IS NOT NULL THEN "closed"
+                    WHEN issues.closed_at IS NOT NULL THEN "closed"
                     ELSE "open"
                 END as status,
                 COUNT(*) as count
             ')
-            ->groupBy('status')
+            ->groupByRaw('CASE WHEN issues.closed_at IS NOT NULL THEN "closed" ELSE "open" END')
             ->pluck('count', 'status');
 
-        $byDepartment = Issue::whereYear('created_at', $year)
+        $byDepartmentQuery = DB::table('issues')
+            ->whereYear('issues.created_at', $year)
+            ->whereNull('issues.deleted_at')
             ->selectRaw('d.name, COUNT(*) as count')
             ->join('department_issue as di', 'issues.id', '=', 'di.issue_id')
-            ->join('departments as d', 'di.department_id', '=', 'd.id')
+            ->join('departments as d', 'di.department_id', '=', 'd.id');
+
+        if ($categoryId) {
+            $byDepartmentQuery
+                ->join('issue_issue_type as iit2', 'issues.id', '=', 'iit2.issue_id')
+                ->join('issue_types as it2', 'iit2.issue_type_id', '=', 'it2.id')
+                ->where('it2.issue_category_id', $categoryId);
+        }
+
+        $byDepartment = $byDepartmentQuery
             ->groupBy('d.id', 'd.name')
             ->orderByDesc('count')
             ->pluck('count', 'd.name');
 
-        $byIssueType = Issue::whereYear('created_at', $year)
+        $byIssueTypeQuery = DB::table('issues')
+            ->whereYear('issues.created_at', $year)
+            ->whereNull('issues.deleted_at')
             ->selectRaw('it.name, COUNT(*) as count')
             ->join('issue_issue_type as iit', 'issues.id', '=', 'iit.issue_id')
-            ->join('issue_types as it', 'iit.issue_type_id', '=', 'it.id')
+            ->join('issue_types as it', 'iit.issue_type_id', '=', 'it.id');
+
+        if ($categoryId) {
+            $byIssueTypeQuery->where('it.issue_category_id', $categoryId);
+        }
+
+        $byIssueType = $byIssueTypeQuery
             ->groupBy('it.id', 'it.name')
             ->orderByDesc('count')
             ->pluck('count', 'it.name');
 
-        $avgCloseTime = Issue::whereYear('created_at', $year)
-            ->whereNotNull('closed_at')
-            ->selectRaw('AVG(TIMESTAMPDIFF(HOUR, created_at, closed_at)) as avg_hours')
-            ->value('avg_hours');
+        $avgCloseTimeQuery = DB::table('issues')
+            ->whereYear('issues.created_at', $year)
+            ->whereNull('issues.deleted_at')
+            ->whereNotNull('issues.closed_at');
 
-        $bySeverity = Issue::whereYear('created_at', $year)
-            ->selectRaw('severity, COUNT(*) as count')
-            ->whereNotNull('severity')
-            ->groupBy('severity')
-            ->orderByDesc('count')
-            ->pluck('count', 'severity');
+        if ($categoryId) {
+            $avgCloseTimeQuery
+                ->join('issue_issue_type as iit', 'issues.id', '=', 'iit.issue_id')
+                ->join('issue_types as it', 'iit.issue_type_id', '=', 'it.id')
+                ->where('it.issue_category_id', $categoryId);
+        }
+
+        $avgCloseTime = $avgCloseTimeQuery
+            ->selectRaw('AVG(TIMESTAMPDIFF(HOUR, issues.created_at, issues.closed_at)) as avg_hours')
+            ->value('avg_hours');
 
         return [
             'year' => $year,
@@ -144,7 +390,7 @@ class ReportService
             'by_department' => $byDepartment,
             'by_issue_type' => $byIssueType,
             'avg_close_time_hours' => round($avgCloseTime ?? 0, 2),
-            'by_severity' => $bySeverity,
+            'category_id' => $categoryId,
         ];
     }
 
@@ -153,7 +399,7 @@ class ReportService
      */
     public function logbookReport(array $filters = []): Collection
     {
-        $query = Issue::with(['departments', 'issueTypes', 'createdBy', 'closedBy']);
+        $query = Issue::with(['departments', 'issueTypes', 'createdBy', 'closedBy', 'comments.user', 'issueTypes.issueCategory']);
 
         // Date range filter
         if (isset($filters['date_from'])) {
@@ -174,6 +420,13 @@ class ReportService
         if (isset($filters['issue_type_id'])) {
             $query->whereHas('issueTypes', function ($q) use ($filters) {
                 $q->where('issue_types.id', $filters['issue_type_id']);
+            });
+        }
+
+        // Issue category filter
+        if (isset($filters['issue_category_id'])) {
+            $query->whereHas('issueTypes', function ($q) use ($filters) {
+                $q->where('issue_types.issue_category_id', $filters['issue_category_id']);
             });
         }
 

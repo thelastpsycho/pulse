@@ -32,6 +32,40 @@ class Form extends Component
     #[Rule(['nullable', 'exists:users,id'])]
     public ?int $assigned_to = null;
 
+    // Guest details
+    #[Rule(['nullable', 'string', 'max:255'])]
+    public ?string $name = null;
+
+    #[Rule(['nullable', 'string', 'max:50'])]
+    public ?string $room_number = null;
+
+    #[Rule(['nullable', 'date'])]
+    public ?string $checkin_date = null;
+
+    #[Rule(['nullable', 'date'])]
+    public ?string $checkout_date = null;
+
+    #[Rule(['nullable', 'date'])]
+    public ?string $issue_date = null;
+
+    #[Rule(['nullable', 'string', 'max:255'])]
+    public ?string $source = null;
+
+    #[Rule(['nullable', 'string', 'max:100'])]
+    public ?string $nationality = null;
+
+    #[Rule(['nullable', 'string', 'max:100'])]
+    public ?string $contact = null;
+
+    #[Rule(['nullable', 'string'])]
+    public ?string $recovery = null;
+
+    #[Rule(['nullable', 'integer', 'min:0'])]
+    public ?int $recovery_cost = null;
+
+    #[Rule(['nullable', 'string'])]
+    public ?string $training = null;
+
     public bool $isEditing = false;
 
     protected IssueService $issueService;
@@ -53,6 +87,19 @@ class Form extends Component
             $this->assigned_to = $issue->assigned_to;
             $this->department_ids = $issue->departments->pluck('id')->toArray();
             $this->issue_type_ids = $issue->issueTypes->pluck('id')->toArray();
+
+            // Guest details
+            $this->name = $issue->name;
+            $this->room_number = $issue->room_number;
+            $this->checkin_date = $issue->checkin_date?->format('Y-m-d');
+            $this->checkout_date = $issue->checkout_date?->format('Y-m-d');
+            $this->issue_date = $issue->issue_date?->format('Y-m-d');
+            $this->source = $issue->source;
+            $this->nationality = $issue->nationality;
+            $this->contact = $issue->contact;
+            $this->recovery = $issue->recovery;
+            $this->recovery_cost = $issue->recovery_cost;
+            $this->training = $issue->training;
 
             $this->authorize('update', $issue);
         } else {
@@ -77,6 +124,18 @@ class Form extends Component
             'assigned_to' => $this->assigned_to ?: null,
             'department_ids' => $this->department_ids,
             'issue_type_ids' => $this->issue_type_ids,
+            // Guest details
+            'name' => $this->name,
+            'room_number' => $this->room_number,
+            'checkin_date' => $this->checkin_date,
+            'checkout_date' => $this->checkout_date,
+            'issue_date' => $this->issue_date,
+            'source' => $this->source,
+            'nationality' => $this->nationality,
+            'contact' => $this->contact,
+            'recovery' => $this->recovery,
+            'recovery_cost' => $this->recovery_cost,
+            'training' => $this->training,
         ];
 
         if ($this->isEditing) {

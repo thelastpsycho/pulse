@@ -199,12 +199,14 @@ class IssueService
             $query->whereDate('created_at', '<=', $filters['date_to']);
         }
 
-        // Search by title or description
+        // Search by title, description, location, or room number
         if (!empty($filters['search'])) {
             $search = $filters['search'];
             $query->where(function ($q) use ($search) {
                 $q->where('title', 'like', "%{$search}%")
-                    ->orWhere('description', 'like', "%{$search}%");
+                    ->orWhere('description', 'like', "%{$search}%")
+                    ->orWhere('location', 'like', "%{$search}%")
+                    ->orWhere('room_number', 'like', "%{$search}%");
             });
         }
 
@@ -257,11 +259,13 @@ class IssueService
         ActivityLog::create([
             'subject_type' => Issue::class,
             'subject_id' => $issue->id,
-            'user_id' => Auth::id(),
+            'actor_user_id' => Auth::id(),
             'action' => $action,
-            'description' => $description,
-            'ip_address' => request()->ip(),
-            'user_agent' => request()->userAgent(),
+            'meta' => [
+                'description' => $description,
+                'ip_address' => request()->ip(),
+                'user_agent' => request()->userAgent(),
+            ],
         ]);
     }
 
@@ -272,7 +276,7 @@ class IssueService
     {
         return ActivityLog::where('subject_type', Issue::class)
             ->where('subject_id', $issue->id)
-            ->with('user')
+            ->with('actor')
             ->orderBy('created_at', 'desc')
             ->get();
     }

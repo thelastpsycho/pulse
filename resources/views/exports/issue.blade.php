@@ -104,7 +104,7 @@
     <div class="header">
         <h1>Issue #{{ $issue->id }}</h1>
         <div class="meta">
-            DM-Log Issue Tracking System • Generated: {{ now()->format('M d, Y H:i') }}
+            GuestPulse! Issue Tracking System • Generated: {{ now()->format('M d, Y H:i') }}
         </div>
     </div>
 
@@ -215,7 +215,7 @@
     @endif
 
     <div class="footer">
-        DM-Log Issue Tracking System • {{ config('app.name') }} • {{ $issue->id }}
+        GuestPulse! Issue Tracking System • {{ config('app.name') }} • {{ $issue->id }}
     </div>
 </body>
 </html>

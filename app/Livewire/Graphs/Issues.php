@@ -3,12 +3,16 @@
 namespace App\Livewire\Graphs;
 
 use App\Models\Issue;
+use App\Models\IssueCategory;
+use Illuminate\Support\Facades\DB;
 use Livewire\Component;
 
 class Issues extends Component
 {
     public int $selectedYear;
+    public ?int $selectedCategoryId = null;
     public array $availableYears = [];
+    public array $availableCategories = [];
     public array $chartData = [];
 
     public function mount(): void
@@ -21,14 +25,31 @@ class Issues extends Component
             $this->availableYears[$year] = $year;
         }
 
+        // Load available categories
+        $this->availableCategories = IssueCategory::orderBy('name')
+            ->get()
+            ->pluck('name', 'id')
+            ->toArray();
+
         $this->loadChartData();
     }
 
     public function loadChartData(): void
     {
         // Monthly trend data
-        $monthlyData = Issue::whereYear('created_at', $this->selectedYear)
-            ->selectRaw('MONTH(created_at) as month, COUNT(*) as count')
+        $monthlyQuery = DB::table('issues')
+            ->whereYear('issues.created_at', $this->selectedYear)
+            ->whereNull('issues.deleted_at')
+            ->selectRaw('MONTH(issues.created_at) as month, COUNT(*) as count');
+
+        if ($this->selectedCategoryId) {
+            $monthlyQuery
+                ->join('issue_issue_type as iit', 'issues.id', '=', 'iit.issue_id')
+                ->join('issue_types as it', 'iit.issue_type_id', '=', 'it.id')
+                ->where('it.issue_category_id', $this->selectedCategoryId);
+        }
+
+        $monthlyData = $monthlyQuery
             ->groupBy('month')
             ->orderBy('month')
             ->pluck('count', 'month')
@@ -44,28 +65,52 @@ class Issues extends Component
         }
 
         // Status breakdown
-        $statusData = Issue::whereYear('created_at', $this->selectedYear)
-            ->selectRaw('
-                CASE
-                    WHEN closed_at IS NOT NULL THEN "closed"
-                    ELSE "open"
-                END as status,
-                COUNT(*) as count
-            ')
-            ->groupBy('status')
-            ->pluck('count', 'status')
-            ->toArray();
+        $openQuery = DB::table('issues')
+            ->whereYear('issues.created_at', $this->selectedYear)
+            ->whereNull('issues.deleted_at')
+            ->whereNull('issues.closed_at');
+
+        $closedQuery = DB::table('issues')
+            ->whereYear('issues.created_at', $this->selectedYear)
+            ->whereNull('issues.deleted_at')
+            ->whereNotNull('issues.closed_at');
+
+        if ($this->selectedCategoryId) {
+            $openQuery
+                ->join('issue_issue_type as iit', 'issues.id', '=', 'iit.issue_id')
+                ->join('issue_types as it', 'iit.issue_type_id', '=', 'it.id')
+                ->where('it.issue_category_id', $this->selectedCategoryId);
+
+            $closedQuery
+                ->join('issue_issue_type as iit', 'issues.id', '=', 'iit.issue_id')
+                ->join('issue_types as it', 'iit.issue_type_id', '=', 'it.id')
+                ->where('it.issue_category_id', $this->selectedCategoryId);
+        }
+
+        $openCount = $openQuery->count();
+        $closedCount = $closedQuery->count();
 
         $this->chartData['status'] = [
-            'open' => $statusData['open'] ?? 0,
-            'closed' => $statusData['closed'] ?? 0,
+            'open' => $openCount,
+            'closed' => $closedCount,
         ];
 
         // Department breakdown
-        $deptData = Issue::whereYear('created_at', $this->selectedYear)
+        $deptQuery = DB::table('issues')
+            ->whereYear('issues.created_at', $this->selectedYear)
+            ->whereNull('issues.deleted_at')
             ->selectRaw('d.name, COUNT(*) as count')
             ->join('department_issue as di', 'issues.id', '=', 'di.issue_id')
-            ->join('departments as d', 'di.department_id', '=', 'd.id')
+            ->join('departments as d', 'di.department_id', '=', 'd.id');
+
+        if ($this->selectedCategoryId) {
+            $deptQuery
+                ->join('issue_issue_type as iit2', 'issues.id', '=', 'iit2.issue_id')
+                ->join('issue_types as it2', 'iit2.issue_type_id', '=', 'it2.id')
+                ->where('it2.issue_category_id', $this->selectedCategoryId);
+        }
+
+        $deptData = $deptQuery
             ->groupBy('d.id', 'd.name')
             ->orderByDesc('count')
             ->limit(10)
@@ -77,10 +122,18 @@ class Issues extends Component
         ])->toArray();
 
         // Issue type breakdown
-        $typeData = Issue::whereYear('created_at', $this->selectedYear)
+        $typeQuery = DB::table('issues')
+            ->whereYear('issues.created_at', $this->selectedYear)
+            ->whereNull('issues.deleted_at')
             ->selectRaw('it.name, COUNT(*) as count')
             ->join('issue_issue_type as iit', 'issues.id', '=', 'iit.issue_id')
-            ->join('issue_types as it', 'iit.issue_type_id', '=', 'it.id')
+            ->join('issue_types as it', 'iit.issue_type_id', '=', 'it.id');
+
+        if ($this->selectedCategoryId) {
+            $typeQuery->where('it.issue_category_id', $this->selectedCategoryId);
+        }
+
+        $typeData = $typeQuery
             ->groupBy('it.id', 'it.name')
             ->orderByDesc('count')
             ->limit(10)
@@ -97,11 +150,17 @@ class Issues extends Component
         $this->loadChartData();
     }
 
+    public function updatedSelectedCategoryId(): void
+    {
+        $this->loadChartData();
+    }
+
     public function render()
     {
         return view('livewire.graphs.issues', [
             'chartData' => $this->chartData,
             'availableYears' => $this->availableYears,
+            'availableCategories' => $this->availableCategories,
         ])->layout('layouts.app')->title('Issues Graphs');
     }
 }

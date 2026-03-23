@@ -1,5 +1,6 @@
 import defaultTheme from 'tailwindcss/defaultTheme';
 import forms from '@tailwindcss/forms';
+import typography from '@tailwindcss/typography';
 
 /** @type {import('tailwindcss').Config} */
 export default {
@@ -13,9 +14,11 @@ export default {
     theme: {
         extend: {
             fontFamily: {
-                sans: ['Inter', ...defaultTheme.fontFamily.sans],
+                sans: ['Plus Jakarta Sans', ...defaultTheme.fontFamily.sans],
+                heading: ['Inter', ...defaultTheme.fontFamily.sans],
             },
             colors: {
+                // GuestPulse color palette
                 background: 'rgb(var(--background) / <alpha-value>)',
                 surface: 'rgb(var(--surface) / <alpha-value>)',
                 'surface-2': 'rgb(var(--surface-2) / <alpha-value>)',
@@ -29,14 +32,29 @@ export default {
                 accent: 'rgb(var(--accent) / <alpha-value>)',
                 danger: 'rgb(var(--danger) / <alpha-value>)',
                 warning: 'rgb(var(--warning) / <alpha-value>)',
+                success: 'rgb(var(--success) / <alpha-value>)',
             },
             borderRadius: {
-                lg: '0.75rem',
-                md: '0.5rem',
-                sm: '0.375rem',
+                '2xl': '1rem',
+                '3xl': '1.5rem',
+            },
+            animation: {
+                'fade-in': 'fade-in 0.4s ease-out',
+                'slide-in': 'slide-in 0.3s ease-out',
+                'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+            },
+            keyframes: {
+                'fade-in': {
+                    '0%': { opacity: '0', transform: 'translateY(10px)' },
+                    '100%': { opacity: '1', transform: 'translateY(0)' },
+                },
+                'slide-in': {
+                    '0%': { transform: 'translateX(-10px)', opacity: '0' },
+                    '100%': { transform: 'translateX(0)', opacity: '1' },
+                },
             },
         },
     },
 
-    plugins: [forms],
+    plugins: [forms, typography],
 };

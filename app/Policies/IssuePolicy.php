@@ -37,9 +37,15 @@ class IssuePolicy
 
     /**
      * Determine if the user can update a specific issue.
+     * Issues can only be edited when they are open.
      */
     public function update(User $user, Issue $issue): bool
     {
+        // Issues can only be edited when open
+        if ($issue->status !== 'open') {
+            return false;
+        }
+
         if ($user->can('issues.update')) {
             return true;
         }

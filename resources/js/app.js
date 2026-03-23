@@ -10,6 +10,3 @@ if (savedTheme === 'light') {
     document.documentElement.classList.add('dark');
     localStorage.setItem('theme', 'dark');
 }
-
-// Don't define Alpine stores here - Livewire will handle them
-// Stores are defined in the layout after Livewire loads

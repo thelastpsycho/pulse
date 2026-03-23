@@ -15,7 +15,8 @@ return new class extends Migration
             Schema::create('issue_types', function (Blueprint $table) {
             $table->id();
             $table->string('name')->unique();
-            $table->string('severity_default')->nullable();
+            $table->text('description')->nullable();
+            $table->string('default_severity')->nullable();
             $table->boolean('is_active')->default(true);
             $table->timestamps();
         });

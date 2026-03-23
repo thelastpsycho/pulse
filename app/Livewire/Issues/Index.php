@@ -16,7 +16,7 @@ class Index extends Component
 {
     use WithPagination;
 
-    public string $tab = 'open'; // open or closed
+    public string $tab = 'all'; // all, open or closed
     public string $search = '';
     public ?int $department_id = null;
     public ?int $issue_type_id = null;
@@ -31,7 +31,7 @@ class Index extends Component
     public bool $selectAll = false;
 
     protected $queryString = [
-        'tab' => ['except' => 'open'],
+        'tab' => ['except' => 'all'],
         'search' => ['except' => ''],
         'department_id' => ['except' => ''],
         'issue_type_id' => ['except' => ''],
@@ -60,7 +60,7 @@ class Index extends Component
     protected function getIssues()
     {
         $filters = [
-            'status' => $this->tab === 'open' ? 'open' : 'closed',
+            'status' => $this->tab === 'all' ? null : ($this->tab === 'open' ? 'open' : 'closed'),
             'search' => $this->search,
             'department_id' => $this->department_id,
             'issue_type_id' => $this->issue_type_id,
@@ -162,6 +162,9 @@ class Index extends Component
 
         $this->issueService->close($issue);
 
+        // Dispatch event to refresh the component
+        $this->dispatch('issue-closed');
+
         session()->flash('success', 'Issue closed successfully.');
     }
 
@@ -172,6 +175,9 @@ class Index extends Component
 
         $this->issueService->reopen($issue);
 
+        // Dispatch event to refresh the component
+        $this->dispatch('issue-reopened');
+
         session()->flash('success', 'Issue reopened successfully.');
     }
 
@@ -181,6 +187,10 @@ class Index extends Component
         $this->authorize('delete', $issue);
 
         $this->issueService->delete($issue);
+
+        // Reset page and dispatch event to refresh
+        $this->resetPage();
+        $this->dispatch('issue-deleted');
 
         session()->flash('success', 'Issue deleted successfully.');
     }
@@ -225,8 +235,10 @@ class Index extends Component
     #[On('issue-updated')]
     #[On('issue-closed')]
     #[On('issue-reopened')]
+    #[On('issue-deleted')]
     public function refresh(): void
     {
+        // Reset pagination to ensure fresh data
         $this->resetPage();
     }
 }
