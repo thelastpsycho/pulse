@@ -152,7 +152,7 @@ class IssueService
     /**
      * Get issues with filters applied.
      */
-    public function getFilteredIssues(array $filters, int $perPage = 15)
+    public function getFilteredIssues(array $filters, int $perPage = 15, bool $usePagination = true)
     {
         $query = Issue::with(['departments', 'issueTypes', 'createdBy', 'assignedTo']);
 
@@ -216,7 +216,7 @@ class IssueService
 
         $query->orderBy($orderBy, $orderDir);
 
-        return $query->paginate($perPage);
+        return $usePagination ? $query->paginate($perPage) : $query->get();
     }
 
     /**

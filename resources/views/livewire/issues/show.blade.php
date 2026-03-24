@@ -1,4 +1,4 @@
-<div class="space-y-6" x-data="{ showCloseModal: false, showReopenModal: false }">
+<div class="space-y-6" x-data="{ showCloseModal: false, showReopenModal: false, showDeleteModal: false }">
     @if (session('success'))
         <div class="rounded-lg bg-success/10 px-4 py-3 text-sm text-success">
             {{ session('success') }}
@@ -26,6 +26,13 @@
                     </svg>
                 </a>
             @endcan
+            @can('categorize', $issue)
+                <button @click="$dispatch('open-categorize', {})" class="p-2 text-muted hover:text-accent rounded-lg hover:bg-surface-2" title="Categorize">
+                    <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+                    </svg>
+                </button>
+            @endcan
             @if($issue->status === 'open')
                 @can('close', $issue)
                     <button @click="showCloseModal = true" class="p-2 text-muted hover:text-success rounded-lg hover:bg-surface-2" title="Close">
@@ -51,7 +58,7 @@
                 </button>
             @endcan
             @can('delete', $issue)
-                <button wire:click="deleteIssue" class="p-2 text-muted hover:text-danger rounded-lg hover:bg-surface-2" title="Delete">
+                <button @click="showDeleteModal = true" class="p-2 text-muted hover:text-danger rounded-lg hover:bg-surface-2" title="Delete">
                     <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                     </svg>
@@ -191,7 +198,7 @@
         </div>
 
         <!-- Sidebar -->
-        <div class="space-y-6" x-data="{ showCloseModal: false, showReopenModal: false }">
+        <div class="space-y-6" x-data="{ showCloseModal: false, showReopenModal: false, showDeleteModal: false }">
             <!-- Comments -->
             <div class="rounded-lg border border-border">
                 <div class="border-b border-border px-4 py-3">
@@ -304,4 +311,65 @@
             </div>
         </div>
     </div>
+
+<!-- Delete Modal -->
+<div x-show="showDeleteModal" style="display: none;" class="fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div class="absolute inset-0 bg-black/50" @click="showCloseModal = false; showReopenModal = false; showDeleteModal = false"></div>
+        <div class="relative w-full max-w-md rounded-lg border border-border bg-surface p-6">
+            <h3 class="text-lg font-semibold text-text mb-4">Delete Issue</h3>
+            <p class="text-sm text-muted mb-4">Are you sure you want to delete this issue? This action cannot be undone.</p>
+            <div class="rounded-md bg-danger/10 p-3 mb-4">
+                <p class="text-sm font-medium text-danger">Warning: All associated comments and activity logs will also be permanently deleted.</p>
+            </div>
+            <div class="mt-4 flex justify-end gap-2">
+                <button @click="showCloseModal = false; showReopenModal = false; showDeleteModal = false" class="px-4 py-2 text-sm text-text hover:bg-surface-2 rounded">Cancel</button>
+                <button wire:click="confirmDelete" class="bg-danger px-4 py-2 text-sm text-white rounded hover:bg-danger/90">Delete</button>
+            </div>
+        </div>
+    </div>
+
+<!-- Categorize Modal -->
+<div x-data="{ showCategorizeModal: false }" @open-categorize.window="showCategorizeModal = true; $wire.openCategorizeModal()">
+    <div x-show="showCategorizeModal" style="display: none;" class="fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div class="absolute inset-0 bg-black/50" @click="showCategorizeModal = false; $wire.closeModals()"></div>
+        <div class="relative w-full max-w-lg rounded-lg border border-border bg-surface p-6 max-h-[90vh] overflow-y-auto">
+            <h3 class="text-lg font-semibold text-text mb-4">Categorize Issue</h3>
+
+            <form wire:submit="categorize">
+                <!-- Departments -->
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-text mb-2">Departments <span class="text-danger">*</span></label>
+                    <div class="space-y-2 max-h-32 overflow-y-auto rounded border border-border bg-surface-2 p-3">
+                        @foreach($this->departments as $id => $name)
+                            <label class="flex items-center gap-2 cursor-pointer">
+                                <input type="checkbox" value="{{ $id }}" wire:model.live="department_ids" class="rounded border-border text-primary focus:ring-primary">
+                                <span class="text-sm text-text">{{ $name }}</span>
+                            </label>
+                        @endforeach
+                    </div>
+                    <x-input-error :messages="$errors->get('department_ids')" class="mt-1" />
+                </div>
+
+                <!-- Issue Types -->
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-text mb-2">Issue Types <span class="text-danger">*</span></label>
+                    <div class="space-y-2 max-h-48 overflow-y-auto rounded border border-border bg-surface-2 p-3">
+                        @foreach($this->issueTypes as $id => $name)
+                            <label class="flex items-center gap-2 cursor-pointer">
+                                <input type="checkbox" value="{{ $id }}" wire:model.live="issue_type_ids" class="rounded border-border text-accent focus:ring-accent">
+                                <span class="text-sm text-text">{{ $name }}</span>
+                            </label>
+                        @endforeach
+                    </div>
+                    <x-input-error :messages="$errors->get('issue_type_ids')" class="mt-1" />
+                </div>
+
+                <div class="flex justify-end gap-2 mt-6">
+                    <button type="button" @click="showCategorizeModal = false; $wire.closeModals()" class="px-4 py-2 text-sm text-text hover:bg-surface-2 rounded">Cancel</button>
+                    <button type="submit" class="bg-accent px-4 py-2 text-sm text-white rounded hover:bg-accent/90">Save Categories</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 </div>

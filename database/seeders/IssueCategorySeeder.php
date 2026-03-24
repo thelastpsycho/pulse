@@ -16,9 +16,6 @@ class IssueCategorySeeder extends Seeder
             ['name' => 'product', 'label' => 'Product'],
             ['name' => 'service', 'label' => 'Service'],
             ['name' => 'general', 'label' => 'General'],
-            ['name' => 'facility', 'label' => 'Facility'],
-            ['name' => 'staff', 'label' => 'Staff'],
-            ['name' => 'policy', 'label' => 'Policy'],
         ];
 
         foreach ($categories as $category) {

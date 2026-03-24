@@ -269,6 +269,21 @@
             .nav-link svg {
                 flex-shrink: 0;
             }
+
+            /* Custom Scrollbar for dropdowns */
+            .custom-scrollbar::-webkit-scrollbar {
+                width: 6px;
+            }
+            .custom-scrollbar::-webkit-scrollbar-track {
+                background: transparent;
+            }
+            .custom-scrollbar::-webkit-scrollbar-thumb {
+                background: rgb(var(--border) / 0.5);
+                border-radius: 3px;
+            }
+            .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+                background: rgb(var(--border) / 0.8);
+            }
         </style>
 
         <!-- Keyboard Shortcuts Modal -->
@@ -357,6 +372,338 @@
                         this.isOpen = true;
                     }
                 });
+
+                // Multi-select component function
+                window.multiSelect = function(config) {
+                    return {
+                        selected: config.selected || [],
+                        options: config.options || [],
+                        isOpen: false,
+                        search: '',
+                        wireProperty: config.wireProperty || null,
+
+                        init() {
+                            if (this.wireProperty) {
+                                this.$watch('selected', (val) => {
+                                    this.$wire.set(this.wireProperty, val);
+                                });
+                            }
+                        },
+
+                        get filteredOptions() {
+                            if (!this.search) return this.options;
+                            const search = this.search.toLowerCase();
+                            return this.options.filter(opt =>
+                                opt.name.toLowerCase().includes(search)
+                            );
+                        },
+
+                        toggleDropdown() {
+                            this.isOpen = !this.isOpen;
+                            if (this.isOpen) {
+                                this.$nextTick(() => {
+                                    const input = this.$el.querySelector('input[type="text"]');
+                                    if (input) input.focus();
+                                });
+                            }
+                        },
+
+                        closeDropdown() {
+                            this.isOpen = false;
+                            this.search = '';
+                        },
+
+                        selectAll() {
+                            if (this.selected.length === this.filteredOptions.length) {
+                                this.selected = [];
+                            } else {
+                                this.selected = this.filteredOptions.map(opt => opt.id);
+                            }
+                        }
+                    };
+                };
+
+                // Custom date picker component
+                window.datePicker = function(config) {
+                    return {
+                        value: config.value || '',
+                        isOpen: false,
+                        currentDate: new Date(),
+                        viewDate: new Date(),
+                        selectedMonth: new Date().getMonth(),
+                        selectedYear: new Date().getFullYear(),
+                        today: new Date(),
+
+                        get monthNames() {
+                            return ['January', 'February', 'March', 'April', 'May', 'June',
+                                    'July', 'August', 'September', 'October', 'November', 'December'];
+                        },
+
+                        get daysInMonth() {
+                            return new Date(this.selectedYear, this.selectedMonth + 1, 0).getDate();
+                        },
+
+                        get firstDayOfMonth() {
+                            return new Date(this.selectedYear, this.selectedMonth, 1).getDay();
+                        },
+
+                        get calendarDays() {
+                            const days = [];
+                            for (let i = 0; i < this.firstDayOfMonth; i++) {
+                                days.push(null);
+                            }
+                            for (let i = 1; i <= this.daysInMonth; i++) {
+                                days.push(i);
+                            }
+                            return days;
+                        },
+
+                        get formattedValue() {
+                            if (!this.value) return '';
+                            const date = new Date(this.value + 'T00:00:00');
+                            return date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+                        },
+
+                        open() {
+                            this.isOpen = true;
+                            if (this.value) {
+                                const date = new Date(this.value + 'T00:00:00');
+                                this.selectedMonth = date.getMonth();
+                                this.selectedYear = date.getFullYear();
+                            }
+                        },
+
+                        close() {
+                            this.isOpen = false;
+                        },
+
+                        selectDay(day) {
+                            const month = String(this.selectedMonth + 1).padStart(2, '0');
+                            const dayStr = String(day).padStart(2, '0');
+                            this.value = `${this.selectedYear}-${month}-${dayStr}`;
+                            this.close();
+                        },
+
+                        prevMonth() {
+                            if (this.selectedMonth === 0) {
+                                this.selectedMonth = 11;
+                                this.selectedYear--;
+                            } else {
+                                this.selectedMonth--;
+                            }
+                        },
+
+                        nextMonth() {
+                            if (this.selectedMonth === 11) {
+                                this.selectedMonth = 0;
+                                this.selectedYear++;
+                            } else {
+                                this.selectedMonth++;
+                            }
+                        },
+
+                        isToday(day) {
+                            return day === this.today.getDate() &&
+                                   this.selectedMonth === this.today.getMonth() &&
+                                   this.selectedYear === this.today.getFullYear();
+                        },
+
+                        isSelected(day) {
+                            if (!this.value) return false;
+                            const date = new Date(this.value + 'T00:00:00');
+                            return day === date.getDate() &&
+                                   this.selectedMonth === date.getMonth() &&
+                                   this.selectedYear === date.getFullYear();
+                        }
+                    };
+                };
+
+                // Date range picker component (two months side by side)
+                window.dateRangePicker = function(config) {
+                    return {
+                        startDate: config.startDate || '',
+                        endDate: config.endDate || '',
+                        isOpen: false,
+                        selecting: 'start', // 'start' or 'end'
+                        hoveredDate: null,
+                        today: new Date(),
+
+                        get firstMonth() {
+                            return new Date(this.today.getFullYear(), this.today.getMonth(), 1);
+                        },
+
+                        get secondMonth() {
+                            const nextMonth = new Date(this.today.getFullYear(), this.today.getMonth() + 1, 1);
+                            return nextMonth;
+                        },
+
+                        get monthNames() {
+                            return ['January', 'February', 'March', 'April', 'May', 'June',
+                                    'July', 'August', 'September', 'October', 'November', 'December'];
+                        },
+
+                        get formattedRange() {
+                            if (this.startDate && this.endDate) {
+                                const start = new Date(this.startDate + 'T00:00:00');
+                                const end = new Date(this.endDate + 'T00:00:00');
+                                return `${start.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - ${end.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`;
+                            }
+                            if (this.startDate) {
+                                const start = new Date(this.startDate + 'T00:00:00');
+                                return `${start.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - Select date`;
+                            }
+                            return 'Select dates';
+                        },
+
+                        getDaysInMonth(year, month) {
+                            return new Date(year, month + 1, 0).getDate();
+                        },
+
+                        getFirstDayOfMonth(year, month) {
+                            return new Date(year, month, 1).getDay();
+                        },
+
+                        getCalendarDays(year, month) {
+                            const days = [];
+                            const firstDay = this.getFirstDayOfMonth(year, month);
+                            const daysInMonth = this.getDaysInMonth(year, month);
+                            for (let i = 0; i < firstDay; i++) {
+                                days.push(null);
+                            }
+                            for (let i = 1; i <= daysInMonth; i++) {
+                                days.push(i);
+                            }
+                            return days;
+                        },
+
+                        open() {
+                            this.isOpen = true;
+                        },
+
+                        close() {
+                            this.isOpen = false;
+                            this.hoveredDate = null;
+                        },
+
+                        isToday(year, month, day) {
+                            return day === this.today.getDate() &&
+                                   month === this.today.getMonth() &&
+                                   year === this.today.getFullYear();
+                        },
+
+                        isSelected(year, month, day) {
+                            const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                            if (this.startDate && dateStr === this.startDate) return 'start';
+                            if (this.endDate && dateStr === this.endDate) return 'end';
+                            return false;
+                        },
+
+                        isInRange(year, month, day) {
+                            if (!this.startDate || !this.endDate) return false;
+                            const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                            return dateStr > this.startDate && dateStr < this.endDate;
+                        },
+
+                        isHovered(year, month, day) {
+                            if (!this.hoveredDate) return false;
+                            const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                            return dateStr === this.hoveredDate;
+                        },
+
+                        isInRangeOrHovered(year, month, day) {
+                            const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                            if (this.startDate && this.endDate) {
+                                return dateStr > this.startDate && dateStr < this.endDate;
+                            }
+                            if (this.startDate && this.hoveredDate) {
+                                const start = this.startDate < this.hoveredDate ? this.startDate : this.hoveredDate;
+                                const end = this.startDate > this.hoveredDate ? this.startDate : this.hoveredDate;
+                                return dateStr >= start && dateStr <= end;
+                            }
+                            return false;
+                        },
+
+                        selectDate(year, month, day) {
+                            const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+
+                            if (!this.startDate || (this.startDate && this.endDate)) {
+                                this.startDate = dateStr;
+                                this.endDate = '';
+                                this.selecting = 'end';
+                            } else {
+                                if (dateStr < this.startDate) {
+                                    this.endDate = this.startDate;
+                                    this.startDate = dateStr;
+                                } else {
+                                    this.endDate = dateStr;
+                                }
+                                this.selecting = 'start';
+                            }
+                        },
+
+                        setHovered(year, month, day) {
+                            this.hoveredDate = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                        },
+
+                        clearHovered() {
+                            this.hoveredDate = null;
+                        },
+
+                        clear() {
+                            this.startDate = '';
+                            this.endDate = '';
+                            this.selecting = 'start';
+                        }
+                    };
+                };
+
+                // Nationality select component (single select with search)
+                window.nationalitySelect = function() {
+                    return {
+                        selected: '',
+                        options: [],
+                        isOpen: false,
+                        search: '',
+                        initSelect(value) {
+                            this.selected = value || '';
+                            this.$nextTick(() => {
+                                const dataEl = this.$el.querySelector('[data-nationalities]');
+                                if (dataEl) {
+                                    this.options = dataEl.getAttribute('data-nationalities').split(',');
+                                }
+                            });
+                        },
+                        get filteredOptions() {
+                            if (!this.search) return this.options;
+                            return this.options.filter(opt =>
+                                opt.toLowerCase().includes(this.search.toLowerCase())
+                            );
+                        },
+                        select(option) {
+                            this.selected = option;
+                            this.$wire.set('nationality', option);
+                            this.closeDropdown();
+                        },
+                        clear() {
+                            this.selected = '';
+                            this.$wire.set('nationality', '');
+                        },
+                        toggleDropdown() {
+                            this.isOpen = !this.isOpen;
+                            // Ensure options are loaded when opening
+                            if (this.isOpen && this.options.length === 0) {
+                                const dataEl = this.$el.querySelector('[data-nationalities]');
+                                if (dataEl) {
+                                    this.options = dataEl.getAttribute('data-nationalities').split(',');
+                                }
+                            }
+                        },
+                        closeDropdown() {
+                            this.isOpen = false;
+                            this.search = '';
+                        }
+                    };
+                };
             }
         </script>
         <script>

@@ -18,8 +18,8 @@ class ReportService
         $dateFrom = $dateFrom ?? now()->subMonth()->format('Y-m-d');
         $dateTo = $dateTo ?? now()->format('Y-m-d');
 
-        $query = Issue::whereDate('issue_date', '>=', $dateFrom)
-            ->whereDate('issue_date', '<=', $dateTo);
+        $query = Issue::whereRaw('COALESCE(DATE(issue_date), DATE(created_at)) >= ?', [$dateFrom])
+            ->whereRaw('COALESCE(DATE(issue_date), DATE(created_at)) <= ?', [$dateTo]);
 
         if ($categoryId) {
             $query->whereHas('issueTypes', function ($q) use ($categoryId) {
@@ -30,9 +30,9 @@ class ReportService
         $totalIssues = $query->count();
 
         $byStatusQuery = DB::table('issues')
-            ->whereDate('issue_date', '>=', $dateFrom)
-            ->whereDate('issue_date', '<=', $dateTo)
-            ->whereNull('deleted_at');
+            ->whereRaw('COALESCE(DATE(issues.issue_date), DATE(issues.created_at)) >= ?', [$dateFrom])
+            ->whereRaw('COALESCE(DATE(issues.issue_date), DATE(issues.created_at)) <= ?', [$dateTo])
+            ->whereNull('issues.deleted_at');
 
         if ($categoryId) {
             $byStatusQuery
@@ -44,18 +44,18 @@ class ReportService
         $byStatus = $byStatusQuery
             ->selectRaw('
                 CASE
-                    WHEN issues.closed_at IS NOT NULL THEN "closed"
+                    WHEN issues.status IN ("closed", "resolved") THEN "closed"
                     ELSE "open"
                 END as status,
                 COUNT(*) as count
             ')
-            ->groupByRaw('CASE WHEN issues.closed_at IS NOT NULL THEN "closed" ELSE "open" END')
+            ->groupByRaw('CASE WHEN issues.status IN ("closed", "resolved") THEN "closed" ELSE "open" END')
             ->pluck('count', 'status');
 
         $byPriorityQuery = DB::table('issues')
-            ->whereDate('issue_date', '>=', $dateFrom)
-            ->whereDate('issue_date', '<=', $dateTo)
-            ->whereNull('deleted_at');
+            ->whereRaw('COALESCE(DATE(issues.issue_date), DATE(issues.created_at)) >= ?', [$dateFrom])
+            ->whereRaw('COALESCE(DATE(issues.issue_date), DATE(issues.created_at)) <= ?', [$dateTo])
+            ->whereNull('issues.deleted_at');
 
         if ($categoryId) {
             $byPriorityQuery
@@ -71,9 +71,9 @@ class ReportService
             ->pluck('count', 'priority');
 
         $byDepartmentQuery = DB::table('issues')
-            ->whereDate('issue_date', '>=', $dateFrom)
-            ->whereDate('issue_date', '<=', $dateTo)
-            ->whereNull('deleted_at')
+            ->whereRaw('COALESCE(DATE(issues.issue_date), DATE(issues.created_at)) >= ?', [$dateFrom])
+            ->whereRaw('COALESCE(DATE(issues.issue_date), DATE(issues.created_at)) <= ?', [$dateTo])
+            ->whereNull('issues.deleted_at')
             ->selectRaw('d.name, COUNT(*) as count')
             ->join('department_issue as di', 'issues.id', '=', 'di.issue_id')
             ->join('departments as d', 'di.department_id', '=', 'd.id');
@@ -91,9 +91,9 @@ class ReportService
             ->pluck('count', 'd.name');
 
         $byIssueTypeQuery = DB::table('issues')
-            ->whereDate('issue_date', '>=', $dateFrom)
-            ->whereDate('issue_date', '<=', $dateTo)
-            ->whereNull('deleted_at')
+            ->whereRaw('COALESCE(DATE(issues.issue_date), DATE(issues.created_at)) >= ?', [$dateFrom])
+            ->whereRaw('COALESCE(DATE(issues.issue_date), DATE(issues.created_at)) <= ?', [$dateTo])
+            ->whereNull('issues.deleted_at')
             ->selectRaw('it.name, COUNT(*) as count')
             ->join('issue_issue_type as iit', 'issues.id', '=', 'iit.issue_id')
             ->join('issue_types as it', 'iit.issue_type_id', '=', 'it.id');
@@ -108,9 +108,9 @@ class ReportService
             ->pluck('count', 'it.name');
 
         $byCategoryQuery = DB::table('issues')
-            ->whereDate('issue_date', '>=', $dateFrom)
-            ->whereDate('issue_date', '<=', $dateTo)
-            ->whereNull('deleted_at')
+            ->whereRaw('COALESCE(DATE(issues.issue_date), DATE(issues.created_at)) >= ?', [$dateFrom])
+            ->whereRaw('COALESCE(DATE(issues.issue_date), DATE(issues.created_at)) <= ?', [$dateTo])
+            ->whereNull('issues.deleted_at')
             ->selectRaw('ic.label, COUNT(*) as count')
             ->join('issue_issue_type as iit', 'issues.id', '=', 'iit.issue_id')
             ->join('issue_types as it', 'iit.issue_type_id', '=', 'it.id')
@@ -121,10 +121,10 @@ class ReportService
         $byCategory = $byCategoryQuery->pluck('count', 'ic.label');
 
         $avgCloseTimeQuery = DB::table('issues')
-            ->whereDate('issue_date', '>=', $dateFrom)
-            ->whereDate('issue_date', '<=', $dateTo)
-            ->whereNull('deleted_at')
-            ->whereNotNull('closed_at');
+            ->whereRaw('COALESCE(DATE(issues.issue_date), DATE(issues.created_at)) >= ?', [$dateFrom])
+            ->whereRaw('COALESCE(DATE(issues.issue_date), DATE(issues.created_at)) <= ?', [$dateTo])
+            ->whereNull('issues.deleted_at')
+            ->whereIn('issues.status', ['closed', 'resolved']);
 
         if ($categoryId) {
             $avgCloseTimeQuery
@@ -139,12 +139,12 @@ class ReportService
 
         // Daily trend
         $dailyTrendQuery = DB::table('issues')
-            ->whereDate('issue_date', '>=', $dateFrom)
-            ->whereDate('issue_date', '<=', $dateTo)
-            ->whereNull('deleted_at')
-            ->selectRaw('issue_date, COUNT(*) as count')
-            ->groupBy('issue_date')
-            ->orderBy('issue_date');
+            ->whereRaw('COALESCE(DATE(issues.issue_date), DATE(issues.created_at)) >= ?', [$dateFrom])
+            ->whereRaw('COALESCE(DATE(issues.issue_date), DATE(issues.created_at)) <= ?', [$dateTo])
+            ->whereNull('issues.deleted_at')
+            ->selectRaw('COALESCE(DATE(issues.issue_date), DATE(issues.created_at)) as date, COUNT(*) as count')
+            ->groupBy(DB::raw('COALESCE(DATE(issues.issue_date), DATE(issues.created_at))'))
+            ->orderBy('date');
 
         if ($categoryId) {
             $dailyTrendQuery
@@ -153,7 +153,7 @@ class ReportService
                 ->where('it.issue_category_id', $categoryId);
         }
 
-        $dailyTrend = $dailyTrendQuery->pluck('count', 'issue_date');
+        $dailyTrend = $dailyTrendQuery->pluck('count', 'date');
 
         return [
             'date_from' => $dateFrom,
@@ -204,12 +204,12 @@ class ReportService
         $byStatus = $byStatusQuery
             ->selectRaw('
                 CASE
-                    WHEN issues.closed_at IS NOT NULL THEN "closed"
+                    WHEN issues.status IN ("closed", "resolved") THEN "closed"
                     ELSE "open"
                 END as status,
                 COUNT(*) as count
             ')
-            ->groupByRaw('CASE WHEN issues.closed_at IS NOT NULL THEN "closed" ELSE "open" END')
+            ->groupByRaw('CASE WHEN issues.status IN ("closed", "resolved") THEN "closed" ELSE "open" END')
             ->pluck('count', 'status');
 
         $byDepartmentQuery = DB::table('issues')
@@ -252,7 +252,8 @@ class ReportService
         $avgCloseTimeQuery = DB::table('issues')
             ->whereYear('issues.created_at', $year)
             ->whereMonth('issues.created_at', $month)
-            ->whereNotNull('issues.closed_at');
+            ->whereNull('issues.deleted_at')
+            ->whereIn('status', ['closed', 'resolved']);
 
         if ($categoryId) {
             $avgCloseTimeQuery
@@ -323,12 +324,12 @@ class ReportService
         $byStatus = $byStatusQuery
             ->selectRaw('
                 CASE
-                    WHEN issues.closed_at IS NOT NULL THEN "closed"
+                    WHEN issues.status IN ("closed", "resolved") THEN "closed"
                     ELSE "open"
                 END as status,
                 COUNT(*) as count
             ')
-            ->groupByRaw('CASE WHEN issues.closed_at IS NOT NULL THEN "closed" ELSE "open" END')
+            ->groupByRaw('CASE WHEN issues.status IN ("closed", "resolved") THEN "closed" ELSE "open" END')
             ->pluck('count', 'status');
 
         $byDepartmentQuery = DB::table('issues')
@@ -369,7 +370,7 @@ class ReportService
         $avgCloseTimeQuery = DB::table('issues')
             ->whereYear('issues.created_at', $year)
             ->whereNull('issues.deleted_at')
-            ->whereNotNull('issues.closed_at');
+            ->whereIn('status', ['closed', 'resolved']);
 
         if ($categoryId) {
             $avgCloseTimeQuery
@@ -433,9 +434,9 @@ class ReportService
         // Status filter
         if (isset($filters['status'])) {
             if ($filters['status'] === 'open') {
-                $query->whereNull('closed_at');
+                $query->whereNotIn('status', ['closed', 'resolved']);
             } elseif ($filters['status'] === 'closed') {
-                $query->whereNotNull('closed_at');
+                $query->whereIn('status', ['closed', 'resolved']);
             }
         }
 
@@ -447,23 +448,23 @@ class ReportService
      */
     public function kpiData(): array
     {
-        $openIssues = Issue::whereNull('closed_at')->count();
+        $openIssues = Issue::whereNotIn('status', ['closed', 'resolved'])->count();
 
-        $closedToday = Issue::whereNotNull('closed_at')
-            ->whereDate('closed_at', today())
+        $closedToday = Issue::whereIn('status', ['closed', 'resolved'])
+            ->whereDate('updated_at', today())
             ->count();
 
-        $closedThisWeek = Issue::whereNotNull('closed_at')
-            ->whereBetween('closed_at', [now()->startOfWeek(), now()->endOfWeek()])
+        $closedThisWeek = Issue::whereIn('status', ['closed', 'resolved'])
+            ->whereBetween('updated_at', [now()->startOfWeek(), now()->endOfWeek()])
             ->count();
 
-        $closedThisMonth = Issue::whereNotNull('closed_at')
-            ->whereMonth('closed_at', now()->month)
-            ->whereYear('closed_at', now()->year)
+        $closedThisMonth = Issue::whereIn('status', ['closed', 'resolved'])
+            ->whereMonth('updated_at', now()->month)
+            ->whereYear('updated_at', now()->year)
             ->count();
 
-        $avgCloseTime = Issue::whereNotNull('closed_at')
-            ->selectRaw('AVG(TIMESTAMPDIFF(HOUR, created_at, closed_at)) as avg_hours')
+        $avgCloseTime = Issue::whereIn('status', ['closed', 'resolved'])
+            ->selectRaw('AVG(TIMESTAMPDIFF(HOUR, created_at, updated_at)) as avg_hours')
             ->value('avg_hours');
 
         $topDepartments = Issue::selectRaw('d.name, COUNT(*) as count')

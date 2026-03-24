@@ -38,4 +38,9 @@ class UserPolicy
 
         return $user->can('admin.users.delete') || $user->can('admin.users.*');
     }
+
+    public function resetPassword(User $user, User $model): bool
+    {
+        return $user->can('admin.users.reset-password') || $user->can('admin.users.*');
+    }
 }

@@ -33,6 +33,7 @@ class PermissionsSeeder extends Seeder
             ['name' => 'admin.users.update', 'description' => 'Update users'],
             ['name' => 'admin.users.delete', 'description' => 'Delete users'],
             ['name' => 'admin.users.activate', 'description' => 'Activate/deactivate users'],
+            ['name' => 'admin.users.reset-password', 'description' => 'Reset user passwords'],
 
             // Roles
             ['name' => 'admin.roles.view', 'description' => 'View roles'],

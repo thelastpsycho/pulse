@@ -20,6 +20,7 @@ return new class extends Migration
                 $table->string('action');
                 $table->json('meta')->nullable();
                 $table->timestamp('created_at')->index();
+                $table->timestamp('updated_at')->nullable();
 
                 $table->index(['subject_type', 'subject_id']);
             });

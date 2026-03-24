@@ -88,4 +88,13 @@ class IssuePolicy
     {
         return $user->can('issues.export');
     }
+
+    /**
+     * Determine if the user can categorize issues (assign departments and issue types).
+     * Can be done regardless of issue status.
+     */
+    public function categorize(User $user): bool
+    {
+        return $user->can('issues.update');
+    }
 }

@@ -48,9 +48,9 @@ class Index extends Component
 
     public function deleteIssueType(int $id): void
     {
-        $this->authorize('delete', IssueType::class);
-
         $issueType = IssueType::findOrFail($id);
+
+        $this->authorize('delete', $issueType);
 
         if ($issueType->issues()->count() > 0) {
             session()->flash('error', 'Cannot delete issue type with associated issues.');

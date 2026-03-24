@@ -35,6 +35,7 @@ class Issue extends Model
         'assigned_to_user_id',
         'closed_at',
         'closed_by_user_id',
+        'issue_type_id',
     ];
 
     protected function casts(): array
@@ -67,12 +68,20 @@ class Issue extends Model
     }
 
     /**
-     * Get the issue types that belong to the issue.
+     * Get the issue types that belong to the issue (many-to-many via pivot).
      */
     public function issueTypes(): BelongsToMany
     {
         return $this->belongsToMany(IssueType::class, 'issue_issue_type')
             ->withTimestamps();
+    }
+
+    /**
+     * Get the primary issue type for the issue (many-to-one).
+     */
+    public function issueType(): BelongsTo
+    {
+        return $this->belongsTo(IssueType::class);
     }
 
     /**

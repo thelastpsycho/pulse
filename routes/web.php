@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\LogbookExportController;
+use App\Http\Controllers\IssueExportController;
 use App\Http\Controllers\ProfileController;
 use App\Livewire\Issues\Form;
 use App\Livewire\Issues\Index;
@@ -39,6 +40,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/create', Form::class)->name('create');
         Route::get('/{issue}', Show::class)->name('show');
         Route::get('/{issue}/edit', Form::class)->name('edit');
+        Route::get('/{issue}/export/pdf', [IssueExportController::class, 'exportPDF'])->name('export.pdf');
     });
 
     // Profile

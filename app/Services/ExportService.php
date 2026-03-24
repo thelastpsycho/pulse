@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Issue;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Collection;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class ExportService
 {
@@ -72,5 +73,76 @@ class ExportService
         $filename = 'yearly-report-' . $reportData['year'] . '.pdf';
 
         return $pdf->download($filename);
+    }
+
+    /**
+     * Export issues to CSV.
+     */
+    public function exportIssuesToCSV(Collection $issues): StreamedResponse
+    {
+        $headers = [
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => 'attachment; filename="issues-' . now()->format('Ymd-His') . '.csv"',
+        ];
+
+        $callback = function () use ($issues) {
+            $file = fopen('php://output', 'w');
+
+            // CSV Headers
+            fputcsv($file, [
+                'ID',
+                'Title',
+                'Description',
+                'Status',
+                'Priority',
+                'Location',
+                'Name',
+                'Room Number',
+                'Nationality',
+                'Contact',
+                'Check-in Date',
+                'Check-out Date',
+                'Issue Date',
+                'Recovery Cost',
+                'Recovery Action',
+                'Departments',
+                'Issue Types',
+                'Assigned To',
+                'Created By',
+                'Created At',
+                'Updated At',
+            ]);
+
+            // CSV Data
+            foreach ($issues as $issue) {
+                fputcsv($file, [
+                    $issue->id,
+                    $issue->title,
+                    strip_tags($issue->description ?? ''),
+                    $issue->status,
+                    $issue->priority,
+                    $issue->location,
+                    $issue->name,
+                    $issue->room_number,
+                    $issue->nationality,
+                    $issue->contact,
+                    $issue->checkin_date?->format('Y-m-d'),
+                    $issue->checkout_date?->format('Y-m-d'),
+                    $issue->issue_date?->format('Y-m-d'),
+                    $issue->recovery_cost,
+                    strip_tags($issue->recovery ?? ''),
+                    $issue->departments->pluck('name')->implode(', '),
+                    $issue->issueTypes->pluck('name')->implode(', '),
+                    $issue->assignedTo?->name,
+                    $issue->createdBy?->name,
+                    $issue->created_at?->format('Y-m-d H:i:s'),
+                    $issue->updated_at?->format('Y-m-d H:i:s'),
+                ]);
+            }
+
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, $headers);
     }
 }

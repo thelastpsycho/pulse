@@ -143,20 +143,44 @@
                                 <td class="px-6 py-4 text-right">
                                     <div class="flex items-center justify-end gap-2">
                                         @can('update', $user)
+                                            <!-- Reset Password -->
+                                            <button wire:click="openResetPasswordModal({{ $user->id }})"
+                                                    class="p-2 text-accent hover:bg-accent/10 rounded-lg transition-smooth"
+                                                    title="Reset Password">
+                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/>
+                                                </svg>
+                                            </button>
                                             @if($user->id !== auth()->id())
+                                                <!-- Toggle Status -->
                                                 <button wire:click="toggleUserStatus({{ $user->id }})"
-                                                        class="text-sm {{ $user->is_active ? 'text-warning' : 'text-accent' }} hover:underline">
-                                                    {{ $user->is_active ? 'Deactivate' : 'Activate' }}
+                                                        class="p-2 {{ $user->is_active ? 'text-warning hover:bg-warning/10' : 'text-success hover:bg-success/10' }} rounded-lg transition-smooth"
+                                                        title="{{ $user->is_active ? 'Deactivate' : 'Activate' }}">
+                                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"/>
+                                                    </svg>
                                                 </button>
                                             @endif
+                                            <!-- Edit -->
                                             <a href="{{ route('admin.users.edit', $user) }}"
-                                               class="text-primary hover:underline text-sm">Edit</a>
+                                               class="p-2 text-primary hover:bg-primary/10 rounded-lg transition-smooth"
+                                               title="Edit">
+                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                                                </svg>
+                                            </a>
                                         @endcan
                                         @can('delete', $user)
                                             @if($user->id !== auth()->id())
+                                                <!-- Delete -->
                                                 <button wire:click="deleteUser({{ $user->id }})"
                                                         wire:confirm="Are you sure you want to delete this user?"
-                                                        class="text-danger hover:underline text-sm">Delete</button>
+                                                        class="p-2 text-danger hover:bg-danger/10 rounded-lg transition-smooth"
+                                                        title="Delete">
+                                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                                    </svg>
+                                                </button>
                                             @endif
                                         @endcan
                                     </div>
@@ -184,4 +208,85 @@
             </div>
         @endif
     </div>
+
+    <!-- Reset Password Modal -->
+    @if($showResetPasswordModal)
+        <div class="fixed inset-0 z-50 flex items-center justify-center">
+            <!-- Backdrop -->
+            <div class="fixed inset-0 bg-black/50" wire:click="closeResetPasswordModal"></div>
+
+            <!-- Modal -->
+            <div class="relative bg-surface-1 rounded-lg shadow-xl max-w-md w-full mx-4">
+                <!-- Header -->
+                <div class="flex items-center justify-between p-6 border-b border-border">
+                    <h3 class="text-lg font-semibold text-text">Reset Password</h3>
+                    <button wire:click="closeResetPasswordModal" class="text-muted hover:text-text">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                    </button>
+                </div>
+
+                <!-- Body -->
+                <div class="p-6">
+                    <p class="text-sm text-muted mb-4">
+                        Set a new password for <strong>{{ $resettingUser->name ?? 'User' }}</strong> ({{ $resettingUser->email ?? '' }})
+                    </p>
+
+                    <form wire:submit="resetPassword">
+                        @csrf
+
+                        <!-- New Password -->
+                        <div class="mb-4">
+                            <x-input-label for="reset_new_password" value="New Password *" />
+                            <x-text-input
+                                id="reset_new_password"
+                                wire:model="new_password"
+                                type="password"
+                                class="mt-1 block w-full"
+                                required
+                                autofocus
+                                placeholder="Enter new password (min. 8 characters)"
+                            />
+                            <x-input-error :messages="$errors->get('new_password')" class="mt-2" />
+                        </div>
+
+                        <!-- Confirm Password -->
+                        <div class="mb-4">
+                            <x-input-label for="reset_new_password_confirmation" value="Confirm Password *" />
+                            <x-text-input
+                                id="reset_new_password_confirmation"
+                                wire:model="new_password_confirmation"
+                                type="password"
+                                class="mt-1 block w-full"
+                                required
+                                placeholder="Confirm new password"
+                            />
+                            <x-input-error :messages="$errors->get('new_password_confirmation')" class="mt-2" />
+                        </div>
+
+                        <!-- Warning -->
+                        <div class="p-3 rounded-lg bg-warning/20 border border-warning/30 mb-4">
+                            <p class="text-sm text-warning flex items-center gap-2">
+                                <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                                </svg>
+                                The user will need to use this new password to log in.
+                            </p>
+                        </div>
+
+                        <!-- Footer -->
+                        <div class="flex items-center justify-end gap-3">
+                            <button type="button" wire:click="closeResetPasswordModal" class="btn btn-secondary">
+                                Cancel
+                            </button>
+                            <button type="submit" class="btn btn-primary">
+                                Reset Password
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    @endif
 </div>

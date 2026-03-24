@@ -1,4 +1,50 @@
-<div class="space-y-6">
+<div class="space-y-6" x-data="{
+    showKeyboardShortcuts: false,
+    showSaveFilterModal: $wire.entangle('showSaveFilterModal'),
+    init() {
+        this.$nextTick(() => {
+            // Keyboard shortcuts
+            document.addEventListener('keydown', (e) => {
+                // Ignore if in input, textarea, or select
+                if (['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement.tagName)) {
+                    // Only allow Escape key
+                    if (e.key !== 'Escape') return;
+                }
+
+                // Keyboard shortcuts
+                switch(e.key.toLowerCase()) {
+                    case '/':
+                        e.preventDefault();
+                        document.querySelector('input[placeholder*=\"Search\"]')?.focus();
+                        break;
+                    case 'c':
+                    case 'n':
+                        @if(auth()->check() && auth()->user()->can('create', \App\Models\Issue::class))
+                            e.preventDefault();
+                            window.location.href = '{{ route('issues.create') }}';
+                        @endif
+                        break;
+                    case 'a':
+                        @if(auth()->check())
+                            e.preventDefault();
+                            @this.set('selectAll', true);
+                        @endif
+                        break;
+                    case 'escape':
+                        @if(auth()->check())
+                            @this.set('selectedIssues', []);
+                            @this.set('selectAll', false);
+                        @endif
+                        break;
+                    case '?':
+                        e.preventDefault();
+                        this.showKeyboardShortcuts = true;
+                        break;
+                }
+            });
+        });
+    }
+}">
     <!-- Flash Messages -->
     @if (session('success'))
         <div class="relative overflow-hidden rounded-2xl border border-success/30 bg-gradient-to-r from-success/20 to-success/10 p-4 animate-fade-in">
@@ -15,27 +61,51 @@
 
     <!-- Page Header with Stats -->
     <div class="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-            <h1 class="text-3xl font-bold text-text font-heading">
-                {{ match($tab) {
-                    'all' => 'All Issues',
-                    'open' => 'Open Issues',
-                    'closed' => 'Closed Issues',
-                    default => 'Issues'
-                } }}
-            </h1>
-            <p class="mt-1 text-muted">
-                {{ $issues->total() }} {{ Str::plural('issue', $issues->total()) }} found
-            </p>
+        <div class="flex items-center gap-3">
+            <div>
+                <h1 class="text-3xl font-bold text-text font-heading">
+                    {{ match($tab) {
+                        'all' => 'All Issues',
+                        'open' => 'Open Issues',
+                        'closed' => 'Closed Issues',
+                        default => 'Issues'
+                    } }}
+                </h1>
+                <p class="mt-1 text-muted">
+                    {{ $issues->total() }} {{ Str::plural('issue', $issues->total()) }} found
+                </p>
+            </div>
         </div>
-        @can('create', \App\Models\Issue::class)
-            <a href="{{ route('issues.create') }}" class="btn btn-primary inline-flex items-center gap-2">
-                <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+        <div class="flex items-center gap-2">
+            <!-- Keyboard Shortcuts Help Button -->
+            <button
+                @click="showKeyboardShortcuts = true"
+                class="inline-flex items-center gap-1.5 rounded-xl border border-border/50 bg-surface-2/50 px-3 py-2 text-sm text-muted transition-all duration-200 hover:border-primary/50 hover:text-text"
+                title="Keyboard shortcuts (?)"
+            >
+                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
                 </svg>
-                New Issue
-            </a>
-        @endcan
+                <span class="hidden sm:inline">Shortcuts</span>
+                <kbd class="rounded bg-surface px-1.5 py-0.5 text-xs font-mono">?</kbd>
+            </button>
+            @can('viewAny', \App\Models\Issue::class)
+                <button wire:click="exportCSV" class="btn btn-outline inline-flex items-center gap-2">
+                    <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                    Export CSV
+                </button>
+            @endcan
+            @can('create', \App\Models\Issue::class)
+                <a href="{{ route('issues.create') }}" class="btn btn-primary inline-flex items-center gap-2">
+                    <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                    </svg>
+                    New Issue
+                </a>
+            @endcan
+        </div>
     </div>
 
     <!-- Tabs - Enhanced Design -->
@@ -80,6 +150,34 @@
     <!-- Search & Filters -->
     <div class="card overflow-hidden">
         <div class="border-b border-border/50 p-4">
+            <!-- Saved Filters -->
+            @if(count($this->savedFilters) > 0)
+                <div class="mb-3 flex flex-wrap items-center gap-2">
+                    <span class="text-sm text-muted">Saved filters:</span>
+                    @foreach($this->savedFilters as $savedFilter)
+                        <div class="group relative inline-flex">
+                            <button
+                                wire:click="loadFilter({{ $savedFilter['id'] }})"
+                                class="inline-flex items-center gap-1 rounded-lg border border-border/50 bg-surface-2/50 px-3 py-1.5 text-sm text-text transition-all duration-200 hover:border-primary/50 hover:bg-surface-2"
+                            >
+                                <svg class="h-3.5 w-3.5 text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+                                </svg>
+                                {{ $savedFilter['name'] }}
+                            </button>
+                            <button
+                                wire:click="deleteFilter({{ $savedFilter['id'] }})"
+                                class="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-danger text-white opacity-0 transition-opacity duration-200 group-hover:opacity-100"
+                                title="Delete filter"
+                            >
+                                <svg class="h-2.5 w-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                            </button>
+                        </div>
+                    @endforeach
+                </div>
+            @endif
             <div class="flex flex-col gap-4 lg:flex-row">
                 <!-- Search -->
                 <div class="flex-1">
@@ -91,8 +189,9 @@
                             type="text"
                             wire:model.live.debounce.300ms="search"
                             placeholder="Search issues..."
-                            class="w-full rounded-xl border border-border/50 bg-surface-2/50 py-3 pl-12 pr-4 text-text placeholder-muted transition-all duration-200 focus:border-primary focus:ring-2 focus:ring-primary/20"
+                            class="w-full rounded-xl border border-border/50 bg-surface-2/50 py-3 pl-12 pr-12 text-text placeholder-muted transition-all duration-200 focus:border-primary focus:ring-2 focus:ring-primary/20"
                         />
+                        <kbd class="absolute right-3 top-1/2 -translate-y-1/2 rounded bg-surface px-1.5 py-0.5 text-xs font-mono text-muted border border-border">/</kbd>
                     </div>
                 </div>
 
@@ -125,11 +224,98 @@
                             <option value="{{ $id }}">{{ $name }}</option>
                         @endforeach
                     </select>
+
+                    <!-- Date Range Picker -->
+                    <div x-data="{
+                        isOpen: false,
+                        dateFrom: '{{ $date_from ?? '' }}',
+                        dateTo: '{{ $date_to ?? '' }}',
+                        apply() {
+                            @this.set('date_from', this.dateFrom);
+                            @this.set('date_to', this.dateTo);
+                            this.close();
+                        },
+                        clear() {
+                            this.dateFrom = '';
+                            this.dateTo = '';
+                            @this.set('date_from', '');
+                            @this.set('date_to', '');
+                            this.close();
+                        },
+                        close() {
+                            this.isOpen = false;
+                        }
+                    }" class="relative">
+                        <button
+                            @click="isOpen = !isOpen"
+                            type="button"
+                            class="flex items-center gap-2 rounded-xl border border-border/50 bg-surface-2/50 px-4 py-3 text-text transition-all duration-200 hover:border-primary/50 focus:border-primary focus:ring-2 focus:ring-primary/20"
+                        >
+                            <svg class="h-5 w-5 text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                            <span class="text-sm" x-text="dateFrom || dateTo ? (dateFrom + ' - ' + dateTo) : 'Date Range'"></span>
+                            <svg class="h-4 w-4 text-muted" :class="{'rotate-180': isOpen}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </button>
+
+                        <div
+                            x-show="isOpen"
+                            @click.away="close()"
+                            x-transition:enter="transition ease-out duration-100"
+                            x-transition:enter-start="transform opacity-0 scale-95"
+                            x-transition:enter-end="transform opacity-100 scale-100"
+                            x-transition:leave="transition ease-in duration-75"
+                            x-transition:leave-start="transform opacity-100 scale-100"
+                            x-transition:leave-end="transform opacity-0 scale-95"
+                            class="absolute right-0 z-50 mt-2 w-80 rounded-xl border border-border bg-surface shadow-lg"
+                            style="display: none;"
+                        >
+                            <div class="p-4">
+                                <h4 class="mb-3 text-sm font-semibold text-text">Date Range</h4>
+                                <div class="space-y-3">
+                                    <div>
+                                        <label class="mb-1 block text-xs text-muted">From</label>
+                                        <input
+                                            type="date"
+                                            x-model="dateFrom"
+                                            class="w-full rounded-lg border border-border bg-surface-2 px-3 py-2 text-sm text-text focus:border-primary focus:outline-none"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label class="mb-1 block text-xs text-muted">To</label>
+                                        <input
+                                            type="date"
+                                            x-model="dateTo"
+                                            class="w-full rounded-lg border border-border bg-surface-2 px-3 py-2 text-sm text-text focus:border-primary focus:outline-none"
+                                        />
+                                    </div>
+                                </div>
+                                <div class="mt-4 flex justify-end gap-2">
+                                    <button
+                                        @click="clear()"
+                                        type="button"
+                                        class="rounded-lg px-3 py-1.5 text-xs font-medium text-muted hover:bg-surface-2"
+                                    >
+                                        Clear
+                                    </button>
+                                    <button
+                                        @click="apply()"
+                                        type="button"
+                                        class="rounded-lg bg-primary px-3 py-1.5 text-xs font-medium text-white hover:bg-primary/90"
+                                    >
+                                        Apply
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
             <!-- Active Filters -->
-            @if($search || $department_id || $issue_type_id || $priority || $assigned_to)
+            @if($search || $department_id || $issue_type_id || $priority || $assigned_to || $date_from || $date_to)
                 <div class="mt-4 flex flex-wrap items-center gap-2">
                     <span class="text-sm text-muted">Active filters:</span>
                     @if($search)
@@ -152,7 +338,23 @@
                     @if($assigned_to)
                         <span class="badge badge-muted">{{ $this->users[$assigned_to] ?? '' }}</span>
                     @endif
+                    @if($date_from || $date_to)
+                        <span class="badge badge-muted flex items-center gap-1">
+                            <svg class="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                            {{ $date_from ?? '?' }} - {{ $date_to ?? '?' }}
+                        </span>
+                    @endif
                     <button wire:click="clearFilters" class="ml-2 text-sm font-medium text-primary hover:underline">Clear all</button>
+                    @if($search || $department_id || $issue_type_id || $priority || $assigned_to || $date_from || $date_to)
+                        <button wire:click="openSaveFilterModal" class="ml-2 text-sm font-medium text-muted hover:text-text" title="Save current filters">
+                            <svg class="inline h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+                            </svg>
+                            Save
+                        </button>
+                    @endif
                 </div>
             @endif
         </div>
@@ -330,4 +532,127 @@
             @endcan
         </div>
     @endif
+
+    <!-- Save Filter Modal -->
+    <div
+        x-show="showSaveFilterModal"
+        x-transition:enter="transition ease-out duration-100"
+        x-transition:enter-start="transform opacity-0 scale-95"
+        x-transition:enter-end="transform opacity-100 scale-100"
+        x-transition:leave="transition ease-in duration-75"
+        x-transition:leave-start="transform opacity-100 scale-100"
+        x-transition:leave-end="transform opacity-0 scale-95"
+        class="fixed inset-0 z-50 flex items-center justify-center p-4"
+        style="display: none;"
+        @click.self="closeSaveFilterModal"
+    >
+        <div class="absolute inset-0 bg-black/50"></div>
+        <div class="relative w-full max-w-md rounded-2xl border border-border bg-surface p-6 shadow-xl">
+            <h3 class="text-lg font-semibold text-text mb-4">Save Current Filters</h3>
+
+            <form wire:submit="saveFilter">
+                <div>
+                    <label class="mb-1 block text-sm font-medium text-text">Filter Name</label>
+                    <input
+                        type="text"
+                        wire:model="savedFilterName"
+                        class="w-full rounded-xl border border-border bg-surface-2 px-4 py-2.5 text-text placeholder-muted focus:border-primary focus:ring-2 focus:ring-primary/20"
+                        placeholder="e.g., High Priority Front Desk Issues"
+                        autofocus
+                    />
+                    <x-input-error :messages="$errors->get('savedFilterName')" class="mt-1" />
+                </div>
+
+                <div class="mt-6 flex justify-end gap-2">
+                    <button
+                        type="button"
+                        wire:click="closeSaveFilterModal"
+                        class="rounded-xl px-4 py-2 text-sm font-medium text-text hover:bg-surface-2 transition-colors"
+                    >
+                        Cancel
+                    </button>
+                    <button
+                        type="submit"
+                        class="btn btn-primary"
+                    >
+                        Save Filter
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Keyboard Shortcuts Modal -->
+    <div
+        x-show="showKeyboardShortcuts"
+        x-transition:enter="transition ease-out duration-100"
+        x-transition:enter-start="transform opacity-0 scale-95"
+        x-transition:enter-end="transform opacity-100 scale-100"
+        x-transition:leave="transition ease-in duration-75"
+        x-transition:leave-start="transform opacity-100 scale-100"
+        x-transition:leave-end="transform opacity-0 scale-95"
+        class="fixed inset-0 z-50 flex items-center justify-center p-4"
+        style="display: none;"
+        @click.self="showKeyboardShortcuts = false"
+        @keydown.escape="showKeyboardShortcuts = false"
+    >
+        <div class="absolute inset-0 bg-black/50"></div>
+        <div class="relative w-full max-w-lg rounded-2xl border border-border bg-surface p-6 shadow-xl">
+            <div class="mb-4 flex items-center justify-between">
+                <h3 class="text-lg font-semibold text-text">Keyboard Shortcuts</h3>
+                <button @click="showKeyboardShortcuts = false" class="p-1 text-muted hover:text-text">
+                    <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+
+            <div class="space-y-4">
+                <!-- Search -->
+                <div class="flex items-center justify-between rounded-lg bg-surface-2 p-3">
+                    <span class="text-sm text-text">Focus search</span>
+                    <kbd class="rounded bg-surface px-2 py-1 text-xs font-mono text-muted border border-border">/</kbd>
+                </div>
+
+                <!-- Create Issue -->
+                @if(auth()->check() && auth()->user()->can('create', \App\Models\Issue::class))
+                <div class="flex items-center justify-between rounded-lg bg-surface-2 p-3">
+                    <span class="text-sm text-text">Create new issue</span>
+                    <div class="flex gap-1">
+                        <kbd class="rounded bg-surface px-2 py-1 text-xs font-mono text-muted border border-border">C</kbd>
+                        <kbd class="rounded bg-surface px-2 py-1 text-xs font-mono text-muted border border-border">N</kbd>
+                    </div>
+                </div>
+                @endif
+
+                <!-- Select All -->
+                @if(auth()->check())
+                <div class="flex items-center justify-between rounded-lg bg-surface-2 p-3">
+                    <span class="text-sm text-text">Select all</span>
+                    <kbd class="rounded bg-surface px-2 py-1 text-xs font-mono text-muted border border-border">A</kbd>
+                </div>
+                @endif
+
+                <!-- Clear Selection -->
+                @if(auth()->check())
+                <div class="flex items-center justify-between rounded-lg bg-surface-2 p-3">
+                    <span class="text-sm text-text">Clear selection</span>
+                    <kbd class="rounded bg-surface px-2 py-1 text-xs font-mono text-muted border border-border">Esc</kbd>
+                </div>
+                @endif
+
+                <!-- Show Shortcuts -->
+                <div class="flex items-center justify-between rounded-lg bg-surface-2 p-3">
+                    <span class="text-sm text-text">Show this help</span>
+                    <kbd class="rounded bg-surface px-2 py-1 text-xs font-mono text-muted border border-border">?</kbd>
+                </div>
+            </div>
+
+            <div class="mt-6 text-center">
+                <button @click="showKeyboardShortcuts = false" class="btn btn-primary w-full">
+                    Got it
+                </button>
+            </div>
+        </div>
+    </div>
 </div>

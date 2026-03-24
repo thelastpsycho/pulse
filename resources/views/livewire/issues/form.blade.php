@@ -457,8 +457,9 @@
                         <!-- Departments Multi-Select -->
                         <div class="space-y-1.5" x-data="multiSelect({
                             selected: @js($department_ids),
-                            options: @js(array_map(fn($id, $name) => ['id' => $id, 'name' => $name], array_keys($this->departments), $this->departments))
-                        })" x-init="$watch('selected', val => @this.set('department_ids', val))">
+                            options: @js(array_map(fn($id, $name) => ['id' => $id, 'name' => $name], array_keys($this->departments), $this->departments)),
+                            wireProperty: 'department_ids'
+                        })" x-init="init()">
                             <label class="text-sm font-medium text-text">Departments <span class="text-danger">*</span></label>
                             <div class="relative">
                                 <template x-for="id in selected" :key="id">
@@ -537,8 +538,9 @@
                         <!-- Issue Types Multi-Select -->
                         <div class="space-y-1.5" x-data="multiSelect({
                             selected: @js($issue_type_ids),
-                            options: @js(array_map(fn($id, $name) => ['id' => $id, 'name' => $name], array_keys($this->issueTypes), $this->issueTypes))
-                        })" x-init="$watch('selected', val => @this.set('issue_type_ids', val))">
+                            options: @js(array_map(fn($id, $name) => ['id' => $id, 'name' => $name], array_keys($this->issueTypes), $this->issueTypes)),
+                            wireProperty: 'issue_type_ids'
+                        })" x-init="init()">
                             <label class="text-sm font-medium text-text">Issue Types <span class="text-danger">*</span></label>
                             <div class="relative">
                                 <template x-for="id in selected" :key="id">

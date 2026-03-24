@@ -47,7 +47,6 @@
                             wire:model="password"
                             type="password"
                             class="mt-1 block w-full"
-                            {{ !$isEditing ? 'required' : '' }}
                             placeholder="Min. 8 characters"
                         />
                         <x-input-error :messages="$errors->get('password')" class="mt-2" />
@@ -65,7 +64,6 @@
                                 wire:model="password_confirmation"
                                 type="password"
                                 class="mt-1 block w-full"
-                                {{ !$isEditing ? 'required' : '' }}
                                 placeholder="Confirm password"
                             />
                             <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />

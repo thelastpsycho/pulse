@@ -20,9 +20,8 @@ class DatabaseSeeder extends Seeder
             PermissionsSeeder::class,
             DepartmentsSeeder::class,
             IssueCategorySeeder::class,
-            IssueTypesSeeder::class,
+            IssueTypeSeeder::class,
             UsersSeeder::class,
-            IssueSeeder::class,
         ]);
     }
 }

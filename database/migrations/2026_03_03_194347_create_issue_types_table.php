@@ -13,13 +13,14 @@ return new class extends Migration
     {
         if (!Schema::hasTable('issue_types')) {
             Schema::create('issue_types', function (Blueprint $table) {
-            $table->id();
-            $table->string('name')->unique();
-            $table->text('description')->nullable();
-            $table->string('default_severity')->nullable();
-            $table->boolean('is_active')->default(true);
-            $table->timestamps();
-        });
+                $table->id();
+                $table->foreignId('issue_category_id')->nullable()->constrained('issue_categories');
+                $table->string('name')->unique();
+                $table->text('description')->nullable();
+                $table->string('default_severity')->nullable();
+                $table->boolean('is_active')->default(true);
+                $table->timestamps();
+            });
         }
     }
 

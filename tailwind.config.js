@@ -56,5 +56,9 @@ export default {
         },
     },
 
+    safelist: [
+        'grid-cols-7',
+    ],
+
     plugins: [forms, typography],
 };

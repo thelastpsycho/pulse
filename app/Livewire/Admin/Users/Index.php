@@ -4,6 +4,7 @@ namespace App\Livewire\Admin\Users;
 
 use App\Models\User;
 use App\Models\Role;
+use Illuminate\Support\Facades\Hash;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -16,6 +17,13 @@ class Index extends Component
     public string $statusFilter = '';
     public string $sortField = 'name';
     public string $sortDirection = 'asc';
+
+    // Password reset modal
+    public bool $showResetPasswordModal = false;
+    public ?int $resettingUserId = null;
+    public ?User $resettingUser = null;
+    public string $new_password = '';
+    public string $new_password_confirmation = '';
 
     protected $queryString = [
         'search' => ['except' => ''],
@@ -64,9 +72,9 @@ class Index extends Component
 
     public function toggleUserStatus(int $userId): void
     {
-        $this->authorize('update', User::class);
-
         $user = User::findOrFail($userId);
+
+        $this->authorize('update', $user);
 
         // Prevent deactivating yourself
         if ($user->id === auth()->id()) {
@@ -81,9 +89,9 @@ class Index extends Component
 
     public function deleteUser(int $userId): void
     {
-        $this->authorize('delete', User::class);
-
         $user = User::findOrFail($userId);
+
+        $this->authorize('delete', $user);
 
         // Prevent deleting yourself
         if ($user->id === auth()->id()) {
@@ -99,6 +107,52 @@ class Index extends Component
     {
         $this->reset(['search', 'roleFilter', 'statusFilter']);
         $this->resetPage();
+    }
+
+    public function openResetPasswordModal(int $userId): void
+    {
+        $user = User::findOrFail($userId);
+        $this->authorize('resetPassword', $user);
+
+        $this->resettingUser = $user;
+        $this->resettingUserId = $userId;
+        $this->new_password = '';
+        $this->new_password_confirmation = '';
+        $this->showResetPasswordModal = true;
+    }
+
+    public function closeResetPasswordModal(): void
+    {
+        $this->showResetPasswordModal = false;
+        $this->resettingUser = null;
+        $this->resettingUserId = null;
+        $this->new_password = '';
+        $this->new_password_confirmation = '';
+    }
+
+    public function resetPassword(): void
+    {
+        $this->validate([
+            'new_password' => ['required', 'string', 'min:8', 'confirmed'],
+        ], [
+            'new_password.required' => 'The new password field is required.',
+            'new_password.min' => 'The password must be at least 8 characters.',
+            'new_password.confirmed' => 'The password confirmation does not match.',
+        ]);
+
+        if (!$this->resettingUser) {
+            return;
+        }
+
+        $this->authorize('update', $this->resettingUser);
+
+        $this->resettingUser->update([
+            'password' => Hash::make($this->new_password),
+        ]);
+
+        $this->closeResetPasswordModal();
+
+        session()->flash('success', "Password reset successfully for {$this->resettingUser->name}.");
     }
 
     public function getSortIcon(string $field): string

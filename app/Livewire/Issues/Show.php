@@ -18,7 +18,13 @@ class Show extends Component
 
     public bool $showCloseModal = false;
     public bool $showReopenModal = false;
+    public bool $showDeleteModal = false;
+    public bool $showCategorizeModal = false;
     public ?string $closeNote = null;
+
+    // Categorization fields
+    public array $department_ids = [];
+    public array $issue_type_ids = [];
 
     protected IssueService $issueService;
 
@@ -47,7 +53,45 @@ class Show extends Component
     {
         $this->showCloseModal = false;
         $this->showReopenModal = false;
+        $this->showDeleteModal = false;
+        $this->showCategorizeModal = false;
         $this->closeNote = null;
+    }
+
+    public function openCategorizeModal(): void
+    {
+        $this->authorize('categorize', $this->issue);
+        $this->department_ids = $this->issue->departments->pluck('id')->toArray();
+        $this->issue_type_ids = $this->issue->issueTypes->pluck('id')->toArray();
+        $this->showCategorizeModal = true;
+    }
+
+    public function categorize(): void
+    {
+        $this->authorize('categorize', $this->issue);
+
+        $this->validate([
+            'department_ids' => ['required', 'array', 'min:1'],
+            'department_ids.*' => ['exists:departments,id'],
+            'issue_type_ids' => ['required', 'array', 'min:1'],
+            'issue_type_ids.*' => ['exists:issue_types,id'],
+        ]);
+
+        // Sync departments
+        $this->issue->departments()->sync($this->department_ids);
+
+        // Sync issue types
+        $this->issue->issueTypes()->sync($this->issue_type_ids);
+
+        // Also update primary issue_type_id if provided
+        if (!empty($this->issue_type_ids)) {
+            $this->issue->update(['issue_type_id' => $this->issue_type_ids[0]]);
+        }
+
+        $this->issue->load(['departments', 'issueTypes']);
+        $this->closeModals();
+
+        session()->flash('success', 'Issue categorized successfully.');
     }
 
     public function render()
@@ -113,6 +157,12 @@ class Show extends Component
     public function deleteIssue()
     {
         $this->authorize('delete', $this->issue);
+        $this->showDeleteModal = true;
+    }
+
+    public function confirmDelete()
+    {
+        $this->authorize('delete', $this->issue);
 
         $this->issueService->delete($this->issue);
 
@@ -137,6 +187,21 @@ class Show extends Component
     {
         $this->authorize('view', $this->issue);
 
-        return $exportService->exportIssue($this->issue);
+        // Redirect to a controller route for PDF download
+        return redirect()->route('issues.export.pdf', $this->issue);
+    }
+
+    public function getDepartmentsProperty(): array
+    {
+        return \App\Models\Department::orderBy('name')
+            ->pluck('name', 'id')
+            ->toArray();
+    }
+
+    public function getIssueTypesProperty(): array
+    {
+        return \App\Models\IssueType::orderBy('name')
+            ->pluck('name', 'id')
+            ->toArray();
     }
 }

@@ -6,6 +6,7 @@ use App\Models\Issue;
 use App\Models\Department;
 use App\Models\IssueType;
 use App\Models\User;
+use App\Models\SavedFilter;
 use App\Services\IssueService;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\On;
@@ -29,6 +30,8 @@ class Index extends Component
 
     public array $selectedIssues = [];
     public bool $selectAll = false;
+    public string $savedFilterName = '';
+    public bool $showSaveFilterModal = false;
 
     protected $queryString = [
         'tab' => ['except' => 'all'],
@@ -240,5 +243,107 @@ class Index extends Component
     {
         // Reset pagination to ensure fresh data
         $this->resetPage();
+    }
+
+    public function exportCSV(\App\Services\ExportService $exportService)
+    {
+        $this->authorize('viewAny', Issue::class);
+
+        // Get all issues matching current filters (without pagination)
+        $filters = [
+            'status' => $this->tab === 'all' ? null : ($this->tab === 'open' ? 'open' : 'closed'),
+            'search' => $this->search,
+            'department_id' => $this->department_id,
+            'issue_type_id' => $this->issue_type_id,
+            'priority' => $this->priority,
+            'assigned_to' => $this->assigned_to,
+            'date_from' => $this->date_from,
+            'date_to' => $this->date_to,
+            'order_by' => $this->order_by,
+            'order_dir' => $this->order_dir,
+        ];
+
+        $issues = $this->issueService->getFilteredIssues($filters, usePagination: false);
+
+        return $exportService->exportIssuesToCSV($issues);
+    }
+
+    public function openSaveFilterModal(): void
+    {
+        $this->showSaveFilterModal = true;
+    }
+
+    public function closeSaveFilterModal(): void
+    {
+        $this->showSaveFilterModal = false;
+        $this->savedFilterName = '';
+    }
+
+    public function saveFilter(): void
+    {
+        $this->validate([
+            'savedFilterName' => 'required|string|max:255',
+        ]);
+
+        SavedFilter::create([
+            'user_id' => auth()->id(),
+            'name' => $this->savedFilterName,
+            'filters' => [
+                'tab' => $this->tab,
+                'search' => $this->search,
+                'department_id' => $this->department_id,
+                'issue_type_id' => $this->issue_type_id,
+                'priority' => $this->priority,
+                'assigned_to' => $this->assigned_to,
+                'date_from' => $this->date_from,
+                'date_to' => $this->date_to,
+            ],
+        ]);
+
+        $this->closeSaveFilterModal();
+
+        session()->flash('success', 'Filter saved successfully.');
+    }
+
+    public function loadFilter(int $filterId): void
+    {
+        $savedFilter = SavedFilter::where('user_id', auth()->id())
+            ->where('id', $filterId)
+            ->firstOrFail();
+
+        $filters = $savedFilter->filters;
+
+        $this->tab = $filters['tab'] ?? 'all';
+        $this->search = $filters['search'] ?? '';
+        $this->department_id = $filters['department_id'] ?? null;
+        $this->issue_type_id = $filters['issue_type_id'] ?? null;
+        $this->priority = $filters['priority'] ?? null;
+        $this->assigned_to = $filters['assigned_to'] ?? null;
+        $this->date_from = $filters['date_from'] ?? null;
+        $this->date_to = $filters['date_to'] ?? null;
+
+        $this->resetPage();
+
+        session()->flash('success', "Filter '{$savedFilter->name}' loaded successfully.");
+    }
+
+    public function deleteFilter(int $filterId): void
+    {
+        $savedFilter = SavedFilter::where('user_id', auth()->id())
+            ->where('id', $filterId)
+            ->firstOrFail();
+
+        $savedFilter->delete();
+
+        session()->flash('success', 'Filter deleted successfully.');
+    }
+
+    #[Computed]
+    public function savedFilters(): array
+    {
+        return SavedFilter::where('user_id', auth()->id())
+            ->orderBy('name')
+            ->get()
+            ->toArray();
     }
 }

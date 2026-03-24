@@ -16,10 +16,9 @@ class DepartmentsSeeder extends Seeder
         $departments = [
             ['name' => 'Front Office'],
             ['name' => 'Housekeeping'],
-            ['name' => 'Food & Beverage'],
-            ['name' => 'Kitchen'],
+            ['name' => 'F&B Service'],
+            ['name' => 'F&B Production'],
             ['name' => 'Engineering'],
-            ['name' => 'Maintenance'],
             ['name' => 'Security'],
             ['name' => 'Sales & Marketing'],
             ['name' => 'Human Resources'],

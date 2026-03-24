@@ -16,6 +16,8 @@ return new class extends Migration
                 $table->id();
                 $table->string('title');
                 $table->text('description')->nullable();
+                $table->string('location')->nullable();
+                $table->foreignId('issue_type_id')->nullable()->constrained('issue_types');
                 $table->string('name')->nullable(); // Guest name
                 $table->string('room_number')->nullable();
                 $table->date('checkin_date')->nullable();
