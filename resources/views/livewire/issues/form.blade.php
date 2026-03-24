@@ -4,79 +4,89 @@
             <div class="p-6 space-y-8">
                 <!-- Issue Details Section -->
                 <div>
-                    <h3 class="text-lg font-semibold text-text mb-4 pb-2 border-b border-border">Issue Details</h3>
-                    <div class="space-y-6">
+                    <h3 class="text-lg font-semibold text-text mb-6 flex items-center gap-2">
+                        <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                        Issue Details
+                    </h3>
+                    <div class="space-y-5">
                         <!-- Title -->
-                        <div>
-                            <x-input-label for="title" value="Title *" />
-                            <x-text-input
-                                id="title"
-                                wire:model="title"
+                        <div class="space-y-1.5">
+                            <label class="text-sm font-medium text-text">Title <span class="text-danger">*</span></label>
+                            <input
                                 type="text"
-                                class="mt-1 block w-full"
+                                wire:model="title"
+                                class="w-full bg-surface border border-border text-text rounded-lg px-3 py-2.5 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all placeholder:text-muted/60"
                                 required
                                 autofocus
                                 placeholder="Brief description of the issue"
                             />
-                            <x-input-error :messages="$errors->get('title')" class="mt-2" />
+                            <x-input-error :messages="$errors->get('title')" />
                         </div>
 
                         <!-- Description -->
-                        <div>
-                            <x-input-label for="description" value="Description" />
+                        <div class="space-y-1.5">
+                            <label class="text-sm font-medium text-text">Description</label>
                             <textarea
-                                id="description"
                                 wire:model="description"
-                                rows="4"
-                                class="mt-1 block w-full bg-surface-2 border border-border text-text placeholder-muted rounded-lg focus:border-primary focus:ring-primary"
+                                rows="3"
+                                class="w-full bg-surface border border-border text-text placeholder:text-muted/60 rounded-lg px-3 py-2.5 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all resize-none"
                                 placeholder="Detailed description of the issue..."
                             ></textarea>
-                            <x-input-error :messages="$errors->get('description')" class="mt-2" />
+                            <x-input-error :messages="$errors->get('description')" />
                         </div>
 
                         <!-- Recovery Action -->
-                        <div>
-                            <x-input-label for="recovery" value="Recovery Action Taken" />
+                        <div class="space-y-1.5">
+                            <label class="text-sm font-medium text-text flex items-center gap-1.5">
+                                <svg class="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                                Recovery Action Taken
+                            </label>
                             <textarea
-                                id="recovery"
                                 wire:model="recovery"
-                                rows="3"
-                                class="mt-1 block w-full bg-surface-2 border border-border text-text placeholder-muted rounded-lg focus:border-primary focus:ring-primary"
+                                rows="2"
+                                class="w-full bg-surface border border-border text-text placeholder:text-muted/60 rounded-lg px-3 py-2.5 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all resize-none"
                                 placeholder="Describe the recovery actions taken..."
                             ></textarea>
-                            <x-input-error :messages="$errors->get('recovery')" class="mt-2" />
+                            <x-input-error :messages="$errors->get('recovery')" />
                         </div>
 
                         <!-- Priority & Location -->
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                             <!-- Priority -->
-                            <div>
-                                <x-input-label for="priority" value="Priority *" />
-                                <select
-                                    id="priority"
-                                    wire:model="priority"
-                                    class="mt-1 block w-full bg-surface-2 border border-border text-text rounded-lg focus:border-primary focus:ring-primary"
-                                    required
-                                >
-                                    <option value="">Select priority</option>
-                                    @foreach($this->priorities as $value => $label)
-                                        <option value="{{ $value }}">{{ $label }}</option>
-                                    @endforeach
-                                </select>
-                                <x-input-error :messages="$errors->get('priority')" class="mt-2" />
+                            <div class="space-y-1.5">
+                                <label class="text-sm font-medium text-text">Priority <span class="text-danger">*</span></label>
+                                <div class="relative">
+                                    <select
+                                        wire:model="priority"
+                                        class="w-full bg-surface border border-border text-text rounded-lg px-3 py-2.5 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all appearance-none cursor-pointer"
+                                        required
+                                    >
+                                        <option value="">Select priority</option>
+                                        @foreach($this->priorities as $value => $label)
+                                            <option value="{{ $value }}">{{ $label }}</option>
+                                        @endforeach
+                                    </select>
+                                    <svg class="w-4 h-4 text-muted absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                    </svg>
+                                </div>
+                                <x-input-error :messages="$errors->get('priority')" />
                             </div>
 
                             <!-- Location -->
-                            <div>
-                                <x-input-label for="location" value="Location" />
-                                <x-text-input
-                                    id="location"
-                                    wire:model="location"
+                            <div class="space-y-1.5">
+                                <label class="text-sm font-medium text-text">Location</label>
+                                <input
                                     type="text"
-                                    class="mt-1 block w-full"
-                                    placeholder="e.g., Room 302, Front Desk, etc."
+                                    wire:model="location"
+                                    class="w-full bg-surface border border-border text-text rounded-lg px-3 py-2.5 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all placeholder:text-muted/60"
+                                    placeholder="e.g., Room 302, Front Desk"
                                 />
-                                <x-input-error :messages="$errors->get('location')" class="mt-2" />
+                                <x-input-error :messages="$errors->get('location')" />
                             </div>
                         </div>
                     </div>
@@ -84,134 +94,352 @@
 
                 <!-- Guest Details Section -->
                 <div>
-                    <h3 class="text-lg font-semibold text-text mb-4 pb-2 border-b border-border">Guest Details</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <h3 class="text-lg font-semibold text-text mb-6 flex items-center gap-2">
+                        <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                        </svg>
+                        Guest Details
+                    </h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
                         <!-- Guest Name -->
-                        <div>
-                            <x-input-label for="name" value="Guest Name" />
-                            <x-text-input
-                                id="name"
-                                wire:model="name"
+                        <div class="space-y-1.5">
+                            <label class="text-sm font-medium text-text">Guest Name</label>
+                            <input
                                 type="text"
-                                class="mt-1 block w-full"
+                                wire:model="name"
+                                class="w-full bg-surface border border-border text-text rounded-lg px-3 py-2.5 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all placeholder:text-muted/60"
                                 placeholder="Guest name"
                             />
-                            <x-input-error :messages="$errors->get('name')" class="mt-2" />
+                            <x-input-error :messages="$errors->get('name')" />
                         </div>
 
                         <!-- Room Number -->
-                        <div>
-                            <x-input-label for="room_number" value="Room Number" />
-                            <x-text-input
-                                id="room_number"
-                                wire:model="room_number"
+                        <div class="space-y-1.5">
+                            <label class="text-sm font-medium text-text">Room Number</label>
+                            <input
                                 type="text"
-                                class="mt-1 block w-full"
+                                wire:model="room_number"
+                                class="w-full bg-surface border border-border text-text rounded-lg px-3 py-2.5 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all placeholder:text-muted/60"
                                 placeholder="e.g., 302"
                             />
-                            <x-input-error :messages="$errors->get('room_number')" class="mt-2" />
+                            <x-input-error :messages="$errors->get('room_number')" />
                         </div>
 
                         <!-- Nationality -->
-                        <div>
-                            <x-input-label for="nationality" value="Nationality" />
-                            <x-text-input
-                                id="nationality"
-                                wire:model="nationality"
-                                type="text"
-                                class="mt-1 block w-full"
-                                placeholder="e.g., Canadian"
-                            />
-                            <x-input-error :messages="$errors->get('nationality')" class="mt-2" />
+                        <div class="space-y-1.5" x-data="nationalitySelect()" x-init="initSelect(@js($nationality))">
+                            <span class="hidden" data-nationalities="{{ implode(',', array_values($this->nationalities)) }}"></span>
+                            <label class="text-sm font-medium text-text">Nationality</label>
+                            <div class="relative">
+                                <button
+                                    type="button"
+                                    @click="toggleDropdown()"
+                                    class="w-full bg-surface border border-border text-text rounded-lg px-3 py-2.5 text-left flex items-center justify-between focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all hover:border-border/80"
+                                    :class="{'border-primary ring-2 ring-primary/20': isOpen}"
+                                >
+                                    <span class="truncate" :class="{'text-muted/60': !selected}" x-text="selected || 'Select nationality'"></span>
+                                    <div class="flex items-center gap-1">
+                                        <template x-if="selected">
+                                            <button @click.stop="clear()" class="p-1 text-muted/60 hover:text-text hover:bg-surface-2 rounded transition-colors">
+                                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                                                </svg>
+                                            </button>
+                                        </template>
+                                        <svg class="w-4 h-4 text-muted transition-transform duration-200" :class="{'rotate-180': isOpen}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                        </svg>
+                                    </div>
+                                </button>
+
+                                <div
+                                    x-show="isOpen"
+                                    x-transition:enter="transition ease-out duration-150"
+                                    x-transition:enter-start="opacity-0 scale-95 -translate-y-1"
+                                    x-transition:enter-end="opacity-100 scale-100 translate-y-0"
+                                    x-transition:leave="transition ease-in duration-100"
+                                    x-transition:leave-start="opacity-100 scale-100 translate-y-0"
+                                    x-transition:leave-end="opacity-0 scale-95 -translate-y-1"
+                                    @click.outside="closeDropdown()"
+                                    class="absolute z-50 mt-2 w-full bg-surface border border-border rounded-xl shadow-xl shadow-black/10 overflow-hidden"
+                                    style="display: none;"
+                                >
+                                    <div class="p-2.5 border-b border-border bg-surface-2/50">
+                                        <div class="relative">
+                                            <svg class="w-4 h-4 text-muted absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                            </svg>
+                                            <input
+                                                type="text"
+                                                x-model="search"
+                                                placeholder="Search nationalities..."
+                                                class="w-full pl-10 pr-4 py-2 text-sm bg-surface border border-border rounded-lg focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all placeholder:text-muted/50"
+                                            >
+                                        </div>
+                                    </div>
+
+                                    <div class="max-h-56 overflow-y-auto p-1.5 custom-scrollbar">
+                                        <template x-for="option in filteredOptions">
+                                            <button
+                                                type="button"
+                                                @click="select(option)"
+                                                class="w-full text-left px-3 py-2.5 text-sm rounded-lg transition-all duration-150"
+                                                :class="option === selected ? 'bg-primary text-white font-medium shadow-sm' : 'text-text hover:bg-surface-2'"
+                                                x-text="option"
+                                            ></button>
+                                        </template>
+                                        <div x-show="filteredOptions.length === 0" class="px-3 py-6 text-center text-sm text-muted" style="display: none;">
+                                            <svg class="w-8 h-8 mx-auto mb-2 text-muted/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                            </svg>
+                                            No nationalities found
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <x-input-error :messages="$errors->get('nationality')" />
                         </div>
 
                         <!-- Contact -->
-                        <div>
-                            <x-input-label for="contact" value="Contact" />
-                            <x-text-input
-                                id="contact"
-                                wire:model="contact"
+                        <div class="space-y-1.5">
+                            <label class="text-sm font-medium text-text">Contact</label>
+                            <input
                                 type="text"
-                                class="mt-1 block w-full"
-                                placeholder="Phone number or email"
+                                wire:model="contact"
+                                class="w-full bg-surface border border-border text-text rounded-lg px-3 py-2.5 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all placeholder:text-muted/60"
+                                placeholder="Phone or email"
                             />
-                            <x-input-error :messages="$errors->get('contact')" class="mt-2" />
+                            <x-input-error :messages="$errors->get('contact')" />
                         </div>
 
-                        <!-- Check-in Date -->
-                        <div>
-                            <x-input-label for="checkin_date" value="Check-in Date" />
-                            <x-text-input
-                                id="checkin_date"
-                                wire:model="checkin_date"
-                                type="date"
-                                class="mt-1 block w-full"
-                            />
-                            <x-input-error :messages="$errors->get('checkin_date')" class="mt-2" />
-                        </div>
+                    </div>
 
-                        <!-- Check-out Date -->
-                        <div>
-                            <x-input-label for="checkout_date" value="Check-out Date" />
-                            <x-text-input
-                                id="checkout_date"
-                                wire:model="checkout_date"
-                                type="date"
-                                class="mt-1 block w-full"
-                            />
-                            <x-input-error :messages="$errors->get('checkout_date')" class="mt-2" />
+                    <!-- Date Row -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mt-5">
+                        <!-- Check-in / Check-out Date Range -->
+                        <div class="space-y-1.5" x-data="dateRangePicker({ startDate: @js($checkin_date), endDate: @js($checkout_date) })" x-init="$watch('startDate', val => @this.set('checkin_date', val)); $watch('endDate', val => @this.set('checkout_date', val))">
+                            <label class="text-sm font-medium text-text flex items-center gap-1.5">
+                                <svg class="w-4 h-4 text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                </svg>
+                                Check-in / Check-out
+                            </label>
+                            <div class="relative">
+                                <input type="hidden" wire:model="checkin_date" :value="startDate">
+                                <input type="hidden" wire:model="checkout_date" :value="endDate">
+                                <button
+                                    type="button"
+                                    @click="open()"
+                                    class="w-full bg-surface border border-border text-text rounded-lg px-3 py-2.5 text-left flex items-center justify-between focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all hover:border-border/80"
+                                    :class="{'border-primary ring-2 ring-primary/20': isOpen}"
+                                >
+                                    <span :class="{'text-muted/60': !startDate && !endDate}" x-text="formattedRange"></span>
+                                    <svg class="w-4 h-4 text-muted transition-transform" :class="{'rotate-180': isOpen}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                    </svg>
+                                </button>
+
+                                <div
+                                    x-show="isOpen"
+                                    x-transition:enter="transition ease-out duration-150"
+                                    x-transition:enter-start="opacity-0 scale-95 -translate-y-1"
+                                    x-transition:enter-end="opacity-100 scale-100 translate-y-0"
+                                    x-transition:leave="transition ease-in duration-100"
+                                    x-transition:leave-start="opacity-100 scale-100 translate-y-0"
+                                    x-transition:leave-end="opacity-0 scale-95 -translate-y-1"
+                                    @click.outside="close()"
+                                    class="absolute z-50 mt-2 w-full bg-surface border border-border rounded-xl shadow-xl shadow-black/10 overflow-hidden p-4"
+                                    style="display: none;"
+                                >
+                                    <div class="flex gap-4">
+                                        <template x-for="monthIdx in [0, 1]">
+                                            <div class="flex-1">
+                                                <div class="text-center text-sm font-medium text-text mb-3" x-text="monthNames[(firstMonth.getMonth() + monthIdx) % 12] + ' ' + (firstMonth.getFullYear() + Math.floor((firstMonth.getMonth() + monthIdx) / 12))"></div>
+                                                <div class="grid grid-cols-7 gap-0.5 mb-1">
+                                                    <template x-for="day in ['S', 'M', 'T', 'W', 'T', 'F', 'S']">
+                                                        <div class="text-center text-xs text-muted py-1" x-text="day"></div>
+                                                    </template>
+                                                </div>
+                                                <div class="grid grid-cols-7 gap-0.5">
+                                                    <template x-for="day in getCalendarDays((firstMonth.getFullYear() + Math.floor((firstMonth.getMonth() + monthIdx) / 12)), (firstMonth.getMonth() + monthIdx) % 12)">
+                                                        <button
+                                                            type="button"
+                                                            :disabled="!day"
+                                                            @click="day && selectDate((firstMonth.getFullYear() + Math.floor((firstMonth.getMonth() + monthIdx) / 12)), (firstMonth.getMonth() + monthIdx) % 12, day)"
+                                                            @mouseenter="day && setHovered((firstMonth.getFullYear() + Math.floor((firstMonth.getMonth() + monthIdx) / 12)), (firstMonth.getMonth() + monthIdx) % 12, day)"
+                                                            @mouseleave="day && clearHovered()"
+                                                            class="aspect-square text-xs rounded-lg transition-all"
+                                                            :class="{
+                                                                'invisible': !day,
+                                                                'bg-primary text-white shadow-sm': isSelected((firstMonth.getFullYear() + Math.floor((firstMonth.getMonth() + monthIdx) / 12)), (firstMonth.getMonth() + monthIdx) % 12, day) === 'start' || isSelected((firstMonth.getFullYear() + Math.floor((firstMonth.getMonth() + monthIdx) / 12)), (firstMonth.getMonth() + monthIdx) % 12, day) === 'end',
+                                                                'bg-primary/15 text-primary': isInRangeOrHovered((firstMonth.getFullYear() + Math.floor((firstMonth.getMonth() + monthIdx) / 12)), (firstMonth.getMonth() + monthIdx) % 12, day),
+                                                                'hover:bg-surface-2 text-text': day && !isSelected((firstMonth.getFullYear() + Math.floor((firstMonth.getMonth() + monthIdx) / 12)), (firstMonth.getMonth() + monthIdx) % 12, day) && !isInRangeOrHovered((firstMonth.getFullYear() + Math.floor((firstMonth.getMonth() + monthIdx) / 12)), (firstMonth.getMonth() + monthIdx) % 12, day)
+                                                            }"
+                                                            x-text="day || ''"
+                                                        ></button>
+                                                    </template>
+                                                </div>
+                                            </div>
+                                        </template>
+                                    </div>
+
+                                    <div class="mt-3 pt-3 border-t border-border flex items-center justify-between">
+                                        <div class="text-sm text-text">
+                                            <span x-show="startDate" class="text-primary font-medium" x-text="startDate ? new Date(startDate + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : ''"></span>
+                                            <span x-show="startDate && endDate" class="text-muted mx-1.5">→</span>
+                                            <span x-show="endDate" class="text-primary font-medium" x-text="endDate ? new Date(endDate + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : ''"></span>
+                                            <span x-show="!startDate && !endDate" class="text-muted/60 text-xs">Select dates</span>
+                                        </div>
+                                        <div class="flex gap-2">
+                                            <button type="button" @click="clear(); close()" class="text-xs text-muted hover:text-text px-3 py-1.5 rounded-lg hover:bg-surface-2 transition-colors">Clear</button>
+                                            <button type="button" @click="close()" class="text-xs bg-primary text-white px-3 py-1.5 rounded-lg hover:bg-primary/90 transition-colors">Done</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="flex gap-3">
+                                <x-input-error :messages="$errors->get('checkin_date')" />
+                                <x-input-error :messages="$errors->get('checkout_date')" />
+                            </div>
                         </div>
 
                         <!-- Issue Date -->
-                        <div>
-                            <x-input-label for="issue_date" value="Issue Date" />
-                            <x-text-input
-                                id="issue_date"
-                                wire:model="issue_date"
-                                type="date"
-                                class="mt-1 block w-full"
-                            />
-                            <x-input-error :messages="$errors->get('issue_date')" class="mt-2" />
-                        </div>
+                        <div class="space-y-1.5" x-data="datePicker({ value: @js($issue_date) })" x-init="$watch('value', val => @this.set('issue_date', val))">
+                            <label class="text-sm font-medium text-text flex items-center gap-1.5">
+                                <svg class="w-4 h-4 text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                </svg>
+                                Issue Date
+                            </label>
+                            <div class="relative">
+                                <input type="hidden" wire:model="issue_date" :value="value">
+                                <button
+                                    type="button"
+                                    @click="open()"
+                                    class="w-full bg-surface border border-border text-text rounded-lg px-3 py-2.5 text-left flex items-center justify-between focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all hover:border-border/80"
+                                    :class="{'border-primary ring-2 ring-primary/20': isOpen}"
+                                >
+                                    <span :class="{'text-muted/60': !value}" x-text="formattedValue || 'Select date'"></span>
+                                    <svg class="w-4 h-4 text-muted transition-transform" :class="{'rotate-180': isOpen}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                    </svg>
+                                </button>
 
+                                <div
+                                    x-show="isOpen"
+                                    x-transition:enter="transition ease-out duration-150"
+                                    x-transition:enter-start="opacity-0 scale-95 -translate-y-1"
+                                    x-transition:enter-end="opacity-100 scale-100 translate-y-0"
+                                    x-transition:leave="transition ease-in duration-100"
+                                    x-transition:leave-start="opacity-100 scale-100 translate-y-0"
+                                    x-transition:leave-end="opacity-0 scale-95 -translate-y-1"
+                                    @click.outside="close()"
+                                    class="absolute z-50 mt-2 w-full bg-surface border border-border rounded-xl shadow-xl shadow-black/10 overflow-hidden"
+                                    style="display: none;"
+                                >
+                                    <div class="flex items-center justify-between px-4 py-3 border-b border-border">
+                                        <button type="button" @click="prevMonth()" class="p-1 hover:bg-surface-2 rounded-lg transition-colors">
+                                            <svg class="w-4 h-4 text-text" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                                            </svg>
+                                        </button>
+                                        <span class="text-sm font-medium text-text" x-text="monthNames[selectedMonth] + ' ' + selectedYear"></span>
+                                        <button type="button" @click="nextMonth()" class="p-1 hover:bg-surface-2 rounded-lg transition-colors">
+                                            <svg class="w-4 h-4 text-text" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                                            </svg>
+                                        </button>
+                                    </div>
+
+                                    <div class="grid grid-cols-7 gap-0.5 px-2 pt-2">
+                                        <template x-for="day in ['S', 'M', 'T', 'W', 'T', 'F', 'S']">
+                                            <div class="text-center text-xs text-muted py-1" x-text="day"></div>
+                                        </template>
+                                    </div>
+
+                                    <div class="grid grid-cols-7 gap-0.5 px-2 pb-2">
+                                        <template x-for="day in calendarDays">
+                                            <button
+                                                type="button"
+                                                :disabled="!day"
+                                                @click="day && selectDay(day)"
+                                                class="aspect-square text-sm rounded-lg transition-all"
+                                                :class="{
+                                                    'invisible': !day,
+                                                    'bg-primary text-white shadow-sm': isSelected(day),
+                                                    'bg-primary/15 text-primary font-medium': isToday(day) && !isSelected(day),
+                                                    'hover:bg-surface-2 text-text': day && !isSelected(day) && !isToday(day)
+                                                }"
+                                                x-text="day || ''"
+                                            ></button>
+                                        </template>
+                                    </div>
+
+                                    <div class="px-4 py-2 border-t border-border flex justify-between">
+                                        <button type="button" @click="value = ''; close()" class="text-xs text-muted hover:text-text">Clear</button>
+                                        <button type="button" @click="selectDay(today.getDate()); selectedMonth = today.getMonth(); selectedYear = today.getFullYear()" class="text-xs text-primary hover:underline">Today</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <x-input-error :messages="$errors->get('issue_date')" />
+                        </div>
+                    </div>
+
+                    <!-- Additional Details Row -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mt-5">
                         <!-- Source -->
-                        <div>
-                            <x-input-label for="source" value="Source" />
-                            <x-text-input
-                                id="source"
-                                wire:model="source"
+                        <div class="space-y-1.5">
+                            <label class="text-sm font-medium text-text">Source</label>
+                            <input
                                 type="text"
-                                class="mt-1 block w-full"
-                                placeholder="e.g., OTA, Direct Booking"
+                                wire:model="source"
+                                class="w-full bg-surface border border-border text-text rounded-lg px-3 py-2.5 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all placeholder:text-muted/60"
+                                placeholder="OTA, Direct, etc."
                             />
-                            <x-input-error :messages="$errors->get('source')" class="mt-2" />
+                            <x-input-error :messages="$errors->get('source')" />
                         </div>
 
                         <!-- Recovery Cost -->
-                        <div>
-                            <x-input-label for="recovery_cost" value="Recovery Cost" />
-                            <x-text-input
-                                id="recovery_cost"
-                                wire:model="recovery_cost"
-                                type="number"
-                                min="0"
-                                step="1"
-                                class="mt-1 block w-full"
-                                placeholder="0"
-                            />
-                            <x-input-error :messages="$errors->get('recovery_cost')" class="mt-2" />
+                        <div class="space-y-1.5">
+                            <label class="text-sm font-medium text-text">Recovery Cost</label>
+                            <div class="relative">
+                                <span class="absolute left-3 top-1/2 -translate-y-1/2 text-muted/60 text-sm">$</span>
+                                <input
+                                    type="number"
+                                    wire:model="recovery_cost"
+                                    min="0"
+                                    step="1"
+                                    class="w-full bg-surface border border-border text-text rounded-lg pl-7 pr-3 py-2.5 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all placeholder:text-muted/60"
+                                    placeholder="0.00"
+                                />
+                            </div>
+                            <x-input-error :messages="$errors->get('recovery_cost')" />
+                        </div>
+
+                        <!-- Training Notes Indicator -->
+                        <div class="space-y-1.5">
+                            <label class="text-sm font-medium text-text">Training Needed</label>
+                            <div class="flex items-center h-[42px] px-3 py-2.5 rounded-lg border border-dashed border-border text-muted/60 text-sm">
+                                <svg class="w-4 h-4 mr-2 text-muted/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                                See training field below
+                            </div>
                         </div>
                     </div>
 
                     <!-- Training (full width) -->
-                    <div class="mt-6">
-                        <x-input-label for="training" value="Training Required" />
+                    <div class="mt-5 space-y-1.5">
+                        <label class="text-sm font-medium text-text flex items-center gap-1.5">
+                            <svg class="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                            </svg>
+                            Training Required
+                        </label>
                         <textarea
-                            id="training"
                             wire:model="training"
                             rows="2"
-                            class="mt-1 block w-full bg-surface-2 border border-border text-text placeholder-muted rounded-lg focus:border-primary focus:ring-primary"
-                            placeholder="Any training needed to prevent recurrence..."
+                            class="w-full bg-surface border border-border text-text placeholder:text-muted/60 rounded-lg px-3 py-2.5 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all resize-none"
+                            placeholder="Describe any training needed to prevent similar issues..."
                         ></textarea>
                         <x-input-error :messages="$errors->get('training')" class="mt-2" />
                     </div>
@@ -219,79 +447,220 @@
 
                 <!-- Classification Section -->
                 <div>
-                    <h3 class="text-lg font-semibold text-text mb-4 pb-2 border-b border-border">Classification</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <!-- Departments -->
-                        <div>
-                            <x-input-label for="departments" value="Departments *" />
-                            <div class="mt-2 space-y-2 max-h-48 overflow-y-auto">
-                                @foreach($this->departments as $id => $name)
-                                    <label class="flex items-center gap-2">
-                                        <input
-                                            type="checkbox"
-                                            wire:model.live="department_ids"
-                                            value="{{ $id }}"
-                                            class="rounded border-border bg-surface-2 text-primary focus:ring-primary"
-                                        />
-                                        <span class="text-sm text-text">{{ $name }}</span>
-                                    </label>
-                                @endforeach
-                            </div>
-                            <x-input-error :messages="$errors->get('department_ids')" class="mt-2" />
-                            <p class="mt-1 text-xs text-muted">Select at least one department</p>
-                        </div>
+                    <h3 class="text-lg font-semibold text-text mb-6 flex items-center gap-2">
+                        <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+                        </svg>
+                        Classification
+                    </h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                        <!-- Departments Multi-Select -->
+                        <div class="space-y-1.5" x-data="multiSelect({
+                            selected: @js($department_ids),
+                            options: @js(array_map(fn($id, $name) => ['id' => $id, 'name' => $name], array_keys($this->departments), $this->departments))
+                        })" x-init="$watch('selected', val => @this.set('department_ids', val))">
+                            <label class="text-sm font-medium text-text">Departments <span class="text-danger">*</span></label>
+                            <div class="relative">
+                                <template x-for="id in selected" :key="id">
+                                    <input type="hidden" name="department_ids[]" :value="id">
+                                </template>
 
-                        <!-- Issue Types -->
-                        <div>
-                            <x-input-label for="issue_types" value="Issue Types *" />
-                            <div class="mt-2 space-y-2 max-h-48 overflow-y-auto">
-                                @foreach($this->issueTypes as $id => $name)
-                                    <label class="flex items-center gap-2">
-                                        <input
-                                            type="checkbox"
-                                            wire:model.live="issue_type_ids"
-                                            value="{{ $id }}"
-                                            class="rounded border-border bg-surface-2 text-primary focus:ring-primary"
-                                        />
-                                        <span class="text-sm text-text">{{ $name }}</span>
-                                    </label>
-                                @endforeach
+                                <button
+                                    type="button"
+                                    @click="toggleDropdown()"
+                                    class="w-full bg-surface border border-border text-text rounded-lg px-3 py-2.5 text-left flex items-center justify-between focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all hover:border-border/80"
+                                    :class="{'border-primary ring-2 ring-primary/20': isOpen}"
+                                >
+                                    <span class="truncate" :class="{'text-muted/60': selected.length === 0}" x-text="selected.length > 0 ? `${selected.length} department${selected.length > 1 ? 's' : ''} selected` : 'Select departments'"></span>
+                                    <svg class="w-4 h-4 text-muted transition-transform" :class="{'rotate-180': isOpen}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                    </svg>
+                                </button>
+
+                                <div
+                                    x-show="isOpen"
+                                    x-transition:enter="transition ease-out duration-150"
+                                    x-transition:enter-start="opacity-0 scale-95 -translate-y-1"
+                                    x-transition:enter-end="opacity-100 scale-100 translate-y-0"
+                                    x-transition:leave="transition ease-in duration-100"
+                                    x-transition:leave-start="opacity-100 scale-100 translate-y-0"
+                                    x-transition:leave-end="opacity-0 scale-95 -translate-y-1"
+                                    @click.outside="closeDropdown()"
+                                    class="absolute z-50 mt-2 w-full bg-surface border border-border rounded-xl shadow-xl shadow-black/10 overflow-hidden"
+                                    style="display: none;"
+                                >
+                                    <div class="p-2.5 border-b border-border bg-surface-2/50">
+                                        <div class="relative">
+                                            <svg class="w-4 h-4 text-muted absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                            </svg>
+                                            <input
+                                                type="text"
+                                                x-model="search"
+                                                placeholder="Search departments..."
+                                                class="w-full pl-10 pr-4 py-2 text-sm bg-surface border border-border rounded-lg focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all placeholder:text-muted/50"
+                                                @click="$event.stopPropagation()"
+                                            >
+                                        </div>
+                                    </div>
+
+                                    <div class="max-h-56 overflow-y-auto p-1.5 custom-scrollbar">
+                                        <template x-for="option in filteredOptions" :key="option.id">
+                                            <label class="flex items-center gap-2.5 px-3 py-2.5 hover:bg-surface-2 rounded-lg cursor-pointer transition-colors">
+                                                <input
+                                                    type="checkbox"
+                                                    :value="option.id"
+                                                    x-model="selected"
+                                                    class="w-4 h-4 rounded border-border text-primary focus:ring-2 focus:ring-primary/20"
+                                                >
+                                                <span class="text-sm text-text" x-text="option.name"></span>
+                                            </label>
+                                        </template>
+                                        <div x-show="filteredOptions.length === 0" class="px-3 py-4 text-center text-sm text-muted" style="display: none;">
+                                            No departments found
+                                        </div>
+                                    </div>
+
+                                    <div class="p-2.5 border-t border-border flex items-center justify-between bg-surface-2/30">
+                                        <button
+                                            type="button"
+                                            @click="selectAll()"
+                                            class="text-xs text-primary hover:underline transition-colors"
+                                            x-text="selected.length === filteredOptions.length ? 'Deselect All' : 'Select All'"
+                                        ></button>
+                                        <span class="text-xs text-muted" x-text="`${selected.length} selected`"></span>
+                                    </div>
+                                </div>
                             </div>
-                            <x-input-error :messages="$errors->get('issue_type_ids')" class="mt-2" />
-                            <p class="mt-1 text-xs text-muted">Select at least one issue type</p>
+                            <x-input-error :messages="$errors->get('department_ids')" />
+                        </div>
+                        <!-- Issue Types Multi-Select -->
+                        <div class="space-y-1.5" x-data="multiSelect({
+                            selected: @js($issue_type_ids),
+                            options: @js(array_map(fn($id, $name) => ['id' => $id, 'name' => $name], array_keys($this->issueTypes), $this->issueTypes))
+                        })" x-init="$watch('selected', val => @this.set('issue_type_ids', val))">
+                            <label class="text-sm font-medium text-text">Issue Types <span class="text-danger">*</span></label>
+                            <div class="relative">
+                                <template x-for="id in selected" :key="id">
+                                    <input type="hidden" name="issue_type_ids[]" :value="id">
+                                </template>
+
+                                <button
+                                    type="button"
+                                    @click="toggleDropdown()"
+                                    class="w-full bg-surface border border-border text-text rounded-lg px-3 py-2.5 text-left flex items-center justify-between focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all hover:border-border/80"
+                                    :class="{'border-primary ring-2 ring-primary/20': isOpen}"
+                                >
+                                    <span class="truncate" :class="{'text-muted/60': selected.length === 0}" x-text="selected.length > 0 ? `${selected.length} type${selected.length > 1 ? 's' : ''} selected` : 'Select issue types'"></span>
+                                    <svg class="w-4 h-4 text-muted transition-transform" :class="{'rotate-180': isOpen}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                    </svg>
+                                </button>
+
+                                <div
+                                    x-show="isOpen"
+                                    x-transition:enter="transition ease-out duration-150"
+                                    x-transition:enter-start="opacity-0 scale-95 -translate-y-1"
+                                    x-transition:enter-end="opacity-100 scale-100 translate-y-0"
+                                    x-transition:leave="transition ease-in duration-100"
+                                    x-transition:leave-start="opacity-100 scale-100 translate-y-0"
+                                    x-transition:leave-end="opacity-0 scale-95 -translate-y-1"
+                                    @click.outside="closeDropdown()"
+                                    class="absolute z-50 mt-2 w-full bg-surface border border-border rounded-xl shadow-xl shadow-black/10 overflow-hidden"
+                                    style="display: none;"
+                                >
+                                    <div class="p-2.5 border-b border-border bg-surface-2/50">
+                                        <div class="relative">
+                                            <svg class="w-4 h-4 text-muted absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                            </svg>
+                                            <input
+                                                type="text"
+                                                x-model="search"
+                                                placeholder="Search issue types..."
+                                                class="w-full pl-10 pr-4 py-2 text-sm bg-surface border border-border rounded-lg focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all placeholder:text-muted/50"
+                                                @click="$event.stopPropagation()"
+                                            >
+                                        </div>
+                                    </div>
+
+                                    <div class="max-h-56 overflow-y-auto p-1.5 custom-scrollbar">
+                                        <template x-for="option in filteredOptions" :key="option.id">
+                                            <label class="flex items-center gap-2.5 px-3 py-2.5 hover:bg-surface-2 rounded-lg cursor-pointer transition-colors">
+                                                <input
+                                                    type="checkbox"
+                                                    :value="option.id"
+                                                    x-model="selected"
+                                                    class="w-4 h-4 rounded border-border text-primary focus:ring-2 focus:ring-primary/20"
+                                                >
+                                                <span class="text-sm text-text" x-text="option.name"></span>
+                                            </label>
+                                        </template>
+                                        <div x-show="filteredOptions.length === 0" class="px-3 py-4 text-center text-sm text-muted" style="display: none;">
+                                            No issue types found
+                                        </div>
+                                    </div>
+
+                                    <div class="p-2.5 border-t border-border flex items-center justify-between bg-surface-2/30">
+                                        <button
+                                            type="button"
+                                            @click="selectAll()"
+                                            class="text-xs text-primary hover:underline transition-colors"
+                                            x-text="selected.length === filteredOptions.length ? 'Deselect All' : 'Select All'"
+                                        ></button>
+                                        <span class="text-xs text-muted" x-text="`${selected.length} selected`"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <x-input-error :messages="$errors->get('issue_type_ids')" />
                         </div>
                     </div>
                 </div>
 
                 <!-- Assignment Section -->
                 <div>
-                    <h3 class="text-lg font-semibold text-text mb-4 pb-2 border-b border-border">Assignment</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <h3 class="text-lg font-semibold text-text mb-6 flex items-center gap-2">
+                        <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2" />
+                        </svg>
+                        Assignment
+                    </h3>
+                    <div class="space-y-5">
                         <!-- Assigned To -->
-                        <div>
-                            <x-input-label for="assigned_to" value="Assigned To" />
-                            <select
-                                id="assigned_to"
-                                wire:model="assigned_to"
-                                class="mt-1 block w-full bg-surface-2 border border-border text-text rounded-lg focus:border-primary focus:ring-primary"
-                            >
-                                <option value="">Unassigned</option>
-                                @foreach($this->users as $id => $name)
-                                    <option value="{{ $id }}">{{ $name }}</option>
-                                @endforeach
-                            </select>
-                            <x-input-error :messages="$errors->get('assigned_to')" class="mt-2" />
+                        <div class="space-y-1.5 max-w-md">
+                            <label class="text-sm font-medium text-text flex items-center gap-1.5">
+                                <svg class="w-4 h-4 text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                </svg>
+                                Assigned To
+                            </label>
+                            <div class="relative">
+                                <select
+                                    wire:model="assigned_to"
+                                    class="w-full bg-surface border border-border text-text rounded-lg px-3 py-2.5 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all appearance-none cursor-pointer"
+                                >
+                                    <option value="">Unassigned</option>
+                                    @foreach($this->users as $id => $name)
+                                        <option value="{{ $id }}">{{ $name }}</option>
+                                    @endforeach
+                                </select>
+                                <svg class="w-4 h-4 text-muted absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                </svg>
+                            </div>
+                            <x-input-error :messages="$errors->get('assigned_to')" />
+                            <p class="text-xs text-muted/60">Optional: Assign this issue to a team member</p>
                         </div>
                     </div>
                 </div>
             </div>
 
             <!-- Form Actions -->
-            <div class="px-6 py-4 bg-surface-2 border-t border-border flex items-center justify-end gap-3">
-                <button type="button" wire:click="cancel" class="btn btn-secondary">
+            <div class="px-6 py-4 bg-surface-2/50 border-t border-border flex items-center justify-end gap-3">
+                <button type="button" wire:click="cancel" class="px-4 py-2.5 text-sm font-medium text-text border border-border rounded-lg hover:bg-surface-2 transition-colors">
                     Cancel
                 </button>
-                <button type="submit" class="btn btn-primary">
+                <button type="submit" class="px-5 py-2.5 text-sm font-medium text-white bg-primary rounded-lg hover:bg-primary/90 transition-colors shadow-sm">
                     {{ $isEditing ? 'Update Issue' : 'Create Issue' }}
                 </button>
             </div>
