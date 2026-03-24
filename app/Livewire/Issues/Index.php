@@ -25,7 +25,7 @@ class Index extends Component
     public ?int $assigned_to = null;
     public ?string $date_from = null;
     public ?string $date_to = null;
-    public string $order_by = 'created_at';
+    public string $order_by = 'issue_date';
     public string $order_dir = 'desc';
 
     public array $selectedIssues = [];
