@@ -237,6 +237,7 @@
                     <form wire:submit="addComment">
                         <textarea
                             wire:model="comment"
+                            wire:key="comment-input"
                             rows="2"
                             class="w-full resize-none rounded border border-border bg-surface-2 px-3 py-2 text-sm text-text placeholder-muted focus:border-primary focus:outline-none"
                             placeholder="Add a comment..."
