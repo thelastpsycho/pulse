@@ -109,13 +109,15 @@ class Show extends Component
     {
         $this->validate();
 
+        $commentBody = $this->comment;
+
         IssueComment::create([
             'issue_id' => $this->issue->id,
             'user_id' => auth()->id(),
-            'body' => $this->comment,
+            'body' => $commentBody,
         ]);
 
-        $this->comment = '';
+        $this->reset('comment');
         $this->issue->load('comments.user');
 
         session()->flash('success', 'Comment added successfully.');
