@@ -13,9 +13,11 @@ class IssueCategorySeeder extends Seeder
     public function run(): void
     {
         $categories = [
-            ['name' => 'product', 'label' => 'Product'],
-            ['name' => 'service', 'label' => 'Service'],
-            ['name' => 'general', 'label' => 'General'],
+            ['name' => 'room_facilities', 'label' => 'Room & Facilities'],
+            ['name' => 'food_beverage', 'label' => 'Food & Beverage'],
+            ['name' => 'service_staff', 'label' => 'Service & Staff'],
+            ['name' => 'health_safety_security', 'label' => 'Health, Safety & Security'],
+            ['name' => 'guest_experience', 'label' => 'Guest Experience'],
         ];
 
         foreach ($categories as $category) {
