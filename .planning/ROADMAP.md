@@ -33,7 +33,7 @@
 **Plan List**:
 - [x] 01-01-PLAN.md — Theme toggle component with Alpine.js store and localStorage persistence
 - [x] 01-02-PLAN.md — Component library audit and new components (badge, card, success/warning buttons)
-- [ ] 01-03-PLAN.md — Responsive layout fixes across all existing pages
+- [x] 01-03-PLAN.md — Responsive layout fixes across all existing pages
 
 **UI hint**: yes
 
