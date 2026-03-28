@@ -356,4 +356,51 @@ class Index extends Component
             ->get()
             ->toArray();
     }
+
+    #[Computed]
+    public function kanbanIssues(): array
+    {
+        $issues = $this->getIssues()->get();
+
+        return [
+            'open' => $issues->filter(fn($issue) => $issue->status === 'open'),
+            'in_progress' => $issues->filter(fn($issue) => $issue->status === 'in_progress'),
+            'closed' => $issues->filter(fn($issue) => $issue->status === 'closed'),
+        ];
+    }
+
+    #[On('dragStart')]
+    public function onDragStart(array $data): void
+    {
+        // Optional: Track drag start for analytics
+        // Currently no action needed
+    }
+
+    #[On('dragEnd')]
+    public function onDragEnd(array $data): void
+    {
+        // Optional: Track drag end for analytics
+        // Currently no action needed
+    }
+
+    #[On('updateIssueStatus')]
+    public function updateIssueStatus(array $data): void
+    {
+        $issueId = $data['issueId'];
+        $newStatus = $data['newStatus'];
+
+        $issue = Issue::findOrFail($issueId);
+        $this->authorize('update', $issue);
+
+        // Map status to issue state
+        match($newStatus) {
+            'open' => $this->issueService->reopen($issue),
+            'in_progress' => $this->issueService->update($issue, ['status' => 'in_progress']),
+            'closed' => $this->issueService->close($issue),
+            default => null,
+        };
+
+        // Refresh the list
+        $this->dispatch('issue-updated');
+    }
 }
