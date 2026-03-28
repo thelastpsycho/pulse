@@ -54,6 +54,11 @@
         background: linear-gradient(145deg, rgba(var(--surface), 1) 0%, rgba(var(--surface), 0.8) 100%);
     }
 
+    /* Table row interactions */
+    .table-row-hover {
+        @apply hover:bg-surface-2/30 transition-colors duration-150;
+    }
+
     /* Button Components - Enhanced with gradients */
     .btn {
         @apply inline-flex items-center justify-center rounded-xl px-5 py-2.5 text-sm font-semibold transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-background focus:ring-primary disabled:opacity-50 disabled:pointer-events-none;
@@ -114,6 +119,26 @@
         background: rgba(var(--muted), 0.15);
         color: rgb(var(--muted));
         border: 1px solid rgba(var(--muted), 0.2);
+    }
+
+    /* Mobile card enhancements */
+    @media (max-width: 640px) {
+        .mobile-card {
+            @apply rounded-xl border border-border bg-surface p-4 shadow-sm;
+        }
+
+        .mobile-card-actions {
+            @apply flex gap-2 mt-4 pt-4 border-t border-border/50;
+        }
+
+        .mobile-action-button {
+            @apply flex-1 flex items-center justify-center gap-2 h-11 px-4 rounded-xl font-semibold text-sm transition-all duration-200;
+        }
+    }
+
+    /* Inline action button focus styles */
+    .inline-action-button {
+        @apply p-2 rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary/20;
     }
 
     /* Issue Card - Special styling */
