@@ -151,32 +151,41 @@
     <!-- Search & Filters -->
     <div class="card overflow-hidden">
         <div class="border-b border-border/50 p-4">
-            <!-- Saved Filters -->
+            <!-- Saved Filters (Enhanced) -->
             @if(count($this->savedFilters) > 0)
-                <div class="mb-3 flex flex-wrap items-center gap-2">
-                    <span class="text-sm text-muted">Saved filters:</span>
-                    @foreach($this->savedFilters as $savedFilter)
-                        <div class="group relative inline-flex">
+                <div class="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                    <div class="flex flex-wrap items-center gap-2">
+                        <span class="text-sm font-medium text-muted flex items-center gap-1.5">
+                            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+                            </svg>
+                            Saved Filters
+                        </span>
+                    </div>
+                    <div class="flex flex-wrap gap-2 overflow-x-auto pb-2 sm:pb-0">
+                        @foreach($this->savedFilters as $savedFilter)
+                        <div class="group relative inline-flex flex-shrink-0">
                             <button
                                 wire:click="loadFilter({{ $savedFilter['id'] }})"
-                                class="inline-flex items-center gap-1 rounded-lg border border-border/50 bg-surface-2/50 px-3 py-1.5 text-sm text-text transition-all duration-200 hover:border-primary/50 hover:bg-surface-2"
+                                class="inline-flex items-center gap-2 rounded-lg border border-border/50 bg-surface-2/50 px-4 py-2 text-sm font-medium text-text transition-all duration-200 hover:border-primary/50 hover:bg-surface-2 hover:shadow-sm"
                             >
                                 <svg class="h-3.5 w-3.5 text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
                                 </svg>
-                                {{ $savedFilter['name'] }}
+                                <span class="max-w-[150px] truncate">{{ $savedFilter['name'] }}</span>
                             </button>
                             <button
                                 wire:click="deleteFilter({{ $savedFilter['id'] }})"
-                                class="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-danger text-white opacity-0 transition-opacity duration-200 group-hover:opacity-100"
-                                title="Delete filter"
+                                class="absolute -right-1.5 -top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-danger text-white opacity-0 transition-all duration-200 group-hover:opacity-100 hover:bg-danger/80"
+                                title="Delete filter '{{ $savedFilter['name'] }}'"
                             >
-                                <svg class="h-2.5 w-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg class="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                                 </svg>
                             </button>
                         </div>
-                    @endforeach
+                        @endforeach
+                    </div>
                 </div>
             @endif
             <div class="flex flex-col gap-4 lg:flex-row">
@@ -349,12 +358,18 @@
                     @endif
                     <button wire:click="clearFilters" class="ml-2 text-sm font-medium text-primary hover:underline">Clear all</button>
                     @if($search || $department_id || $issue_type_id || $priority || $assigned_to || $date_from || $date_to)
-                        <button wire:click="openSaveFilterModal" class="ml-2 text-sm font-medium text-muted hover:text-text" title="Save current filters">
-                            <svg class="inline h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        @if(auth()->check() && auth()->user()->can('viewAny', \App\Models\Issue::class))
+                        <button
+                            wire:click="openSaveFilterModal"
+                            class="ml-2 inline-flex items-center gap-1.5 rounded-lg border border-primary/50 bg-primary/10 px-3 py-1.5 text-sm font-semibold text-primary hover:bg-primary/20 transition-all duration-200"
+                            title="Save current filters"
+                        >
+                            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
                             </svg>
-                            Save
+                            Save Filter
                         </button>
+                        @endif
                     @endif
                 </div>
             @endif
