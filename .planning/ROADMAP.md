@@ -61,7 +61,7 @@
 - [x] 02-01-PLAN.md — View toggle component and enhanced table view with inline actions and responsive mobile layout
 - [ ] 02-02a-PLAN.md — Kanban components (card, column, board) and SortableJS integration
 - [ ] 02-02b-PLAN.md — Kanban board integration with Livewire data binding and keyboard navigation
-- [ ] 02-03a-PLAN.md — Bulk action toolbar, quick view modal, and checkbox components
+- [x] 02-03a-PLAN.md — Bulk action toolbar, quick view modal, and checkbox components
 - [ ] 02-03b-PLAN.md — Integration of bulk actions, quick view modal, and saved filter management
 
 **UI hint**: yes
