@@ -434,7 +434,7 @@
                     <h2 class="text-lg font-semibold text-text mb-4">Recent Activity</h2>
                     @php
                         $activities = \App\Models\ActivityLog::query()
-                            ->with(['causer', 'issue'])
+                            ->with(['actor', 'subject'])
                             ->orderBy('created_at', 'desc')
                             ->limit(5)
                             ->get();
