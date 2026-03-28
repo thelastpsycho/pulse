@@ -303,3 +303,30 @@
     .btn-warning:hover {
         box-shadow: 0 6px 20px rgba(var(--warning), 0.4);
     }
+
+    /* Kanban drag-and-drop styles */
+    .kanban-ghost {
+        @apply opacity-50 bg-surface-2/50;
+    }
+
+    .kanban-chosen {
+        @apply ring-2 ring-primary ring-offset-2;
+    }
+
+    .kanban-drag {
+        @apply opacity-50 scale-105 shadow-2xl;
+    }
+
+    .success-flash {
+        animation: successFlash 300ms ease-out;
+    }
+
+    @keyframes successFlash {
+        0%, 100% {
+            box-shadow: 0 0 0 rgba(var(--success), 0);
+        }
+        50% {
+            box-shadow: 0 0 20px rgba(var(--success), 0.5);
+        }
+    }
+}
