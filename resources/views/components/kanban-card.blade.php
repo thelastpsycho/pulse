@@ -2,6 +2,7 @@
 
 <div
     draggable="true"
+    @click="openQuickView({{ $issue->id }})"
     class="kanban-card group relative bg-surface border border-border rounded-xl p-4 shadow-sm hover:shadow-md transition-all duration-200 cursor-move"
     data-issue-id="{{ $issue->id }}"
     x-data="{

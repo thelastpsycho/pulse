@@ -361,29 +361,12 @@
         </div>
     </div>
 
-    <!-- Bulk Actions Bar -->
-    @if(count($selectedIssues) > 0)
-        <div class="gradient-border rounded-2xl p-4 animate-fade-in">
-            <div class="flex items-center justify-between">
-                <div class="flex items-center gap-3">
-                    <div class="flex h-10 w-10 items-center justify-center rounded-full bg-primary/20">
-                        <svg class="h-5 w-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
-                        </svg>
-                    </div>
-                    <span class="font-semibold text-text">{{ count($selectedIssues) }} issue(s) selected</span>
-                </div>
-                <div class="flex gap-2">
-                    @if($tab === 'all' || $tab === 'open')
-                        <button wire:click="closeSelected" class="btn btn-success">Close Selected</button>
-                    @else
-                        <button wire:click="reopenSelected" class="btn btn-primary">Reopen Selected</button>
-                    @endif
-                    <button wire:click="deleteSelected" class="btn btn-danger">Delete</button>
-                </div>
-            </div>
-        </div>
-    @endif
+    <!-- Bulk Action Toolbar -->
+    <x-bulk-action-toolbar
+        :selectedCount="count($selectedIssues)"
+        :canClose="auth()->check() && auth()->user()->can('close', \App\Models\Issue::class)"
+        :canDelete="auth()->check() && auth()->user()->can('delete', \App\Models\Issue::class)"
+    />
 
     <!-- Table/Card List View -->
     @if($viewMode === 'table')
@@ -470,12 +453,21 @@
                                     </button>
                                     @endcan
                                 @endif
-                                <a href="{{ route('issues.show', $issue) }}"
-                                    class="p-2 text-muted hover:text-primary hover:bg-primary/10 rounded-lg transition-colors"
-                                    title="View details">
+                                <button
+                                    wire:click="openQuickView({{ $issue->id }})"
+                                    class="inline-action-button p-2 text-muted hover:text-primary hover:bg-primary/10 rounded-lg transition-colors"
+                                    title="Quick view"
+                                >
                                     <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                    </svg>
+                                </button>
+                                <a href="{{ route('issues.show', $issue) }}"
+                                    class="p-2 text-muted hover:text-primary hover:bg-primary/10 rounded-lg transition-colors"
+                                    title="View full details">
+                                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
                                     </svg>
                                 </a>
                             </div>
@@ -592,14 +584,15 @@
                                         </button>
                                     @endcan
                                 @endif
-                                <a href="{{ route('issues.show', $issue) }}"
-                                    class="flex-1 flex items-center justify-center gap-2 h-11 px-4 rounded-xl font-semibold text-sm transition-all duration-200 text-text bg-surface-2 hover:bg-surface-2/80">
+                                <button
+                                    wire:click="openQuickView({{ $issue->id }})"
+                                    class="flex-1 mobile-action-button flex items-center justify-center gap-2 h-11 px-4 rounded-xl font-semibold text-sm transition-all duration-200 text-primary bg-primary/10 hover:bg-primary/20">
                                     <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                                     </svg>
                                     View
-                                </a>
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -793,4 +786,10 @@
             </div>
         </div>
     </div>
+
+    <!-- Quick View Modal -->
+    <x-quick-view-modal
+        :issue="$this->quickViewIssue"
+        :show="$showQuickView"
+    />
 </div>
