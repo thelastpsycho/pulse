@@ -15,7 +15,7 @@
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
-    <body class="font-sans antialiased bg-background min-h-screen flex items-center justify-center p-4"
+    <body class="font-sans antialiased bg-background min-h-screen flex items-center justify-center px-4 py-12"
           x-data="{ isDark() { return document.documentElement.classList.contains('dark') } }">
         <div class="w-full max-w-md">
             <!-- Logo -->

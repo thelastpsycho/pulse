@@ -131,7 +131,7 @@
                 <div class="flex-1 h-px bg-border"></div>
             </div>
 
-            <div class="grid grid-cols-3 gap-2">
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
                 <button type="button" onclick="fillDemo('superadmin@example.com', 'password')" class="flex flex-col items-center gap-1.5 px-3 py-3 rounded-lg bg-surface border border-border hover:border-primary/40 transition-colors group">
                     <span class="w-8 h-8 rounded-full bg-rose-500/10 text-rose-500 flex items-center justify-center text-xs font-bold">SA</span>
                     <span class="text-[11px] text-muted group-hover:text-text transition-colors">Super Admin</span>
