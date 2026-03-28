@@ -66,32 +66,30 @@ The following features are explicitly deferred to v2:
 
 ## Traceability
 
-This section will be populated by the roadmap with phase mappings.
-
 | REQ-ID | Phase | Status |
 |--------|-------|--------|
-| LIST-01 | TBD | Pending |
-| LIST-02 | TBD | Pending |
-| LIST-03 | TBD | Pending |
-| LIST-04 | TBD | Pending |
-| LIST-05 | TBD | Pending |
-| LIST-06 | TBD | Pending |
-| DETAIL-01 | TBD | Pending |
-| DETAIL-02 | TBD | Pending |
-| DETAIL-03 | TBD | Pending |
-| DETAIL-04 | TBD | Pending |
-| DETAIL-05 | TBD | Pending |
-| DETAIL-06 | TBD | Pending |
-| STATS-01 | TBD | Pending |
-| STATS-02 | TBD | Pending |
-| STATS-03 | TBD | Pending |
-| STATS-04 | TBD | Pending |
-| STATS-05 | TBD | Pending |
-| STATS-06 | TBD | Pending |
-| DESIGN-01 | TBD | Pending |
-| DESIGN-02 | TBD | Pending |
-| DESIGN-03 | TBD | Pending |
-| DESIGN-04 | TBD | Pending |
+| LIST-01 | Phase 2 | Pending |
+| LIST-02 | Phase 2 | Pending |
+| LIST-03 | Phase 2 | Pending |
+| LIST-04 | Phase 2 | Pending |
+| LIST-05 | Phase 2 | Pending |
+| LIST-06 | Phase 2 | Pending |
+| DETAIL-01 | Phase 3 | Pending |
+| DETAIL-02 | Phase 3 | Pending |
+| DETAIL-03 | Phase 3 | Pending |
+| DETAIL-04 | Phase 3 | Pending |
+| DETAIL-05 | Phase 3 | Pending |
+| DETAIL-06 | Phase 3 | Pending |
+| STATS-01 | Phase 4 | Pending |
+| STATS-02 | Phase 4 | Pending |
+| STATS-03 | Phase 4 | Pending |
+| STATS-04 | Phase 4 | Pending |
+| STATS-05 | Phase 4 | Pending |
+| STATS-06 | Phase 4 | Pending |
+| DESIGN-01 | Phase 1 | Pending |
+| DESIGN-02 | Phase 1 | Pending |
+| DESIGN-03 | Phase 1 | Pending |
+| DESIGN-04 | Phase 1 | Pending |
 
 ---
 *Requirements document: 2026-03-28*
