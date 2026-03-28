@@ -88,7 +88,7 @@ The following features are explicitly deferred to v2:
 | STATS-06 | Phase 4 | Pending |
 | DESIGN-01 | Phase 1 | Pending |
 | DESIGN-02 | Phase 1 | Pending |
-| DESIGN-03 | Phase 1 | Pending |
+| DESIGN-03 | Phase 1 | Complete |
 | DESIGN-04 | Phase 1 | Pending |
 
 ---
