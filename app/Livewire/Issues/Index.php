@@ -27,6 +27,7 @@ class Index extends Component
     public ?string $date_to = null;
     public string $order_by = 'issue_date';
     public string $order_dir = 'desc';
+    public string $viewMode = 'table';
 
     public array $selectedIssues = [];
     public bool $selectAll = false;
@@ -40,6 +41,7 @@ class Index extends Component
         'issue_type_id' => ['except' => ''],
         'priority' => ['except' => ''],
         'assigned_to' => ['except' => ''],
+        'viewMode' => ['except' => 'table'],
     ];
 
     protected IssueService $issueService;
@@ -82,6 +84,14 @@ class Index extends Component
     {
         $this->tab = $tab;
         $this->resetPage();
+    }
+
+    public function setViewMode(string $mode): void
+    {
+        if (!in_array($mode, ['table', 'kanban'])) {
+            return;
+        }
+        $this->viewMode = $mode;
     }
 
     public function updatedSearch(): void
