@@ -33,6 +33,8 @@ class Index extends Component
     public bool $selectAll = false;
     public string $savedFilterName = '';
     public bool $showSaveFilterModal = false;
+    public ?int $quickViewIssueId = null;
+    public bool $showQuickView = false;
 
     protected $queryString = [
         'tab' => ['except' => 'all'],
@@ -166,6 +168,38 @@ class Index extends Component
         $this->selectAll = false;
 
         session()->flash('success', "{$count} issue(s) deleted successfully.");
+    }
+
+    public function openQuickView(int $issueId): void
+    {
+        $issue = Issue::findOrFail($issueId);
+        $this->authorize('view', $issue);
+
+        $this->quickViewIssueId = $issueId;
+        $this->showQuickView = true;
+    }
+
+    public function closeQuickView(): void
+    {
+        $this->quickViewIssueId = null;
+        $this->showQuickView = false;
+    }
+
+    #[Computed]
+    public function quickViewIssue(): ?Issue
+    {
+        if (!$this->quickViewIssueId) {
+            return null;
+        }
+
+        return Issue::with(['comments.user', 'createdBy', 'assignedTo', 'departments'])
+            ->find($this->quickViewIssueId);
+    }
+
+    public function clearSelection(): void
+    {
+        $this->selectedIssues = [];
+        $this->selectAll = false;
     }
 
     public function closeIssue(int $issueId): void
