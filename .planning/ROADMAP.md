@@ -62,7 +62,7 @@
 - [x] 02-02a-PLAN.md — Kanban components (card, column, board) and SortableJS integration
 - [x] 02-02b-PLAN.md — Kanban board integration with Livewire data binding and keyboard navigation
 - [x] 02-03a-PLAN.md — Bulk action toolbar, quick view modal, and checkbox components
-- [ ] 02-03b-PLAN.md — Integration of bulk actions, quick view modal, and saved filter management
+- [x] 02-03b-PLAN.md — Integration of bulk actions, quick view modal, and saved filter management
 
 **UI hint**: yes
 
