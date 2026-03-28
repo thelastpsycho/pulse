@@ -68,7 +68,7 @@ The following features are explicitly deferred to v2:
 
 | REQ-ID | Phase | Status |
 |--------|-------|--------|
-| LIST-01 | Phase 2 | Pending |
+| LIST-01 | Phase 2 | Complete |
 | LIST-02 | Phase 2 | Pending |
 | LIST-03 | Phase 2 | Complete |
 | LIST-04 | Phase 2 | Complete |
