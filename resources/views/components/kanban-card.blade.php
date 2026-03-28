@@ -4,12 +4,56 @@
     draggable="true"
     class="kanban-card group relative bg-surface border border-border rounded-xl p-4 shadow-sm hover:shadow-md transition-all duration-200 cursor-move"
     data-issue-id="{{ $issue->id }}"
-    x-data="{ dragged: false }"
+    x-data="{
+        dragged: false,
+        handleKeyDown(event) {
+            const card = event.currentTarget;
+            const column = card.closest('.kanban-column')?.getAttribute('data-column');
+
+            switch(event.key) {
+                case ' ':
+                case 'Enter':
+                    event.preventDefault();
+                    this.dragged = true;
+                    card.setAttribute('aria-grabbed', 'true');
+                    card.classList.add('ring-2', 'ring-primary', 'ring-offset-2');
+                    this.$dispatch('announce', 'Dragging issue {{ $issue->id }}');
+                    break;
+                case 'Escape':
+                    event.preventDefault();
+                    this.dragged = false;
+                    card.setAttribute('aria-grabbed', 'false');
+                    card.classList.remove('ring-2', 'ring-primary', 'ring-offset-2');
+                    this.$dispatch('announce', 'Drag cancelled');
+                    break;
+                case 'ArrowRight':
+                    if (this.dragged && column !== 'closed') {
+                        event.preventDefault();
+                        @this.call('updateIssueStatus', {
+                            issueId: {{ $issue->id }},
+                            newStatus: column === 'open' ? 'in_progress' : 'closed'
+                        });
+                    }
+                    break;
+                case 'ArrowLeft':
+                    if (this.dragged && column !== 'open') {
+                        event.preventDefault();
+                        @this.call('updateIssueStatus', {
+                            issueId: {{ $issue->id }},
+                            newStatus: column === 'closed' ? 'in_progress' : 'open'
+                        });
+                    }
+                    break;
+            }
+        }
+    }"
     @dragstart="$wire.emit('dragStart', {{ $issue->id }}); dragged = true"
     @dragend="$wire.emit('dragEnd', {{ $issue->id }}); dragged = false"
+    @keydown.window="handleKeyDown($event)"
     tabindex="0"
     role="button"
-    aria-label="Issue: {{ $issue->title }}, Press Space to drag"
+    aria-label="Issue: {{ $issue->title }}, Status: {{ $issue->status }}, Press Space or Enter to drag, Arrow keys to move, Escape to cancel"
+    :aria-grabbed="dragged ? 'true' : 'false'"
 >
     <!-- Priority badge (top right) -->
     <div class="absolute top-3 right-3">

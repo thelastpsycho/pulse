@@ -329,4 +329,10 @@
             box-shadow: 0 0 20px rgba(var(--success), 0.5);
         }
     }
+
+    /* Screen reader only */
+    .sr-only {
+        @apply absolute w-px h-px p-0 -m-px overflow-hidden whitespace-nowrap border-0;
+        clip: rect(0, 0, 0, 0);
+    }
 }

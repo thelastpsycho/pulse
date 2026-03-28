@@ -653,6 +653,16 @@
             </div>
         @endif
     @elseif($viewMode === 'kanban')
+        <!-- Live region for accessibility announcements -->
+        <div
+            x-data="{ announce: '' }"
+            @announce.window="announce = $event.detail; setTimeout(() => announce = '', 1000)"
+            aria-live="polite"
+            aria-atomic="true"
+            class="sr-only"
+            x-text="announce"
+        ></div>
+
         <!-- Kanban Board View -->
         <x-kanban-board
             :openIssues="$this->kanbanIssues['open']"
