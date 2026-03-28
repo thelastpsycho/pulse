@@ -385,8 +385,10 @@
         </div>
     @endif
 
-    <!-- Issues List -->
-    @if($issues->count() > 0)
+    <!-- Table/Card List View -->
+    @if($viewMode === 'table')
+        <!-- Issues List -->
+        @if($issues->count() > 0)
         <!-- Desktop Table View -->
         <div class="hidden md:block overflow-x-auto rounded-2xl border border-border/50">
             <table class="w-full">
@@ -629,6 +631,34 @@
                 </a>
             @endcan
         </div>
+        @else
+            <!-- Empty state -->
+            <div class="flex flex-col items-center justify-center py-12 text-center">
+                <div class="relative mb-6">
+                    <div class="absolute inset-0 animate-pulse rounded-full bg-primary/20 blur-2xl"></div>
+                    <svg class="relative h-24 w-24 text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                    </svg>
+                </div>
+                <h3 class="text-2xl font-bold text-text font-heading">No issues found</h3>
+                <p class="mt-2 text-muted">Get started by creating a new issue.</p>
+                @can('create', \App\Models\Issue::class)
+                    <a href="{{ route('issues.create') }}" class="btn btn-primary mt-6">
+                        <svg class="mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                        </svg>
+                        Create Issue
+                    </a>
+                @endcan
+            </div>
+        @endif
+    @elseif($viewMode === 'kanban')
+        <!-- Kanban Board View -->
+        <x-kanban-board
+            :openIssues="$this->kanbanIssues['open']"
+            :progressIssues="$this->kanbanIssues['in_progress']"
+            :closedIssues="$this->kanbanIssues['closed']"
+        />
     @endif
 
     <!-- Save Filter Modal -->
