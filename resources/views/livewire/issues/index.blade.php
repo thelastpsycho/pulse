@@ -76,6 +76,7 @@
                 </p>
             </div>
         </div>
+        <x-view-toggle :viewMode="$viewMode" />
         <div class="flex items-center gap-2">
             <!-- Keyboard Shortcuts Help Button -->
             <button
@@ -386,7 +387,105 @@
 
     <!-- Issues List -->
     @if($issues->count() > 0)
-        <div class="space-y-3">
+        <!-- Desktop Table View -->
+        <div class="hidden md:block overflow-x-auto rounded-2xl border border-border/50">
+            <table class="w-full">
+                <thead>
+                    <tr class="border-b border-border/50 bg-surface-2/30">
+                        <th class="px-4 py-3 text-left text-xs font-semibold text-muted uppercase">Select</th>
+                        <th class="px-4 py-3 text-left text-xs font-semibold text-muted uppercase">Issue</th>
+                        <th class="px-4 py-3 text-left text-xs font-semibold text-muted uppercase">Status</th>
+                        <th class="px-4 py-3 text-left text-xs font-semibold text-muted uppercase">Priority</th>
+                        <th class="px-4 py-3 text-left text-xs font-semibold text-muted uppercase">Department</th>
+                        <th class="px-4 py-3 text-left text-xs font-semibold text-muted uppercase">Assigned</th>
+                        <th class="px-4 py-3 text-left text-xs font-semibold text-muted uppercase">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($issues as $issue)
+                    <tr class="border-b border-border/30 hover:bg-surface-2/30 transition-colors">
+                        <!-- Checkbox cell -->
+                        <td class="px-4 py-3">
+                            <input type="checkbox" wire:model.live="selectedIssues" value="{{ $issue->id }}"
+                                class="h-4 w-4 rounded border-border bg-surface-2 text-primary focus:ring-2 focus:ring-primary/20" />
+                        </td>
+                        <!-- Title and description -->
+                        <td class="px-4 py-3">
+                            <a href="{{ route('issues.show', $issue) }}" class="font-medium text-text hover:text-primary">
+                                {{ $issue->title }}
+                            </a>
+                            @if($issue->description)
+                            <p class="mt-1 text-sm text-muted line-clamp-1">{{ \Illuminate\Support\Str::limit($issue->description, 80) }}</p>
+                            @endif
+                        </td>
+                        <!-- Status badge -->
+                        <td class="px-4 py-3">
+                            <x-badge variant="{{ $issue->isClosed() ? 'success' : 'muted' }}">
+                                {{ $issue->isClosed() ? 'Closed' : 'Open' }}
+                            </x-badge>
+                        </td>
+                        <!-- Priority badge -->
+                        <td class="px-4 py-3">
+                            <x-badge variant="{{ match($issue->priority) {
+                                'urgent' => 'danger',
+                                'high' => 'warning',
+                                default => 'muted'
+                            } }}">
+                                {{ ucfirst($issue->priority) }}
+                            </x-badge>
+                        </td>
+                        <!-- Department badge -->
+                        <td class="px-4 py-3">
+                            @foreach($issue->departments->take(1) as $department)
+                            <x-badge variant="muted">{{ $department->name }}</x-badge>
+                            @endforeach
+                        </td>
+                        <!-- Assigned user -->
+                        <td class="px-4 py-3 text-sm text-muted">
+                            {{ $issue->assignedTo?->name ?? 'Unassigned' }}
+                        </td>
+                        <!-- Inline action buttons -->
+                        <td class="px-4 py-3">
+                            <div class="flex items-center gap-1">
+                                @if($tab === 'all' || $tab === 'open')
+                                    @can('close', $issue)
+                                    <button wire:click="closeIssue({{ $issue->id }})"
+                                        class="p-2 text-success hover:bg-success/10 rounded-lg transition-colors"
+                                        title="Close issue">
+                                        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                                        </svg>
+                                    </button>
+                                    @endcan
+                                @else
+                                    @can('reopen', $issue)
+                                    <button wire:click="reopenIssue({{ $issue->id }})"
+                                        class="p-2 text-primary hover:bg-primary/10 rounded-lg transition-colors"
+                                        title="Reopen issue">
+                                        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                                        </svg>
+                                    </button>
+                                    @endcan
+                                @endif
+                                <a href="{{ route('issues.show', $issue) }}"
+                                    class="p-2 text-muted hover:text-primary hover:bg-primary/10 rounded-lg transition-colors"
+                                    title="View details">
+                                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                    </svg>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Mobile Card View -->
+        <div class="block md:hidden space-y-3">
             @foreach($issues as $index => $issue)
                 <div wire:key="{{ $issue->id }}" class="issue-card animate-fade-in" style="animation-delay: {{ $index * 0.05 }}s">
                     <div class="flex items-start gap-4">
@@ -467,40 +566,39 @@
                                     </span>
                                 @endif
                             </div>
-                        </div>
 
-                        <!-- Actions -->
-                        <div class="flex flex-shrink-0 items-center gap-1">
-                            <a href="{{ route('issues.show', $issue) }}" class="p-3 text-muted hover:text-primary rounded-lg hover:bg-surface-2 transition-all duration-200" title="View">
-                                <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                                </svg>
-                            </a>
-                            @can('update', $issue)
-                                <a href="{{ route('issues.edit', $issue) }}" class="p-3 text-muted hover:text-primary rounded-lg hover:bg-surface-2 transition-all duration-200" title="Edit">
-                                    <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                            <!-- Mobile Actions -->
+                            <div class="mt-4 flex gap-2">
+                                @if($tab === 'all' || $tab === 'open')
+                                    @can('close', $issue)
+                                        <button wire:click="closeIssue({{ $issue->id }})"
+                                            class="flex-1 flex items-center justify-center gap-2 h-11 px-4 rounded-xl font-semibold text-sm transition-all duration-200 text-success bg-success/10 hover:bg-success/20">
+                                            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                                            </svg>
+                                            Close
+                                        </button>
+                                    @endcan
+                                @else
+                                    @can('reopen', $issue)
+                                        <button wire:click="reopenIssue({{ $issue->id }})"
+                                            class="flex-1 flex items-center justify-center gap-2 h-11 px-4 rounded-xl font-semibold text-sm transition-all duration-200 text-primary bg-primary/10 hover:bg-primary/20">
+                                            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                                            </svg>
+                                            Reopen
+                                        </button>
+                                    @endcan
+                                @endif
+                                <a href="{{ route('issues.show', $issue) }}"
+                                    class="flex-1 flex items-center justify-center gap-2 h-11 px-4 rounded-xl font-semibold text-sm transition-all duration-200 text-text bg-surface-2 hover:bg-surface-2/80">
+                                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                                     </svg>
+                                    View
                                 </a>
-                            @endcan
-                            @if($tab === 'all' || $tab === 'open')
-                                @can('close', $issue)
-                                    <button wire:click="closeIssue({{ $issue->id }})" class="p-3 text-muted hover:text-success rounded-lg hover:bg-surface-2 transition-all duration-200" title="Close">
-                                        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                                        </svg>
-                                    </button>
-                                @endcan
-                            @else
-                                @can('reopen', $issue)
-                                    <button wire:click="reopenIssue({{ $issue->id }})" class="p-3 text-muted hover:text-primary rounded-lg hover:bg-surface-2 transition-all duration-200" title="Reopen">
-                                        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                                        </svg>
-                                    </button>
-                                @endcan
-                            @endif
+                            </div>
                         </div>
                     </div>
                 </div>
