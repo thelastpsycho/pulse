@@ -4,7 +4,7 @@
 **Milestone:** v1
 **Granularity:** Coarse (3-5 phases)
 **Created:** 2026-03-28
-**Last Updated:** 2026-03-28 (Phase 2 planned)
+**Last Updated:** 2026-03-28 (Phase 2 revised)
 
 ## Phases
 
@@ -55,12 +55,14 @@
 4. User can view issue details in a quick modal without leaving the list page
 5. Issue list displays in card layout on mobile screens with touch-friendly action buttons
 
-**Plans**: 3 plans
+**Plans**: 5 plans
 
 **Plan List**:
-- [ ] 02-01-PLAN.md — View toggle component and enhanced table view with inline actions and responsive mobile layout
-- [ ] 02-02-PLAN.md — Kanban board with drag-and-drop using SortableJS for visual status management
-- [ ] 02-03-PLAN.md — Saved filter management, bulk action toolbar, and quick view modal for enhanced productivity
+- [x] 02-01-PLAN.md — View toggle component and enhanced table view with inline actions and responsive mobile layout
+- [ ] 02-02a-PLAN.md — Kanban components (card, column, board) and SortableJS integration
+- [ ] 02-02b-PLAN.md — Kanban board integration with Livewire data binding and keyboard navigation
+- [ ] 02-03a-PLAN.md — Bulk action toolbar, quick view modal, and checkbox components
+- [ ] 02-03b-PLAN.md — Integration of bulk actions, quick view modal, and saved filter management
 
 **UI hint**: yes
 
@@ -109,7 +111,7 @@
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Design System Foundation | 3/3 | ✅ Complete | 2026-03-28 |
-| 2. Issue List Experience | 0/3 | 📋 Planned | - |
+| 2. Issue List Experience | 0/5 | 📋 Planned | - |
 | 3. Issue Detail & Collaboration | 0/3 | Not started | - |
 | 4. Analytics Dashboard | 0/3 | Not started | - |
 
@@ -127,10 +129,10 @@
 - DESIGN-04: Consistent component library ✅
 
 **Phase 2: Issue List Experience**
-- LIST-01: Kanban board view (02-02)
-- LIST-02: Saved filters (02-03)
-- LIST-03: Bulk actions (02-03)
-- LIST-04: Quick view modal (02-03)
+- LIST-01: Kanban board view (02-02a, 02-02b)
+- LIST-02: Saved filters (02-03b)
+- LIST-03: Bulk actions (02-03a, 02-03b)
+- LIST-04: Quick view modal (02-03a, 02-03b)
 - LIST-05: Enhanced table view (02-01)
 - LIST-06: Mobile-responsive list (02-01)
 
@@ -152,4 +154,4 @@
 
 ---
 *Roadmap document: 2026-03-28*
-*Last updated: Phase 2 planning complete*
+*Last updated: Phase 2 plans revised*

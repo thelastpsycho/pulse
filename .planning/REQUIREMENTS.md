@@ -72,8 +72,8 @@ The following features are explicitly deferred to v2:
 | LIST-02 | Phase 2 | Pending |
 | LIST-03 | Phase 2 | Pending |
 | LIST-04 | Phase 2 | Pending |
-| LIST-05 | Phase 2 | Pending |
-| LIST-06 | Phase 2 | Pending |
+| LIST-05 | Phase 2 | Complete |
+| LIST-06 | Phase 2 | Complete |
 | DETAIL-01 | Phase 3 | Pending |
 | DETAIL-02 | Phase 3 | Pending |
 | DETAIL-03 | Phase 3 | Pending |
