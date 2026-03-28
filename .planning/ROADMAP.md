@@ -28,7 +28,12 @@
 3. Reusable UI components (buttons, cards, forms, modals) share consistent styling and behavior
 4. Design language reflects clean, minimalist aesthetic with ample whitespace
 
-**Plans**: TBD
+**Plans**: 3 plans
+
+**Plan List**:
+- [ ] 01-01-PLAN.md — Theme toggle component with Alpine.js store and localStorage persistence
+- [ ] 01-02-PLAN.md — Component library audit and new components (badge, card, success/warning buttons)
+- [ ] 01-03-PLAN.md — Responsive layout fixes across all existing pages
 
 **UI hint**: yes
 
