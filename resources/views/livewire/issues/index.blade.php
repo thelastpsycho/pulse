@@ -113,7 +113,7 @@
         <div class="flex gap-1">
             <button
                 wire:click="setTab('all')"
-                class="{{ $tab === 'all' ? 'bg-primary text-white shadow-lg' : 'text-muted hover:text-text hover:bg-surface-2' }} relative flex-1 rounded-xl px-4 py-3 text-sm font-semibold transition-all duration-200">
+                class="{{ $tab === 'all' ? 'bg-primary text-white shadow-lg' : 'text-muted hover:text-text hover:bg-surface-2' }} relative flex-1 rounded-xl px-4 py-4 text-sm font-semibold transition-all duration-200">
                 <span class="flex items-center justify-center gap-2">
                     All
                     <span class="{{ $tab === 'all' ? 'bg-white/20' : 'bg-muted/20' }} rounded-full px-2 py-0.5 text-xs">{{ \App\Models\Issue::count() }}</span>
@@ -124,7 +124,7 @@
             </button>
             <button
                 wire:click="setTab('open')"
-                class="{{ $tab === 'open' ? 'bg-success text-white shadow-lg' : 'text-muted hover:text-text hover:bg-surface-2' }} relative flex-1 rounded-xl px-4 py-3 text-sm font-semibold transition-all duration-200">
+                class="{{ $tab === 'open' ? 'bg-success text-white shadow-lg' : 'text-muted hover:text-text hover:bg-surface-2' }} relative flex-1 rounded-xl px-4 py-4 text-sm font-semibold transition-all duration-200">
                 <span class="flex items-center justify-center gap-2">
                     Open
                     <span class="{{ $tab === 'open' ? 'bg-white/20' : 'bg-muted/20' }} rounded-full px-2 py-0.5 text-xs">{{ \App\Models\Issue::open()->count() }}</span>
@@ -135,7 +135,7 @@
             </button>
             <button
                 wire:click="setTab('closed')"
-                class="{{ $tab === 'closed' ? 'bg-muted text-white shadow-lg' : 'text-muted hover:text-text hover:bg-surface-2' }} relative flex-1 rounded-xl px-4 py-3 text-sm font-semibold transition-all duration-200">
+                class="{{ $tab === 'closed' ? 'bg-muted text-white shadow-lg' : 'text-muted hover:text-text hover:bg-surface-2' }} relative flex-1 rounded-xl px-4 py-4 text-sm font-semibold transition-all duration-200">
                 <span class="flex items-center justify-center gap-2">
                     Closed
                     <span class="{{ $tab === 'closed' ? 'bg-white/20' : 'bg-muted/20' }} rounded-full px-2 py-0.5 text-xs">{{ \App\Models\Issue::closed()->count() }}</span>
@@ -189,7 +189,7 @@
                             type="text"
                             wire:model.live.debounce.300ms="search"
                             placeholder="Search issues..."
-                            class="w-full rounded-xl border border-border/50 bg-surface-2/50 py-3 pl-12 pr-12 text-text placeholder-muted transition-all duration-200 focus:border-primary focus:ring-2 focus:ring-primary/20"
+                            class="w-full rounded-xl border border-border/50 bg-surface-2/50 py-4 pl-12 pr-12 text-text placeholder-muted transition-all duration-200 focus:border-primary focus:ring-2 focus:ring-primary/20"
                         />
                         <kbd class="absolute right-3 top-1/2 -translate-y-1/2 rounded bg-surface px-1.5 py-0.5 text-xs font-mono text-muted border border-border">/</kbd>
                     </div>
@@ -197,28 +197,28 @@
 
                 <!-- Filters -->
                 <div class="flex flex-wrap gap-2">
-                    <select wire:model.live="department_id" class="rounded-xl border border-border/50 bg-surface-2/50 px-4 py-3 text-text transition-all duration-200 focus:border-primary focus:ring-2 focus:ring-primary/20">
+                    <select wire:model.live="department_id" class="rounded-xl border border-border/50 bg-surface-2/50 px-4 py-4 text-text transition-all duration-200 focus:border-primary focus:ring-2 focus:ring-primary/20">
                         <option value="">All Departments</option>
                         @foreach($this->departments as $id => $name)
                             <option value="{{ $id }}">{{ $name }}</option>
                         @endforeach
                     </select>
 
-                    <select wire:model.live="issue_type_id" class="rounded-xl border border-border/50 bg-surface-2/50 px-4 py-3 text-text transition-all duration-200 focus:border-primary focus:ring-2 focus:ring-primary/20">
+                    <select wire:model.live="issue_type_id" class="rounded-xl border border-border/50 bg-surface-2/50 px-4 py-4 text-text transition-all duration-200 focus:border-primary focus:ring-2 focus:ring-primary/20">
                         <option value="">All Types</option>
                         @foreach($this->issueTypes as $id => $name)
                             <option value="{{ $id }}">{{ $name }}</option>
                         @endforeach
                     </select>
 
-                    <select wire:model.live="priority" class="rounded-xl border border-border/50 bg-surface-2/50 px-4 py-3 text-text transition-all duration-200 focus:border-primary focus:ring-2 focus:ring-primary/20">
+                    <select wire:model.live="priority" class="rounded-xl border border-border/50 bg-surface-2/50 px-4 py-4 text-text transition-all duration-200 focus:border-primary focus:ring-2 focus:ring-primary/20">
                         <option value="">All Priorities</option>
                         @foreach($this->priorities as $value => $label)
                             <option value="{{ $value }}">{{ $label }}</option>
                         @endforeach
                     </select>
 
-                    <select wire:model.live="assigned_to" class="rounded-xl border border-border/50 bg-surface-2/50 px-4 py-3 text-text transition-all duration-200 focus:border-primary focus:ring-2 focus:ring-primary/20">
+                    <select wire:model.live="assigned_to" class="rounded-xl border border-border/50 bg-surface-2/50 px-4 py-4 text-text transition-all duration-200 focus:border-primary focus:ring-2 focus:ring-primary/20">
                         <option value="">All Users</option>
                         @foreach($this->users as $id => $name)
                             <option value="{{ $id }}">{{ $name }}</option>
@@ -249,7 +249,7 @@
                         <button
                             @click="isOpen = !isOpen"
                             type="button"
-                            class="flex items-center gap-2 rounded-xl border border-border/50 bg-surface-2/50 px-4 py-3 text-text transition-all duration-200 hover:border-primary/50 focus:border-primary focus:ring-2 focus:ring-primary/20"
+                            class="flex items-center gap-2 rounded-xl border border-border/50 bg-surface-2/50 px-4 py-4 text-text transition-all duration-200 hover:border-primary/50 focus:border-primary focus:ring-2 focus:ring-primary/20"
                         >
                             <svg class="h-5 w-5 text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -392,7 +392,7 @@
                     <div class="flex items-start gap-4">
                         <!-- Checkbox -->
                         <div class="pt-1">
-                            <label class="relative flex h-5 w-5 cursor-pointer items-center justify-center">
+                            <label class="relative flex h-6 w-6 cursor-pointer items-center justify-center">
                                 <input
                                     type="checkbox"
                                     wire:model.live="selectedIssues"
@@ -471,14 +471,14 @@
 
                         <!-- Actions -->
                         <div class="flex flex-shrink-0 items-center gap-1">
-                            <a href="{{ route('issues.show', $issue) }}" class="p-2 text-muted hover:text-primary rounded-lg hover:bg-surface-2 transition-all duration-200" title="View">
+                            <a href="{{ route('issues.show', $issue) }}" class="p-3 text-muted hover:text-primary rounded-lg hover:bg-surface-2 transition-all duration-200" title="View">
                                 <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                                 </svg>
                             </a>
                             @can('update', $issue)
-                                <a href="{{ route('issues.edit', $issue) }}" class="p-2 text-muted hover:text-primary rounded-lg hover:bg-surface-2 transition-all duration-200" title="Edit">
+                                <a href="{{ route('issues.edit', $issue) }}" class="p-3 text-muted hover:text-primary rounded-lg hover:bg-surface-2 transition-all duration-200" title="Edit">
                                     <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                                     </svg>
@@ -486,7 +486,7 @@
                             @endcan
                             @if($tab === 'all' || $tab === 'open')
                                 @can('close', $issue)
-                                    <button wire:click="closeIssue({{ $issue->id }})" class="p-2 text-muted hover:text-success rounded-lg hover:bg-surface-2 transition-all duration-200" title="Close">
+                                    <button wire:click="closeIssue({{ $issue->id }})" class="p-3 text-muted hover:text-success rounded-lg hover:bg-surface-2 transition-all duration-200" title="Close">
                                         <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                                         </svg>
@@ -494,7 +494,7 @@
                                 @endcan
                             @else
                                 @can('reopen', $issue)
-                                    <button wire:click="reopenIssue({{ $issue->id }})" class="p-2 text-muted hover:text-primary rounded-lg hover:bg-surface-2 transition-all duration-200" title="Reopen">
+                                    <button wire:click="reopenIssue({{ $issue->id }})" class="p-3 text-muted hover:text-primary rounded-lg hover:bg-surface-2 transition-all duration-200" title="Reopen">
                                         <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                                         </svg>
