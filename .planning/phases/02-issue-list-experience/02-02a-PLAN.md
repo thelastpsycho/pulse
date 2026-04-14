@@ -1,16 +1,15 @@
 ---
 phase: 02-issue-list-experience
-plan: 02
+plan: 02a
 type: execute
-wave: 1
-depends_on: []
+wave: 2
+depends_on:
+  - 02-01
 files_modified:
-  - resources/views/components/kanban-board.blade.php
-  - resources/views/components/kanban-column.blade.php
-  - resources/views/components/kanban-card.blade.php
-  - resources/views/livewire/issues/index.blade.php
-  - app/Livewire/Issues/Index.php
   - package.json
+  - resources/views/components/kanban-card.blade.php
+  - resources/views/components/kanban-column.blade.php
+  - resources/views/components/kanban-board.blade.php
   - resources/js/kanban.js
 autonomous: true
 requirements:
@@ -58,10 +57,10 @@ must_haves:
 ---
 
 <objective>
-Create Kanban board component with drag-and-drop functionality for visual issue status management.
+Create Kanban board components and SortableJS integration for drag-and-drop functionality.
 
 Purpose: Enable users to manage issue workflow through intuitive drag-and-drop interface, reducing clicks and improving productivity.
-Output: Kanban board with three columns, drag-and-drop using SortableJS, responsive layout (stacked on mobile, side-by-side on desktop).
+Output: Kanban card, column, and board components; SortableJS JavaScript integration; responsive layout (stacked on mobile, side-by-side on desktop).
 </objective>
 
 <execution_context>
@@ -341,21 +340,24 @@ Output: Kanban board with three columns, drag-and-drop using SortableJS, respons
 </task>
 
 <task type="auto">
-  <name>Task 4: Create Kanban board component</name>
-  <files>resources/views/components/kanban-board.blade.php</files>
+  <name>Task 4: Create Kanban board component and JavaScript integration</name>
+  <files>resources/views/components/kanban-board.blade.php, resources/js/kanban.js</files>
   <read_first>
     - resources/views/components/kanban-column.blade.php (child component)
     - resources/views/livewire/issues/index.blade.php (parent component)
+    - app/Livewire/Issues/Index.php (Livewire component methods)
   </read_first>
   <action>
-    Create kanban-board.blade.php component:
+    Create two files:
+
+    1. kanban-board.blade.php component:
 
     Component signature:
     ```php
     @props([
         'openIssues',      // Collection of open issues
-    'progressIssues', // Collection of in-progress issues
-    'closedIssues'    // Collection of closed issues
+        'progressIssues', // Collection of in-progress issues
+        'closedIssues'    // Collection of closed issues
     ])
     ```
 
@@ -405,35 +407,7 @@ Output: Kanban board with three columns, drag-and-drop using SortableJS, respons
     - Desktop (≥ 768px): lg:flex-row lg:gap-6 (columns side-by-side)
     - Each column has distinct background opacity (100%, 95%, 90%)
 
-    Alpine.js integration:
-    - x-data="kanbanBoard()" initializes board logic
-    - x-init="initKanban()" sets up SortableJS on mount
-    - JavaScript defined in resources/js/kanban.js (next task)
-  </action>
-  <verify>
-    <automated>test -f resources/views/components/kanban-board.blade.php && grep -q "x-data=\"kanbanBoard()\"" resources/views/components/kanban-board.blade.php</automated>
-  </verify>
-  <done>
-    - Component file created at resources/views/components/kanban-board.blade.php
-    - Component accepts openIssues, progressIssues, closedIssues props
-    - Three columns rendered: Open, In Progress, Closed
-    - Columns have distinct background opacities
-    - Mobile layout: flex-col (vertical stacking)
-    - Desktop layout: lg:flex-row (side-by-side)
-    - x-data and x-init directives present for Alpine.js integration
-    - Role and aria-label for accessibility
-  </done>
-</task>
-
-<task type="auto">
-  <name>Task 5: Create Kanban JavaScript with SortableJS integration</name>
-  <files>resources/js/kanban.js</files>
-  <read_first>
-    - resources/views/components/kanban-board.blade.php (uses kanbanBoard() function)
-    - app/Livewire/Issues/Index.php (Livewire component methods)
-  </read_first>
-  <action>
-    Create resources/js/kanban.js:
+    2. resources/js/kanban.js:
 
     ```javascript
     // Kanban board drag-and-drop functionality using SortableJS
@@ -534,7 +508,17 @@ Output: Kanban board with three columns, drag-and-drop using SortableJS, respons
     }
     ```
 
-    CSS animations (add to resources/css/app.css):
+    Register in app.js:
+    ```javascript
+    import { kanbanBoard } from './js/kanban';
+
+    // Make available to Alpine
+    document.addEventListener('alpine:init', () => {
+        Alpine.data('kanbanBoard', kanbanBoard);
+    });
+    ```
+
+    Add CSS animations to resources/css/app.css:
     ```css
     /* Kanban drag-and-drop styles */
     .kanban-ghost {
@@ -562,34 +546,16 @@ Output: Kanban board with three columns, drag-and-drop using SortableJS, respons
         }
     }
     ```
-
-    Register in vite.config.js:
-    ```javascript
-    export default defineConfig({
-        // ... existing config
-        resolve: {
-            alias: {
-                '@': path.resolve(__dirname, './resources'),
-            },
-        },
-    });
-    ```
-
-    Import in app.js:
-    ```javascript
-    import { kanbanBoard } from './js/kanban';
-
-    // Make available to Alpine
-    document.addEventListener('alpine:init', () => {
-        Alpine.data('kanbanBoard', kanbanBoard);
-    });
-    ```
   </action>
   <verify>
-    <automated>test -f resources/js/kanban.js && grep -q "import Sortable" resources/js/kanban.js</automated>
+    <automated>test -f resources/views/components/kanban-board.blade.php && test -f resources/js/kanban.js && grep -q "import Sortable" resources/js/kanban.js</automated>
   </verify>
   <done>
-    - kanban.js file created with kanbanBoard() function
+    - kanban-board.blade.php created with three columns: Open, In Progress, Closed
+    - Columns have distinct background opacities (100%, 95%, 90%)
+    - Mobile layout: flex-col (vertical stacking)
+    - Desktop layout: lg:flex-row (side-by-side)
+    - kanban.js created with kanbanBoard() function
     - SortableJS imported and configured
     - Group 'kanban' allows dragging between columns
     - onStart handler adds dragging styles (opacity-50, scale-105, shadow-2xl)
@@ -603,187 +569,6 @@ Output: Kanban board with three columns, drag-and-drop using SortableJS, respons
   </done>
 </task>
 
-<task type="auto">
-  <name>Task 6: Add Kanban-specific methods to Issues Index component</name>
-  <files>app/Livewire/Issues/Index.php</files>
-  <read_first>
-    - app/Livewire/Issues/Index.php (existing component methods)
-    - resources/js/kanban.js (emits these Livewire events)
-  </read_first>
-  <action>
-    Add Kanban-related methods to Index.php:
-
-    1. Add computed property to get issues by status:
-    ```php
-    #[Computed]
-    public function kanbanIssues(): array
-    {
-        $issues = $this->getIssues()->get();
-
-        return [
-            'open' => $issues->filter(fn($issue) => $issue->status === 'open'),
-            'in_progress' => $issues->filter(fn($issue) => $issue->status === 'in_progress'),
-            'closed' => $issues->filter(fn($issue) => $issue->status === 'closed'),
-        ];
-    }
-    ```
-
-    2. Add Livewire listeners for drag-and-drop events:
-    ```php
-    #[On('dragStart')]
-    public function onDragStart(array $data): void
-    {
-        // Optional: Track drag start for analytics
-        // Currently no action needed
-    }
-
-    #[On('dragEnd')]
-    public function onDragEnd(array $data): void
-    {
-        // Optional: Track drag end for analytics
-        // Currently no action needed
-    }
-
-    #[On('updateIssueStatus')]
-    public function updateIssueStatus(array $data): void
-    {
-        $issueId = $data['issueId'];
-        $newStatus = $data['newStatus'];
-
-        $issue = Issue::findOrFail($issueId);
-        $this->authorize('update', $issue);
-
-        // Map status to issue state
-        match($newStatus) {
-            'open' => $this->issueService->reopen($issue),
-            'in_progress' => $this->issueService->update($issue, ['status' => 'in_progress']),
-            'closed' => $this->issueService->close($issue),
-            default => null,
-        };
-
-        // Refresh the list
-        $this->dispatch('issue-updated');
-    }
-    ```
-
-    3. Update getIssues() to respect Kanban filters:
-    - Already respects filters via $this->tab, $this->search, etc.
-    - No changes needed — Kanban uses same filtered result set
-
-    These methods handle the Livewire events emitted by SortableJS, translating drag-and-drop actions into issue status changes.
-  </action>
-  <verify>
-    <automated>grep -n "updateIssueStatus" app/Livewire/Issues/Index.php</automated>
-  </verify>
-  <done>
-    - kanbanIssues computed property added
-    - Returns array with 'open', 'in_progress', 'closed' keys
-    - Filters issues by status from getIssues() result
-    - onDragStart() listener added with #[On('dragStart')]
-    - onDragEnd() listener added with #[On('dragEnd')]
-    - updateIssueStatus() listener added with #[On('updateIssueStatus')]
-    - updateIssueStatus() finds issue, authorizes, calls service method
-    - Match expression maps status to service methods (reopen, update, close)
-    - issue-updated event dispatched after status change
-  </done>
-</task>
-
-<task type="auto">
-  <name>Task 7: Integrate Kanban board into Issues Index view</name>
-  <files>resources/views/livewire/issues/index.blade.php</files>
-  <read_first>
-    - resources/views/livewire/issues/index.blade.php (current layout)
-    - resources/views/components/kanban-board.blade.php (Kanban component)
-    - app/Livewire/Issues/Index.php (kanbanIssues computed property)
-  </read_first>
-  <action>
-    Modify index.blade.php to conditionally render Kanban board:
-
-    1. Add conditional rendering after the bulk action bar:
-    ```blade
-    <!-- Kanban Board (conditional) -->
-    @if($viewMode === 'kanban')
-        <x-kanban-board
-            :openIssues="$this->kanbanIssues['open']"
-            :progressIssues="$this->kanbanIssues['in_progress']"
-            :closedIssues="$this->kanbanIssues['closed']"
-        />
-    @endif
-    ```
-
-    2. Update existing table/card list to only show when viewMode is 'table':
-    ```blade
-    <!-- Table/Card List (conditional) -->
-    @if($viewMode === 'table')
-        <!-- Existing table/card code here -->
-    @endif
-    ```
-
-    3. Add Alpine.js event listeners for keyboard drag-and-drop:
-    ```blade
-    <div x-data="{
-        keyboardDrag: null,
-        handleKeyboardDrag(event, issueId, currentColumn) {
-            if (event.key === ' ') {
-                event.preventDefault();
-                this.keyboardDrag = { issueId, currentColumn };
-
-                // Announce to screen reader
-                const card = event.target.closest('.kanban-card');
-                card?.setAttribute('aria-grabbed', 'true');
-            }
-
-            if (this.keyboardDrag && event.key === 'ArrowRight') {
-                event.preventDefault();
-                // Move to next column (implementation would need column refs)
-            }
-
-            if (this.keyboardDrag && event.key === 'ArrowLeft') {
-                event.preventDefault();
-                // Move to previous column
-            }
-
-            if (this.keyboardDrag && event.key === 'Enter') {
-                event.preventDefault();
-                // Drop in current column
-                @this.call('updateIssueStatus', {
-                    issueId: this.keyboardDrag.issueId,
-                    newStatus: currentColumn
-                });
-                this.keyboardDrag = null;
-            }
-
-            if (event.key === 'Escape') {
-                this.keyboardDrag = null;
-                // Cancel drag
-                const card = event.target.closest('.kanban-card');
-                card?.setAttribute('aria-grabbed', 'false');
-            }
-        }
-    }">
-        <!-- Kanban board here -->
-    </div>
-    ```
-
-    This ensures:
-    - Only one view displays at a time (table OR Kanban)
-    - Kanban board receives filtered issues via computed property
-    - Keyboard navigation support for accessibility
-  </action>
-  <verify>
-    <automated>grep -n "kanban-board" resources/views/livewire/issues/index.blade.php</automated>
-  </verify>
-  <done>
-    - Kanban board conditionally rendered when viewMode === 'kanban'
-    - Table/list view conditionally rendered when viewMode === 'table'
-    - Kanban board receives open, progress, and closed issues
-    - Issues sourced from $this->kanbanIssues computed property
-    - Views never display simultaneously
-    - Alpine.js keyboard drag handlers added
-    - Keyboard shortcuts: Space (grab), Arrows (move), Enter (drop), Escape (cancel)
-  </done>
-</task>
-
 </tasks>
 
 <verification>
@@ -794,62 +579,36 @@ After completing all tasks:
    - Check that node_modules/sortbarjs exists
    - Build assets: `npm run build`
 
-2. Test Kanban board rendering:
-   - Navigate to issues page
-   - Click "Board View" toggle
-   - Verify three columns display: Open, In Progress, Closed
-   - Verify column backgrounds have different opacity levels
+2. Test component rendering (no integration yet):
+   - Components compile without errors
+   - kanban-board.blade.php has three columns
+   - kanban-card.blade.php has draggable attribute
+   - kanban-column.blade.php has drop zone attributes
 
-3. Test drag-and-drop (mouse):
-   - Drag a card from "Open" to "In Progress"
-   - Verify card shows 50% opacity while dragging
-   - Verify drop zone shows dashed border
-   - Verify card shows 300ms success flash after drop
-   - Refresh page → verify status change persisted
+3. Test JavaScript compilation:
+   - resources/js/kanban.js compiles without errors
+   - Alpine.data('kanbanBoard') is registered
+   - SortableJS is imported successfully
 
-4. Test drag-and-drop (touch):
-   - On mobile device or browser dev tools (touch emulation)
-   - Touch and drag card to different column
-   - Verify touch target is at least 44px
-   - Verify smooth dragging animation
+4. Test CSS animations:
+   - successFlash animation is defined
+   - kanban-ghost, kanban-chosen, kanban-drag classes exist
+   - Animations use CSS variables for dark mode compatibility
 
-5. Test keyboard navigation:
-   - Tab to focus on a card
-   - Press Space → aria-grabbed="true"
-   - Press Arrow keys → move between columns
-   - Press Enter → drop in current column
-   - Press Escape → cancel drag
-
-6. Test responsive layout:
-   - Desktop (≥ 768px): Columns side-by-side
-   - Mobile (< 768px): Columns stack vertically
-   - Each column full width on mobile
-
-7. Test authorization:
-   - Try dragging card without update permission → should fail
-   - Verify policy check: $this->authorize('update', $issue)
-
-8. Test dark mode:
-   - Switch to light mode
-   - Verify Kanban board displays correctly
-   - Verify column backgrounds are visible
-   - Verify drop zone border is visible
+Note: Full integration and testing happens in plan 02-02b.
 </verification>
 
 <success_criteria>
 - [ ] SortableJS installed and imported
-- [ ] Kanban board displays with three columns
-- [ ] Cards can be dragged between columns using mouse
-- [ ] Cards can be dragged between columns using touch
-- [ ] Dropped cards show 300ms success flash animation
-- [ ] Status changes persist after page refresh
-- [ ] Keyboard navigation works (Space, Arrows, Enter, Escape)
-- [ ] Mobile layout: columns stack vertically
-- [ ] Desktop layout: columns side-by-side
-- [ ] Authorization checked before status changes
-- [ ] Both light and dark modes display correctly
+- [ ] Kanban board component created with three columns
+- [ ] Kanban column component created with drop zone
+- [ ] Kanban card component created with draggable attribute
+- [ ] JavaScript file created with SortableJS configuration
+- [ ] CSS animations added for drag states
+- [ ] Alpine.js integration configured
+- [ ] Components are self-contained and testable
 </success_criteria>
 
 <output>
-After completion, create `.planning/phases/02-issue-list-experience/02-02-SUMMARY.md`
+After completion, create `.planning/phases/02-issue-list-experience/02-02a-SUMMARY.md`
 </output>

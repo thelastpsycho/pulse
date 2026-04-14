@@ -1,5 +1,5 @@
 import './bootstrap';
-import { kanbanBoard } from './js/kanban';
+import { kanbanBoard } from './kanban';
 
 // Initialize theme immediately (before DOM is ready)
 const savedTheme = localStorage.getItem('theme');

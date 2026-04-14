@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\User\StoreUserRequest;
 use App\Http\Requests\Api\User\UpdateUserRequest;
+use App\Http\Resources\IssueResource;
 use App\Http\Resources\UserResource;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
@@ -68,5 +69,84 @@ class UserController extends Controller
     {
         $user->delete();
         return response()->json(['message' => 'User deleted successfully']);
+    }
+
+    public function assignRole(Request $request, User $user): UserResource
+    {
+        $request->validate([
+            'role_id' => 'required|exists:roles,id'
+        ]);
+
+        $user->roles()->syncWithoutDetaching([$request->role_id]);
+        $user->load(['roles', 'permissions']);
+        return new UserResource($user);
+    }
+
+    public function removeRole(Request $request, User $user): JsonResponse
+    {
+        $request->validate([
+            'role_id' => 'required|exists:roles,id'
+        ]);
+
+        $user->roles()->detach([$request->role_id]);
+        return response()->json(['message' => 'Role removed successfully']);
+    }
+
+    public function changePassword(Request $request, User $user): JsonResponse
+    {
+        $request->validate([
+            'password' => 'required|string|min:8|confirmed'
+        ]);
+
+        $user->update([
+            'password' => bcrypt($request->password)
+        ]);
+
+        return response()->json(['message' => 'Password changed successfully']);
+    }
+
+    public function activate(User $user): UserResource
+    {
+        $user->update(['is_active' => true]);
+        $user->load(['roles', 'permissions']);
+        return new UserResource($user);
+    }
+
+    public function deactivate(User $user): UserResource
+    {
+        if ($user->id === auth()->id()) {
+            return response()->json(['message' => 'Cannot deactivate yourself'], 403);
+        }
+
+        $user->update(['is_active' => false]);
+        $user->load(['roles', 'permissions']);
+        return new UserResource($user);
+    }
+
+    public function permissions(User $user): JsonResponse
+    {
+        $permissions = $user->getAllPermissions();
+        return response()->json([
+            'permissions' => $permissions->pluck('name'),
+            'roles' => $user->roles->pluck('name')
+        ]);
+    }
+
+    public function issues(Request $request, User $user): AnonymousResourceCollection
+    {
+        $query = $user->assignedIssues()
+            ->with(['departments', 'issueTypes', 'createdBy', 'assignedTo']);
+
+        if ($request->has('status')) {
+            $query->where('status', $request->status);
+        }
+
+        if ($request->has('priority')) {
+            $query->where('priority', $request->priority);
+        }
+
+        $issues = $query->paginate($request->input('per_page', 15));
+
+        return IssueResource::collection($issues);
     }
 }

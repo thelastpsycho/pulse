@@ -55,11 +55,14 @@
         <div class="px-6 py-4 space-y-4">
             <!-- Priority and badges -->
             <div class="flex flex-wrap items-center gap-2">
-                <x-badge variant="{{ match($issue->priority) {
-                    'urgent' => 'danger',
-                    'high' => 'warning',
-                    default => 'muted'
-                }}">
+                @php
+                    $priorityVariant = match($issue->priority) {
+                        'urgent' => 'danger',
+                        'high' => 'warning',
+                        default => 'muted'
+                    };
+                @endphp
+                <x-badge variant="{{ $priorityVariant }}">
                     {{ ucfirst($issue->priority) }}
                 </x-badge>
                 @foreach($issue->departments->take(3) as $department)

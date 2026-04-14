@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ActivityLogResource;
 use App\Models\ActivityLog;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
@@ -47,5 +48,22 @@ class ActivityLogController extends Controller
     {
         $activityLog->load(['actor', 'subject']);
         return new ActivityLogResource($activityLog);
+    }
+
+    public function bySubject(Request $request, string $subjectType, int $subjectId): AnonymousResourceCollection
+    {
+        $query = ActivityLog::query()
+            ->where('subject_type', $subjectType)
+            ->where('subject_id', $subjectId)
+            ->with(['actor', 'subject']);
+
+        if ($request->has('action')) {
+            $query->where('action', $request->action);
+        }
+
+        $query->orderBy('created_at', 'desc');
+        $logs = $query->paginate($request->input('per_page', 50));
+
+        return ActivityLogResource::collection($logs);
     }
 }

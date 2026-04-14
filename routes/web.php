@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ApiDocumentationController;
 use App\Http\Controllers\LogbookExportController;
 use App\Http\Controllers\IssueExportController;
 use App\Http\Controllers\ProfileController;
@@ -26,6 +27,9 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return redirect()->route('issues.index');
 });
+
+// Public API Documentation
+Route::get('/docs', [ApiDocumentationController::class, 'index'])->name('docs');
 
 // Authenticated routes
 Route::middleware(['auth', 'verified'])->group(function () {

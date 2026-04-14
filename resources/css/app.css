@@ -335,4 +335,21 @@
         @apply absolute w-px h-px p-0 -m-px overflow-hidden whitespace-nowrap border-0;
         clip: rect(0, 0, 0, 0);
     }
-}
+
+    /* View toggle smooth transitions */
+    .view-transition {
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* View container transitions */
+    .view-container {
+        transition: opacity 0.2s ease-in-out;
+    }
+
+    .view-container.fade-out {
+        opacity: 0;
+    }
+
+    .view-container.fade-in {
+        opacity: 1;
+    }

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\Department\StoreDepartmentRequest;
 use App\Http\Requests\Api\Department\UpdateDepartmentRequest;
 use App\Http\Resources\DepartmentResource;
+use App\Http\Resources\IssueResource;
 use App\Models\Department;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -58,5 +59,23 @@ class DepartmentController extends Controller
     {
         $department->delete();
         return response()->json(['message' => 'Department deleted successfully']);
+    }
+
+    public function issues(Request $request, Department $department): AnonymousResourceCollection
+    {
+        $query = $department->issues()
+            ->with(['departments', 'issueTypes', 'createdBy', 'assignedTo']);
+
+        if ($request->has('status')) {
+            $query->where('status', $request->status);
+        }
+
+        if ($request->has('priority')) {
+            $query->where('priority', $request->priority);
+        }
+
+        $issues = $query->paginate($request->input('per_page', 15));
+
+        return IssueResource::collection($issues);
     }
 }

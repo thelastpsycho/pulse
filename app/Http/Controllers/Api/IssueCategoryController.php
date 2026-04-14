@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\IssueCategory\StoreIssueCategoryRequest;
 use App\Http\Requests\Api\IssueCategory\UpdateIssueCategoryRequest;
 use App\Http\Resources\IssueCategoryResource;
+use App\Http\Resources\IssueTypeResource;
 use App\Models\IssueCategory;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -50,5 +51,18 @@ class IssueCategoryController extends Controller
     {
         $issueCategory->delete();
         return response()->json(['message' => 'Issue category deleted successfully']);
+    }
+
+    public function types(Request $request, IssueCategory $issueCategory): AnonymousResourceCollection
+    {
+        $query = $issueCategory->issueTypes();
+
+        if ($request->has('is_active')) {
+            $query->where('is_active', $request->boolean('is_active'));
+        }
+
+        $types = $query->paginate($request->input('per_page', 15));
+
+        return IssueTypeResource::collection($types);
     }
 }

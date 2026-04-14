@@ -394,12 +394,41 @@ class Index extends Component
     #[Computed]
     public function kanbanIssues(): array
     {
-        $issues = $this->getIssues()->get();
+        $filters = [
+            'status' => null, // Get all statuses for Kanban
+            'search' => $this->search,
+            'department_id' => $this->department_id,
+            'issue_type_id' => $this->issue_type_id,
+            'priority' => $this->priority,
+            'assigned_to' => $this->assigned_to,
+            'date_from' => $this->date_from,
+            'date_to' => $this->date_to,
+            'order_by' => $this->order_by,
+            'order_dir' => $this->order_dir,
+        ];
+
+        // Limit Kanban to most recent 150 issues for performance
+        // With 3,469 total issues, loading all would be too slow
+        $issues = Issue::with(['departments', 'issueTypes', 'createdBy', 'assignedTo'])
+            ->orderBy('issue_date', 'desc')
+            ->limit(150)
+            ->get();
+
+        // Apply filters client-side for small dataset
+        if (!empty($filters['search'])) {
+            $issues = $issues->filter(fn($issue) => stripos($issue->title, $filters['search']) !== false);
+        }
+        if (!empty($filters['department_id'])) {
+            $issues = $issues->filter(fn($issue) => $issue->departments->contains('id', $filters['department_id']));
+        }
+        if (!empty($filters['priority'])) {
+            $issues = $issues->where('priority', $filters['priority']);
+        }
 
         return [
-            'open' => $issues->filter(fn($issue) => $issue->status === 'open'),
-            'in_progress' => $issues->filter(fn($issue) => $issue->status === 'in_progress'),
-            'closed' => $issues->filter(fn($issue) => $issue->status === 'closed'),
+            'open' => $issues->filter(fn($issue) => $issue->status === 'open')->values(),
+            'in_progress' => $issues->filter(fn($issue) => $issue->status === 'in_progress')->values(),
+            'closed' => $issues->filter(fn($issue) => $issue->status === 'closed')->take(20)->values(), // Limit closed issues
         ];
     }
 
