@@ -74,7 +74,7 @@ class ReportService
             ->whereRaw('COALESCE(DATE(issues.issue_date), DATE(issues.created_at)) >= ?', [$dateFrom])
             ->whereRaw('COALESCE(DATE(issues.issue_date), DATE(issues.created_at)) <= ?', [$dateTo])
             ->whereNull('issues.deleted_at')
-            ->selectRaw('d.name, COUNT(*) as count')
+            ->selectRaw('d.id, d.name, COUNT(*) as count')
             ->join('department_issue as di', 'issues.id', '=', 'di.issue_id')
             ->join('departments as d', 'di.department_id', '=', 'd.id');
 
@@ -88,13 +88,16 @@ class ReportService
         $byDepartment = $byDepartmentQuery
             ->groupBy('d.id', 'd.name')
             ->orderByDesc('count')
-            ->pluck('count', 'd.name');
+            ->get()
+            ->mapWithKeys(function ($item) {
+                return [$item->name => ['count' => $item->count, 'id' => $item->id]];
+            });
 
         $byIssueTypeQuery = DB::table('issues')
             ->whereRaw('COALESCE(DATE(issues.issue_date), DATE(issues.created_at)) >= ?', [$dateFrom])
             ->whereRaw('COALESCE(DATE(issues.issue_date), DATE(issues.created_at)) <= ?', [$dateTo])
             ->whereNull('issues.deleted_at')
-            ->selectRaw('it.name, COUNT(*) as count')
+            ->selectRaw('it.id, it.name, COUNT(*) as count')
             ->join('issue_issue_type as iit', 'issues.id', '=', 'iit.issue_id')
             ->join('issue_types as it', 'iit.issue_type_id', '=', 'it.id');
 
@@ -105,20 +108,27 @@ class ReportService
         $byIssueType = $byIssueTypeQuery
             ->groupBy('it.id', 'it.name')
             ->orderByDesc('count')
-            ->pluck('count', 'it.name');
+            ->get()
+            ->mapWithKeys(function ($item) {
+                return [$item->name => ['count' => $item->count, 'id' => $item->id]];
+            });
 
         $byCategoryQuery = DB::table('issues')
             ->whereRaw('COALESCE(DATE(issues.issue_date), DATE(issues.created_at)) >= ?', [$dateFrom])
             ->whereRaw('COALESCE(DATE(issues.issue_date), DATE(issues.created_at)) <= ?', [$dateTo])
             ->whereNull('issues.deleted_at')
-            ->selectRaw('ic.label, COUNT(*) as count')
+            ->selectRaw('ic.id, ic.label, COUNT(*) as count')
             ->join('issue_issue_type as iit', 'issues.id', '=', 'iit.issue_id')
             ->join('issue_types as it', 'iit.issue_type_id', '=', 'it.id')
             ->join('issue_categories as ic', 'it.issue_category_id', '=', 'ic.id')
             ->groupBy('ic.id', 'ic.label')
             ->orderByDesc('count');
 
-        $byCategory = $byCategoryQuery->pluck('count', 'ic.label');
+        $byCategory = $byCategoryQuery
+            ->get()
+            ->mapWithKeys(function ($item) {
+                return [$item->label => ['count' => $item->count, 'id' => $item->id]];
+            });
 
         $avgCloseTimeQuery = DB::table('issues')
             ->whereRaw('COALESCE(DATE(issues.issue_date), DATE(issues.created_at)) >= ?', [$dateFrom])

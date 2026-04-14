@@ -175,6 +175,13 @@ class IssueService
             });
         }
 
+        // Filter by category (through issue types)
+        if (!empty($filters['category_id'])) {
+            $query->whereHas('issueTypes', function ($q) use ($filters) {
+                $q->where('issue_types.issue_category_id', $filters['category_id']);
+            });
+        }
+
         // Filter by priority
         if (!empty($filters['priority'])) {
             $query->where('priority', $filters['priority']);
@@ -190,13 +197,13 @@ class IssueService
             $query->where('created_by', $filters['created_by']);
         }
 
-        // Filter by date range
+        // Filter by date range (use issue_date if available, otherwise created_at)
         if (!empty($filters['date_from'])) {
-            $query->whereDate('created_at', '>=', $filters['date_from']);
+            $query->whereRaw('COALESCE(DATE(issue_date), DATE(created_at)) >= ?', [$filters['date_from']]);
         }
 
         if (!empty($filters['date_to'])) {
-            $query->whereDate('created_at', '<=', $filters['date_to']);
+            $query->whereRaw('COALESCE(DATE(issue_date), DATE(created_at)) <= ?', [$filters['date_to']]);
         }
 
         // Search by title, description, location, or room number

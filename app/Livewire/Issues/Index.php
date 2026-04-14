@@ -21,6 +21,7 @@ class Index extends Component
     public string $search = '';
     public ?int $department_id = null;
     public ?int $issue_type_id = null;
+    public ?int $category_id = null;
     public ?string $priority = null;
     public ?int $assigned_to = null;
     public ?string $date_from = null;
@@ -41,6 +42,7 @@ class Index extends Component
         'search' => ['except' => ''],
         'department_id' => ['except' => ''],
         'issue_type_id' => ['except' => ''],
+        'category_id' => ['except' => ''],
         'priority' => ['except' => ''],
         'assigned_to' => ['except' => ''],
         'viewMode' => ['except' => 'table'],
@@ -71,6 +73,7 @@ class Index extends Component
             'search' => $this->search,
             'department_id' => $this->department_id,
             'issue_type_id' => $this->issue_type_id,
+            'category_id' => $this->category_id,
             'priority' => $this->priority,
             'assigned_to' => $this->assigned_to,
             'date_from' => $this->date_from,
@@ -118,6 +121,7 @@ class Index extends Component
             'search',
             'department_id',
             'issue_type_id',
+            'category_id',
             'priority',
             'assigned_to',
             'date_from',
@@ -299,6 +303,7 @@ class Index extends Component
             'search' => $this->search,
             'department_id' => $this->department_id,
             'issue_type_id' => $this->issue_type_id,
+            'category_id' => $this->category_id,
             'priority' => $this->priority,
             'assigned_to' => $this->assigned_to,
             'date_from' => $this->date_from,
@@ -337,6 +342,7 @@ class Index extends Component
                 'search' => $this->search,
                 'department_id' => $this->department_id,
                 'issue_type_id' => $this->issue_type_id,
+                'category_id' => $this->category_id,
                 'priority' => $this->priority,
                 'assigned_to' => $this->assigned_to,
                 'date_from' => $this->date_from,
@@ -361,6 +367,7 @@ class Index extends Component
         $this->search = $filters['search'] ?? '';
         $this->department_id = $filters['department_id'] ?? null;
         $this->issue_type_id = $filters['issue_type_id'] ?? null;
+        $this->category_id = $filters['category_id'] ?? null;
         $this->priority = $filters['priority'] ?? null;
         $this->assigned_to = $filters['assigned_to'] ?? null;
         $this->date_from = $filters['date_from'] ?? null;
@@ -399,6 +406,7 @@ class Index extends Component
             'search' => $this->search,
             'department_id' => $this->department_id,
             'issue_type_id' => $this->issue_type_id,
+            'category_id' => $this->category_id,
             'priority' => $this->priority,
             'assigned_to' => $this->assigned_to,
             'date_from' => $this->date_from,

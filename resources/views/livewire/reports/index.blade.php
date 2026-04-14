@@ -14,6 +14,13 @@
             transform: scaleY(1.02);
             transform-origin: bottom;
         }
+
+        .chart-clickable {
+            cursor: pointer;
+        }
+        .chart-clickable:hover {
+            opacity: 0.8;
+        }
     </style>
 
     <div class="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -24,32 +31,32 @@
     </div>
 
     <!-- Header -->
-    <div class="mb-8 ">
-        <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
+    <div class="mb-6">
+        <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3">
             <div>
                 <div class="flex items-center gap-3 mb-2">
-                    <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-accent/20 to-primary/20 flex items-center justify-center">
-                        <svg class="w-6 h-6 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-accent/20 to-primary/20 flex items-center justify-center">
+                        <svg class="w-5 h-5 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
                         </svg>
                     </div>
-                    <h1 class="text-3xl sm:text-4xl font-bold text-text">
+                    <h1 class="text-2xl font-semibold text-text">
                         <span class="bg-gradient-to-r from-accent to-primary bg-clip-text text-transparent">Reports</span>
                     </h1>
                 </div>
-                <p class="text-muted ml-15">Analyze issue data with detailed insights and trends</p>
+                <p class="text-sm text-muted ml-13">Analyze issue data with detailed insights and trends</p>
             </div>
         </div>
     </div>
 
     <!-- Filters -->
-    <div class="glass-card rounded-2xl p-6 mb-8  ">
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+    <div class="glass-card rounded-xl p-4 mb-6">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
             <!-- Date Range Preset -->
             <div>
-                <label class="block text-sm font-medium text-text mb-2">Date Range</label>
+                <label class="block text-sm font-medium text-text mb-1.5">Date Range</label>
                 <select wire:model.live="dateRangePreset"
-                        class="w-full bg-surface-2 border border-border text-text rounded-xl px-4 py-3 focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all">
+                        class="w-full bg-surface-2 border border-border text-text rounded-lg px-3 py-2 text-sm focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all">
                     @foreach($presetOptions as $value => $label)
                         <option value="{{ $value }}">{{ $label }}</option>
                     @endforeach
@@ -59,22 +66,22 @@
             @if($dateRangePreset === 'custom')
                 <!-- Custom Date Range -->
                 <div>
-                    <label class="block text-sm font-medium text-text mb-2">From</label>
+                    <label class="block text-sm font-medium text-text mb-1.5">From</label>
                     <input type="date" wire:model.live="dateFrom"
-                           class="w-full bg-surface-2 border border-border text-text rounded-xl px-4 py-3 focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all">
+                           class="w-full bg-surface-2 border border-border text-text rounded-lg px-3 py-2 text-sm focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all">
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-text mb-2">To</label>
+                    <label class="block text-sm font-medium text-text mb-1.5">To</label>
                     <input type="date" wire:model.live="dateTo"
-                           class="w-full bg-surface-2 border border-border text-text rounded-xl px-4 py-3 focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all">
+                           class="w-full bg-surface-2 border border-border text-text rounded-lg px-3 py-2 text-sm focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all">
                 </div>
             @endif
 
             <!-- Category Filter -->
             <div>
-                <label class="block text-sm font-medium text-text mb-2">Category</label>
+                <label class="block text-sm font-medium text-text mb-1.5">Category</label>
                 <select wire:model.live="selectedCategoryId"
-                        class="w-full bg-surface-2 border border-border text-text rounded-xl px-4 py-3 focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all">
+                        class="w-full bg-surface-2 border border-border text-text rounded-lg px-3 py-2 text-sm focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all">
                     <option value="">All Categories</option>
                     @foreach($availableCategories as $id => $name)
                         <option value="{{ $id }}">{{ $name }}</option>
@@ -84,7 +91,7 @@
         </div>
 
         <!-- Date Range Summary -->
-        <div class="mt-4 flex items-center gap-2 text-sm">
+        <div class="mt-3 flex items-center gap-2 text-sm">
             <svg class="w-4 h-4 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
             </svg>
@@ -100,89 +107,89 @@
 
     @if($report)
         <!-- Overview Stats -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
             <!-- Total Issues -->
-            <div class="glass-card rounded-2xl p-6   hover:scale-[1.02] transition-transform duration-300">
+            <a href="{{ route('issues.index', ['date_from' => $report['date_from'], 'date_to' => $report['date_to']]) }}" target="_blank" class="glass-card rounded-xl p-4 hover:scale-[1.02] transition-transform duration-300 block chart-clickable">
                 <div class="flex items-start justify-between">
                     <div>
                         <p class="text-sm text-muted mb-1">Total Issues</p>
-                        <p class="text-4xl font-bold text-text">{{ $report['total_issues'] }}</p>
+                        <p class="text-3xl font-bold text-text">{{ $report['total_issues'] }}</p>
                     </div>
-                    <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-accent/20 to-accent/5 flex items-center justify-center">
-                        <svg class="w-7 h-7 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-accent/20 to-accent/5 flex items-center justify-center">
+                        <svg class="w-6 h-6 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
                         </svg>
                     </div>
                 </div>
-                <div class="mt-4 h-2 bg-surface-2 rounded-full overflow-hidden">
+                <div class="mt-3 h-2 bg-surface-2 rounded-full overflow-hidden">
                     <div class="h-full bg-gradient-to-r from-accent to-primary rounded-full" style="width: 100%"></div>
                 </div>
-            </div>
+            </a>
 
             <!-- Open Issues -->
-            <div class="glass-card rounded-2xl p-6   hover:scale-[1.02] transition-transform duration-300">
+            <a href="{{ route('issues.index', ['tab' => 'open', 'date_from' => $report['date_from'], 'date_to' => $report['date_to']]) }}" target="_blank" class="glass-card rounded-xl p-4 hover:scale-[1.02] transition-transform duration-300 block chart-clickable">
                 <div class="flex items-start justify-between">
                     <div>
                         <p class="text-sm text-muted mb-1">Open Issues</p>
-                        <p class="text-4xl font-bold text-warning">{{ $report['by_status']['open'] ?? 0 }}</p>
+                        <p class="text-3xl font-bold text-warning">{{ $report['by_status']['open'] ?? 0 }}</p>
                     </div>
-                    <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-warning/20 to-warning/5 flex items-center justify-center">
-                        <svg class="w-7 h-7 text-warning" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-warning/20 to-warning/5 flex items-center justify-center">
+                        <svg class="w-6 h-6 text-warning" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                         </svg>
                     </div>
                 </div>
-                <div class="mt-4 h-2 bg-surface-2 rounded-full overflow-hidden">
+                <div class="mt-3 h-2 bg-surface-2 rounded-full overflow-hidden">
                     <div class="h-full bg-gradient-to-r from-warning to-amber-600 rounded-full" style="width: {{ max((($report['by_status']['open'] ?? 0) / max($report['total_issues'], 1)) * 100, 2) }}%"></div>
                 </div>
-            </div>
+            </a>
 
             <!-- Closed Issues -->
-            <div class="glass-card rounded-2xl p-6   hover:scale-[1.02] transition-transform duration-300">
+            <a href="{{ route('issues.index', ['tab' => 'closed', 'date_from' => $report['date_from'], 'date_to' => $report['date_to']]) }}" target="_blank" class="glass-card rounded-xl p-4 hover:scale-[1.02] transition-transform duration-300 block chart-clickable">
                 <div class="flex items-start justify-between">
                     <div>
                         <p class="text-sm text-muted mb-1">Closed Issues</p>
-                        <p class="text-4xl font-bold text-success">{{ $report['by_status']['closed'] ?? 0 }}</p>
+                        <p class="text-3xl font-bold text-success">{{ $report['by_status']['closed'] ?? 0 }}</p>
                     </div>
-                    <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-success/20 to-success/5 flex items-center justify-center">
-                        <svg class="w-7 h-7 text-success" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-success/20 to-success/5 flex items-center justify-center">
+                        <svg class="w-6 h-6 text-success" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                         </svg>
                     </div>
                 </div>
-                <div class="mt-4 h-2 bg-surface-2 rounded-full overflow-hidden">
+                <div class="mt-3 h-2 bg-surface-2 rounded-full overflow-hidden">
                     <div class="h-full bg-gradient-to-r from-success to-emerald-600 rounded-full" style="width: {{ max((($report['by_status']['closed'] ?? 0) / max($report['total_issues'], 1)) * 100, 2) }}%"></div>
                 </div>
-            </div>
+            </a>
 
             <!-- Avg Close Time -->
-            <div class="glass-card rounded-2xl p-6   hover:scale-[1.02] transition-transform duration-300">
+            <div class="glass-card rounded-xl p-4 hover:scale-[1.02] transition-transform duration-300">
                 <div class="flex items-start justify-between">
                     <div>
                         <p class="text-sm text-muted mb-1">Avg. Close Time</p>
-                        <p class="text-4xl font-bold text-primary">{{ $report['avg_close_time_hours'] }}<span class="text-lg">h</span></p>
+                        <p class="text-3xl font-bold text-primary">{{ $report['avg_close_time_hours'] }}<span class="text-base">h</span></p>
                     </div>
-                    <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center">
-                        <svg class="w-7 h-7 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center">
+                        <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
                         </svg>
                     </div>
                 </div>
-                <p class="mt-4 text-xs text-muted">Average time to resolve issues</p>
+                <p class="mt-3 text-xs text-muted">Average time to resolve issues</p>
             </div>
         </div>
 
         <!-- Daily Trend Chart -->
-        <div class="glass-card rounded-2xl mb-8   overflow-hidden">
-            <div class="p-6 border-b border-border/50">
-                <h3 class="text-lg font-semibold text-text flex items-center gap-2">
-                    <svg class="w-5 h-5 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div class="glass-card rounded-xl mb-6 overflow-hidden">
+            <div class="p-4 border-b border-border/50">
+                <h3 class="text-base font-medium text-text flex items-center gap-2">
+                    <svg class="w-4 h-4 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"/>
                     </svg>
                     Daily Trend
                 </h3>
             </div>
-            <div class="p-6">
+            <div class="p-4">
                 @if($report['daily_trend']->count() > 0)
                     @php
                         $maxCount = $report['daily_trend']->max() ?? 1;
@@ -321,32 +328,37 @@
         </div>
 
         <!-- Breakdown Grid -->
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6">
             <!-- By Department -->
-            <div class="glass-card rounded-2xl  ">
-                <div class="p-6 border-b border-border/50">
-                    <h3 class="text-lg font-semibold text-text flex items-center gap-2">
-                        <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div class="glass-card rounded-xl">
+                <div class="p-4 border-b border-border/50">
+                    <h3 class="text-base font-medium text-text flex items-center gap-2">
+                        <svg class="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
                         </svg>
                         By Department
                     </h3>
                 </div>
-                <div class="p-6">
+                <div class="p-4">
                     @if($report['by_department']->count() > 0)
-                        @php $maxDept = $report['by_department']->max() ?? 1; @endphp
+                        @php $maxDept = $report['by_department']->max(function($item) { return is_array($item) ? $item['count'] : $item; }) ?? 1; @endphp
                         <div class="space-y-4">
-                            @foreach($report['by_department'] as $department => $count)
-                                <div class="group">
+                            @foreach($report['by_department'] as $department => $data)
+                                @php
+                                    $count = is_array($data) ? $data['count'] : $data;
+                                    $deptId = is_array($data) ? $data['id'] : null;
+                                    $filterUrl = $deptId ? route('issues.index', ['department_id' => $deptId, 'date_from' => $report['date_from'], 'date_to' => $report['date_to']]) : '#';
+                                @endphp
+                                <a href="{{ $filterUrl }}" target="_blank" class="block group chart-clickable">
                                     <div class="flex items-center justify-between mb-2">
-                                        <span class="text-sm font-medium text-text">{{ $department }}</span>
+                                        <span class="text-sm font-medium text-text group-hover:text-accent transition-colors">{{ $department }}</span>
                                         <span class="text-sm font-bold text-text">{{ $count }}</span>
                                     </div>
                                     <div class="h-3 bg-surface-2 rounded-full overflow-hidden">
                                         <div class="h-full bg-gradient-to-r from-primary to-accent rounded-full transition-all duration-500 group-hover:from-primary/80 group-hover:to-accent/80"
                                              style="width: {{ ($count / $maxDept) * 100 }}%"></div>
                                     </div>
-                                </div>
+                                </a>
                             @endforeach
                         </div>
                     @else
@@ -356,30 +368,35 @@
             </div>
 
             <!-- By Issue Type -->
-            <div class="glass-card rounded-2xl  ">
-                <div class="p-6 border-b border-border/50">
-                    <h3 class="text-lg font-semibold text-text flex items-center gap-2">
-                        <svg class="w-5 h-5 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div class="glass-card rounded-xl">
+                <div class="p-4 border-b border-border/50">
+                    <h3 class="text-base font-medium text-text flex items-center gap-2">
+                        <svg class="w-4 h-4 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
                         </svg>
                         By Issue Type
                     </h3>
                 </div>
-                <div class="p-6">
+                <div class="p-4">
                     @if($report['by_issue_type']->count() > 0)
-                        @php $maxType = $report['by_issue_type']->max() ?? 1; @endphp
+                        @php $maxType = $report['by_issue_type']->max(function($item) { return is_array($item) ? $item['count'] : $item; }) ?? 1; @endphp
                         <div class="space-y-4">
-                            @foreach($report['by_issue_type'] as $type => $count)
-                                <div class="group">
+                            @foreach($report['by_issue_type'] as $type => $data)
+                                @php
+                                    $count = is_array($data) ? $data['count'] : $data;
+                                    $typeId = is_array($data) ? $data['id'] : null;
+                                    $filterUrl = $typeId ? route('issues.index', ['issue_type_id' => $typeId, 'date_from' => $report['date_from'], 'date_to' => $report['date_to']]) : '#';
+                                @endphp
+                                <a href="{{ $filterUrl }}" target="_blank" class="block group chart-clickable">
                                     <div class="flex items-center justify-between mb-2">
-                                        <span class="text-sm font-medium text-text">{{ $type }}</span>
+                                        <span class="text-sm font-medium text-text group-hover:text-accent transition-colors">{{ $type }}</span>
                                         <span class="text-sm font-bold text-text">{{ $count }}</span>
                                     </div>
                                     <div class="h-3 bg-surface-2 rounded-full overflow-hidden">
                                         <div class="h-full bg-gradient-to-r from-accent to-primary rounded-full transition-all duration-500 group-hover:from-accent/80 group-hover:to-primary/80"
                                              style="width: {{ ($count / $maxType) * 100 }}%"></div>
                                     </div>
-                                </div>
+                                </a>
                             @endforeach
                         </div>
                     @else
@@ -389,30 +406,35 @@
             </div>
 
             <!-- By Category -->
-            <div class="glass-card rounded-2xl  ">
-                <div class="p-6 border-b border-border/50">
-                    <h3 class="text-lg font-semibold text-text flex items-center gap-2">
-                        <svg class="w-5 h-5 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div class="glass-card rounded-xl">
+                <div class="p-4 border-b border-border/50">
+                    <h3 class="text-base font-medium text-text flex items-center gap-2">
+                        <svg class="w-4 h-4 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/>
                         </svg>
                         By Category
                     </h3>
                 </div>
-                <div class="p-6">
+                <div class="p-4">
                     @if($report['by_category']->count() > 0)
-                        @php $maxCat = $report['by_category']->max() ?? 1; @endphp
+                        @php $maxCat = $report['by_category']->max(function($item) { return is_array($item) ? $item['count'] : $item; }) ?? 1; @endphp
                         <div class="space-y-4">
-                            @foreach($report['by_category'] as $category => $count)
-                                <div class="group">
+                            @foreach($report['by_category'] as $category => $data)
+                                @php
+                                    $count = is_array($data) ? $data['count'] : $data;
+                                    $categoryId = is_array($data) ? $data['id'] : null;
+                                    $filterUrl = $categoryId ? route('issues.index', ['category_id' => $categoryId, 'date_from' => $report['date_from'], 'date_to' => $report['date_to']]) : '#';
+                                @endphp
+                                <a href="{{ $filterUrl }}" target="_blank" class="block group chart-clickable">
                                     <div class="flex items-center justify-between mb-2">
-                                        <span class="text-sm font-medium text-text">{{ $category }}</span>
+                                        <span class="text-sm font-medium text-text group-hover:text-purple-400 transition-colors">{{ $category }}</span>
                                         <span class="text-sm font-bold text-text">{{ $count }}</span>
                                     </div>
                                     <div class="h-3 bg-surface-2 rounded-full overflow-hidden">
                                         <div class="h-full bg-gradient-to-r from-purple-500 to-purple-600 rounded-full transition-all duration-500 group-hover:from-purple-500/80 group-hover:to-purple-600/80"
                                              style="width: {{ ($count / $maxCat) * 100 }}%"></div>
                                     </div>
-                                </div>
+                                </a>
                             @endforeach
                         </div>
                     @else
@@ -422,16 +444,16 @@
             </div>
 
             <!-- By Priority -->
-            <div class="glass-card rounded-2xl  ">
-                <div class="p-6 border-b border-border/50">
-                    <h3 class="text-lg font-semibold text-text flex items-center gap-2">
-                        <svg class="w-5 h-5 text-danger" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div class="glass-card rounded-xl">
+                <div class="p-4 border-b border-border/50">
+                    <h3 class="text-base font-medium text-text flex items-center gap-2">
+                        <svg class="w-4 h-4 text-danger" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
                         </svg>
                         By Priority
                     </h3>
                 </div>
-                <div class="p-6">
+                <div class="p-4">
                     @if($report['by_priority']->count() > 0)
                         @php
                             $maxPriority = $report['by_priority']->max() ?? 1;
@@ -444,16 +466,19 @@
                         @endphp
                         <div class="space-y-4">
                             @foreach($report['by_priority'] as $priority => $count)
-                                <div class="group">
+                                @php
+                                    $filterUrl = route('issues.index', ['priority' => $priority, 'date_from' => $report['date_from'], 'date_to' => $report['date_to']]);
+                                @endphp
+                                <a href="{{ $filterUrl }}" target="_blank" class="block group chart-clickable">
                                     <div class="flex items-center justify-between mb-2">
-                                        <span class="text-sm font-medium text-text capitalize">{{ $priority }}</span>
+                                        <span class="text-sm font-medium text-text capitalize group-hover:text-danger transition-colors">{{ $priority }}</span>
                                         <span class="text-sm font-bold text-text">{{ $count }}</span>
                                     </div>
                                     <div class="h-3 bg-surface-2 rounded-full overflow-hidden">
                                         <div class="h-full bg-gradient-to-r {{ $priorityColors[$priority] ?? 'from-muted to-gray-500' }} rounded-full transition-all duration-500"
                                              style="width: {{ ($count / $maxPriority) * 100 }}%"></div>
                                     </div>
-                                </div>
+                                </a>
                             @endforeach
                         </div>
                     @else
@@ -464,61 +489,61 @@
         </div>
 
         <!-- Status Distribution & Quick Links -->
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
             <!-- Status Distribution -->
-            <div class="lg:col-span-2 glass-card rounded-2xl  ">
-                <div class="p-6 border-b border-border/50">
-                    <h3 class="text-lg font-semibold text-text flex items-center gap-2">
-                        <svg class="w-5 h-5 text-success" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div class="lg:col-span-2 glass-card rounded-xl">
+                <div class="p-4 border-b border-border/50">
+                    <h3 class="text-base font-medium text-text flex items-center gap-2">
+                        <svg class="w-4 h-4 text-success" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"/>
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z"/>
                         </svg>
                         Status Distribution
                     </h3>
                 </div>
-                <div class="p-6">
+                <div class="p-4">
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
                         <!-- Open -->
-                        <div class="flex items-center gap-4">
+                        <a href="{{ route('issues.index', ['tab' => 'open', 'date_from' => $report['date_from'], 'date_to' => $report['date_to']]) }}" target="_blank" class="flex items-center gap-4 group chart-clickable">
                             <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-warning/20 to-warning/5 flex items-center justify-center">
                                 <span class="text-2xl font-bold text-warning">{{ $report['by_status']['open'] ?? 0 }}</span>
                             </div>
                             <div class="flex-1">
-                                <p class="text-sm font-medium text-text">Open Issues</p>
+                                <p class="text-sm font-medium text-text group-hover:text-warning transition-colors">Open Issues</p>
                                 <div class="mt-2 h-2 bg-surface-2 rounded-full overflow-hidden">
                                     <div class="h-full bg-gradient-to-r from-warning to-amber-600 rounded-full"
                                          style="width: {{ max((($report['by_status']['open'] ?? 0) / max($report['total_issues'], 1)) * 100, 2) }}%"></div>
                                 </div>
                             </div>
-                        </div>
+                        </a>
                         <!-- Closed -->
-                        <div class="flex items-center gap-4">
+                        <a href="{{ route('issues.index', ['tab' => 'closed', 'date_from' => $report['date_from'], 'date_to' => $report['date_to']]) }}" target="_blank" class="flex items-center gap-4 group chart-clickable">
                             <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-success/20 to-success/5 flex items-center justify-center">
                                 <span class="text-2xl font-bold text-success">{{ $report['by_status']['closed'] ?? 0 }}</span>
                             </div>
                             <div class="flex-1">
-                                <p class="text-sm font-medium text-text">Closed Issues</p>
+                                <p class="text-sm font-medium text-text group-hover:text-success transition-colors">Closed Issues</p>
                                 <div class="mt-2 h-2 bg-surface-2 rounded-full overflow-hidden">
                                     <div class="h-full bg-gradient-to-r from-success to-emerald-600 rounded-full"
                                          style="width: {{ max((($report['by_status']['closed'] ?? 0) / max($report['total_issues'], 1)) * 100, 2) }}%"></div>
                                 </div>
                             </div>
-                        </div>
+                        </a>
                     </div>
                 </div>
             </div>
 
             <!-- Quick Links -->
-            <div class="glass-card rounded-2xl  ">
-                <div class="p-6 border-b border-border/50">
-                    <h3 class="text-lg font-semibold text-text flex items-center gap-2">
-                        <svg class="w-5 h-5 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div class="glass-card rounded-xl">
+                <div class="p-4 border-b border-border/50">
+                    <h3 class="text-base font-medium text-text flex items-center gap-2">
+                        <svg class="w-4 h-4 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/>
                         </svg>
                         Quick Links
                     </h3>
                 </div>
-                <div class="p-6 space-y-3">
+                <div class="p-4 space-y-2">
                     <a href="{{ route('reports.logbook') }}" class="flex items-center gap-3 p-4 rounded-xl bg-surface-2/50 hover:bg-accent/10 hover:border-accent/30 border border-transparent transition-all group">
                         <div class="w-10 h-10 rounded-lg bg-accent/10 flex items-center justify-center group-hover:bg-accent/20 transition-colors">
                             <svg class="w-5 h-5 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
