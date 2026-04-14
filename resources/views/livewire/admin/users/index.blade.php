@@ -13,10 +13,10 @@
     @endif
 
     <!-- Header -->
-    <div class="flex items-center justify-between mb-6">
+    <div class="flex items-center justify-between mb-4">
         <div>
-            <h1 class="text-2xl font-bold text-text">Users</h1>
-            <p class="text-muted">Manage system users and their roles</p>
+            <h1 class="text-xl font-semibold text-text">Users</h1>
+            <p class="text-sm text-muted">Manage system users and their roles</p>
         </div>
         @can('create', App\Models\User::class)
             <a href="{{ route('admin.users.create') }}" class="btn btn-primary">
@@ -29,29 +29,29 @@
     </div>
 
     <!-- Search & Filters -->
-    <div class="card mb-6">
+    <div class="card mb-4">
         <div class="p-4">
-            <div class="flex flex-col lg:flex-row gap-4">
+            <div class="flex flex-col lg:flex-row gap-3">
                 <!-- Search -->
                 <div class="flex-1">
                     <input
                         type="text"
                         wire:model.live.debounce.300ms="search"
                         placeholder="Search users by name or email..."
-                        class="w-full bg-surface-2 border border-border text-text placeholder-muted rounded-lg px-4 py-2 focus:border-primary focus:ring-primary"
+                        class="w-full bg-surface-2 border border-border text-sm text-text placeholder-muted rounded-lg px-3 py-1.5 focus:border-primary focus:ring-primary"
                     />
                 </div>
 
                 <!-- Filters -->
                 <div class="flex flex-wrap gap-3">
-                    <select wire:model.live="roleFilter" class="bg-surface-2 border border-border text-text rounded-lg px-3 py-2 focus:border-primary focus:ring-primary">
+                    <select wire:model.live="roleFilter" class="bg-surface-2 border border-border text-sm text-text rounded-lg px-3 py-1.5 focus:border-primary focus:ring-primary">
                         <option value="">All Roles</option>
                         @foreach($roles as $role)
                             <option value="{{ $role }}">{{ ucfirst($role) }}</option>
                         @endforeach
                     </select>
 
-                    <select wire:model.live="statusFilter" class="bg-surface-2 border border-border text-text rounded-lg px-3 py-2 focus:border-primary focus:ring-primary">
+                    <select wire:model.live="statusFilter" class="bg-surface-2 border border-border text-sm text-text rounded-lg px-3 py-1.5 focus:border-primary focus:ring-primary">
                         <option value="">All Status</option>
                         <option value="active">Active</option>
                         <option value="inactive">Inactive</option>
@@ -72,7 +72,7 @@
                 <table class="w-full">
                     <thead>
                         <tr class="border-b border-border">
-                            <th class="px-6 py-3 text-left text-xs font-medium text-muted uppercase tracking-wider cursor-pointer hover:text-text"
+                            <th class="px-4 py-2.5 text-left text-xs font-medium text-muted tracking-wider cursor-pointer hover:text-text"
                                 wire:click="sortBy('name')">
                                 <div class="flex items-center gap-1">
                                     User
@@ -81,10 +81,10 @@
                                     </svg>
                                 </div>
                             </th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-muted uppercase tracking-wider">
+                            <th class="px-4 py-2.5 text-left text-xs font-medium text-muted tracking-wider">
                                 Roles
                             </th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-muted uppercase tracking-wider cursor-pointer hover:text-text"
+                            <th class="px-4 py-2.5 text-left text-xs font-medium text-muted tracking-wider cursor-pointer hover:text-text"
                                 wire:click="sortBy('email')">
                                 <div class="flex items-center gap-1">
                                     Email
@@ -93,16 +93,16 @@
                                     </svg>
                                 </div>
                             </th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-muted uppercase tracking-wider cursor-pointer hover:text-text"
+                            <th class="px-4 py-2.5 text-left text-xs font-medium text-muted tracking-wider cursor-pointer hover:text-text"
                                 wire:click="sortBy('is_active')">
                                 <div class="flex items-center gap-1">
                                     Status
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ $this->getSortIcon('is_active') }}"/>
                                     </svg>
                                 </div>
                             </th>
-                            <th class="px-6 py-3 text-right text-xs font-medium text-muted uppercase tracking-wider">
+                            <th class="px-4 py-2.5 text-right text-xs font-medium text-muted tracking-wider">
                                 Actions
                             </th>
                         </tr>
@@ -110,7 +110,7 @@
                     <tbody class="divide-y divide-border">
                         @foreach($users as $user)
                             <tr class="hover:bg-surface-2 transition-smooth">
-                                <td class="px-6 py-4">
+                                <td class="px-4 py-2.5">
                                     <div class="flex items-center gap-3">
                                         <div class="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary font-semibold">
                                             {{ $user->name[0] }}
@@ -123,31 +123,31 @@
                                         </div>
                                     </div>
                                 </td>
-                                <td class="px-6 py-4">
+                                <td class="px-4 py-2.5">
                                     <div class="flex flex-wrap gap-1">
                                         @foreach($user->roles as $role)
-                                            <span class="badge badge-muted">{{ ucfirst($role->name) }}</span>
+                                            <span class="badge badge-muted text-xs">{{ ucfirst($role->name) }}</span>
                                         @endforeach
                                     </div>
                                 </td>
-                                <td class="px-6 py-4">
+                                <td class="px-4 py-2.5">
                                     <span class="text-sm text-muted">{{ $user->email }}</span>
                                 </td>
-                                <td class="px-6 py-4">
+                                <td class="px-4 py-2.5">
                                     @if($user->is_active)
                                         <span class="badge badge-success">Active</span>
                                     @else
                                         <span class="badge badge-danger">Inactive</span>
                                     @endif
                                 </td>
-                                <td class="px-6 py-4 text-right">
+                                <td class="px-4 py-2.5 text-right">
                                     <div class="flex items-center justify-end gap-2">
                                         @can('update', $user)
                                             <!-- Reset Password -->
                                             <button wire:click="openResetPasswordModal({{ $user->id }})"
                                                     class="p-2 text-accent hover:bg-accent/10 rounded-lg transition-smooth"
                                                     title="Reset Password">
-                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/>
                                                 </svg>
                                             </button>
@@ -156,7 +156,7 @@
                                                 <button wire:click="toggleUserStatus({{ $user->id }})"
                                                         class="p-2 {{ $user->is_active ? 'text-warning hover:bg-warning/10' : 'text-success hover:bg-success/10' }} rounded-lg transition-smooth"
                                                         title="{{ $user->is_active ? 'Deactivate' : 'Activate' }}">
-                                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"/>
                                                     </svg>
                                                 </button>
@@ -165,7 +165,7 @@
                                             <a href="{{ route('admin.users.edit', $user) }}"
                                                class="p-2 text-primary hover:bg-primary/10 rounded-lg transition-smooth"
                                                title="Edit">
-                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
                                                 </svg>
                                             </a>
@@ -177,7 +177,7 @@
                                                         wire:confirm="Are you sure you want to delete this user?"
                                                         class="p-2 text-danger hover:bg-danger/10 rounded-lg transition-smooth"
                                                         title="Delete">
-                                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
                                                     </svg>
                                                 </button>
@@ -192,16 +192,16 @@
             </div>
 
             <!-- Pagination -->
-            <div class="px-6 py-4 border-t border-border">
+            <div class="px-4 py-2.5 border-t border-border">
                 {{ $users->links() }}
             </div>
         @else
-            <div class="p-12 text-center">
-                <svg class="w-16 h-16 mx-auto text-muted mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div class="p-8 text-center">
+                <svg class="h-12 w-12 mx-auto text-muted mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
                 </svg>
-                <h3 class="text-lg font-medium text-text mb-2">No users found</h3>
-                <p class="text-muted mb-6">Get started by creating a new user.</p>
+                <h3 class="text-base font-medium text-text mb-2">No users found</h3>
+                <p class="text-sm text-muted mb-4">Get started by creating a new user.</p>
                 @can('create', App\Models\User::class)
                     <a href="{{ route('admin.users.create') }}" class="btn btn-primary">Add User</a>
                 @endcan

@@ -13,10 +13,10 @@
     @endif
 
     <!-- Header -->
-    <div class="flex items-center justify-between mb-6">
+    <div class="flex items-center justify-between mb-4">
         <div>
-            <h1 class="text-2xl font-bold text-text">Departments</h1>
-            <p class="text-muted">Manage hotel departments for issue tracking</p>
+            <h1 class="text-xl font-semibold text-text">Departments</h1>
+            <p class="text-sm text-muted">Manage hotel departments for issue tracking</p>
         </div>
         @can('create', App\Models\Department::class)
             <a href="{{ route('admin.departments.create') }}" class="btn btn-primary">
@@ -29,13 +29,13 @@
     </div>
 
     <!-- Search -->
-    <div class="card mb-6">
+    <div class="card mb-4">
         <div class="p-4">
             <input
                 type="text"
                 wire:model.live.debounce.300ms="search"
                 placeholder="Search departments..."
-                class="w-full bg-surface-2 border border-border text-text placeholder-muted rounded-lg px-4 py-2 focus:border-primary focus:ring-primary"
+                class="w-full bg-surface-2 border border-border text-sm text-text placeholder-muted rounded-lg px-3 py-1.5 focus:border-primary focus:ring-primary"
             />
         </div>
     </div>
@@ -47,7 +47,7 @@
                 <table class="w-full">
                     <thead>
                         <tr class="border-b border-border">
-                            <th class="px-6 py-3 text-left text-xs font-medium text-muted uppercase tracking-wider cursor-pointer hover:text-text"
+                            <th class="px-4 py-2.5 text-left text-xs font-medium text-muted tracking-wider cursor-pointer hover:text-text"
                                 wire:click="sortBy('name')">
                                 <div class="flex items-center gap-1">
                                     Name
@@ -56,10 +56,10 @@
                                     </svg>
                                 </div>
                             </th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-muted uppercase tracking-wider">
+                            <th class="px-4 py-2.5 text-left text-xs font-medium text-muted tracking-wider">
                                 Description
                             </th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-muted uppercase tracking-wider cursor-pointer hover:text-text"
+                            <th class="px-4 py-2.5 text-left text-xs font-medium text-muted tracking-wider cursor-pointer hover:text-text"
                                 wire:click="sortBy('issues_count')">
                                 <div class="flex items-center gap-1">
                                     Issues
@@ -68,7 +68,7 @@
                                     </svg>
                                 </div>
                             </th>
-                            <th class="px-6 py-3 text-right text-xs font-medium text-muted uppercase tracking-wider">
+                            <th class="px-4 py-2.5 text-right text-xs font-medium text-muted tracking-wider">
                                 Actions
                             </th>
                         </tr>
@@ -76,16 +76,16 @@
                     <tbody class="divide-y divide-border">
                         @foreach($departments as $department)
                             <tr class="hover:bg-surface-2 transition-smooth">
-                                <td class="px-6 py-4">
+                                <td class="px-4 py-2.5">
                                     <span class="font-medium text-text">{{ $department->name }}</span>
                                 </td>
-                                <td class="px-6 py-4">
+                                <td class="px-4 py-2.5">
                                     <span class="text-sm text-muted">{{ $department->description ?: '—' }}</span>
                                 </td>
-                                <td class="px-6 py-4">
-                                    <span class="badge badge-muted">{{ $department->issues_count }} issues</span>
+                                <td class="px-4 py-2.5">
+                                    <span class="badge badge-muted text-xs">{{ $department->issues_count }} issues</span>
                                 </td>
-                                <td class="px-6 py-4 text-right">
+                                <td class="px-4 py-2.5 text-right">
                                     <div class="flex items-center justify-end gap-2">
                                         @can('update', $department)
                                             <a href="{{ route('admin.departments.edit', $department) }}"
@@ -109,16 +109,16 @@
             </div>
 
             <!-- Pagination -->
-            <div class="px-6 py-4 border-t border-border">
+            <div class="px-4 py-2.5 border-t border-border">
                 {{ $departments->links() }}
             </div>
         @else
-            <div class="p-12 text-center">
-                <svg class="w-16 h-16 mx-auto text-muted mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div class="p-8 text-center">
+                <svg class="h-12 w-12 mx-auto text-muted mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
                 </svg>
-                <h3 class="text-lg font-medium text-text mb-2">No departments found</h3>
-                <p class="text-muted mb-6">Get started by creating a new department.</p>
+                <h3 class="text-base font-medium text-text mb-2">No departments found</h3>
+                <p class="text-sm text-muted mb-4">Get started by creating a new department.</p>
                 @can('create', App\Models\Department::class)
                     <a href="{{ route('admin.departments.create') }}" class="btn btn-primary">Add Department</a>
                 @endcan

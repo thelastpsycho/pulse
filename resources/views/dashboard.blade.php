@@ -76,27 +76,27 @@
 
     <div class="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <!-- Hero Section -->
-        <div class="mb-10 animate-fade-in-up">
+        <div class="mb-8 animate-fade-in-up">
             <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
                 <div>
                     <p class="text-sm font-medium text-accent mb-2 tracking-wide uppercase">
                         {{ now()->format('l, F j, Y') }}
                     </p>
-                    <h1 class="text-4xl sm:text-5xl font-bold text-text mb-2">
+                    <h1 class="text-3xl sm:text-4xl font-semibold text-text mb-2">
                         Good {{ now()->hour < 12 ? 'Morning' : (now()->hour < 17 ? 'Afternoon' : 'Evening') }},
                         <span class="bg-gradient-to-r from-accent to-primary bg-clip-text text-transparent">
                             {{ auth()->user()->name }}
                         </span>
                     </h1>
-                    <p class="text-lg text-muted max-w-2xl">
+                    <p class="text-sm text-muted max-w-2xl">
                         Here's what's happening with your issues today.
                         <span class="text-text font-medium">{{ \App\Models\Issue::query()->where('status', 'open')->count() }} open</span> issues need your attention.
                     </p>
                 </div>
                 @can('create', \App\Models\Issue::class)
                     <a href="{{ route('issues.create') }}"
-                       class="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-accent to-primary text-white font-semibold rounded-xl shadow-lg shadow-accent/25 hover:shadow-accent/40 hover:scale-105 transition-all duration-300">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                       class="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-accent to-primary text-white font-medium rounded-lg shadow-lg shadow-accent/25 hover:shadow-accent/40 hover:scale-105 transition-all duration-300">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
                         </svg>
                         New Issue
@@ -106,13 +106,13 @@
         </div>
 
         <!-- Metrics Grid -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-10">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
             <!-- Open Issues -->
-            <div class="metric-card gradient-accent glass-card rounded-2xl p-6 animate-fade-in-up stagger-1 hover:scale-[1.02] transition-transform duration-300">
+            <div class="metric-card gradient-accent glass-card rounded-2xl p-4 animate-fade-in-up stagger-1 hover:scale-[1.02] transition-transform duration-300">
                 <div class="relative">
-                    <div class="flex items-start justify-between mb-4">
-                        <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-accent/20 to-accent/10 flex items-center justify-center">
-                            <svg class="w-7 h-7 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div class="flex items-start justify-between mb-3">
+                        <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-accent/20 to-accent/10 flex items-center justify-center">
+                            <svg class="w-6 h-6 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
                             </svg>
                         </div>
@@ -124,7 +124,7 @@
                         </span>
                     </div>
                     <p class="text-sm text-muted mb-1">Open Issues</p>
-                    <p class="text-3xl font-bold text-text">{{ \App\Models\Issue::query()->where('status', 'open')->count() }}</p>
+                    <p class="text-2xl font-semibold text-text">{{ \App\Models\Issue::query()->where('status', 'open')->count() }}</p>
                     <div class="mt-3 h-1.5 bg-surface-2 rounded-full overflow-hidden">
                         <div class="h-full w-3/4 bg-gradient-to-r from-accent to-primary rounded-full"></div>
                     </div>
@@ -132,11 +132,11 @@
             </div>
 
             <!-- Closed Today -->
-            <div class="metric-card gradient-success glass-card rounded-2xl p-6 animate-fade-in-up stagger-2 hover:scale-[1.02] transition-transform duration-300">
+            <div class="metric-card gradient-success glass-card rounded-2xl p-4 animate-fade-in-up stagger-2 hover:scale-[1.02] transition-transform duration-300">
                 <div class="relative">
-                    <div class="flex items-start justify-between mb-4">
-                        <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-success/20 to-success/10 flex items-center justify-center">
-                            <svg class="w-7 h-7 text-success" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div class="flex items-start justify-between mb-3">
+                        <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-success/20 to-success/10 flex items-center justify-center">
+                            <svg class="w-6 h-6 text-success" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                             </svg>
                         </div>
@@ -148,7 +148,7 @@
                         </span>
                     </div>
                     <p class="text-sm text-muted mb-1">Closed Today</p>
-                    <p class="text-3xl font-bold text-text">{{ \App\Models\Issue::query()->where('status', 'closed')->whereDate('closed_at', today())->count() }}</p>
+                    <p class="text-2xl font-semibold text-text">{{ \App\Models\Issue::query()->where('status', 'closed')->whereDate('closed_at', today())->count() }}</p>
                     <div class="mt-3 h-1.5 bg-surface-2 rounded-full overflow-hidden">
                         <div class="h-full w-1/2 bg-gradient-to-r from-success to-emerald-600 rounded-full"></div>
                     </div>
@@ -156,11 +156,11 @@
             </div>
 
             <!-- Urgent Issues -->
-            <div class="metric-card gradient-danger glass-card rounded-2xl p-6 animate-fade-in-up stagger-3 hover:scale-[1.02] transition-transform duration-300">
+            <div class="metric-card gradient-danger glass-card rounded-2xl p-4 animate-fade-in-up stagger-3 hover:scale-[1.02] transition-transform duration-300">
                 <div class="relative">
-                    <div class="flex items-start justify-between mb-4">
-                        <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-danger/20 to-danger/10 flex items-center justify-center">
-                            <svg class="w-7 h-7 text-danger" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div class="flex items-start justify-between mb-3">
+                        <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-danger/20 to-danger/10 flex items-center justify-center">
+                            <svg class="w-6 h-6 text-danger" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
                             </svg>
                         </div>
@@ -169,7 +169,7 @@
                         </span>
                     </div>
                     <p class="text-sm text-muted mb-1">Urgent Issues</p>
-                    <p class="text-3xl font-bold text-text">{{ \App\Models\Issue::query()->where('status', 'open')->where('priority', 'urgent')->count() }}</p>
+                    <p class="text-2xl font-semibold text-text">{{ \App\Models\Issue::query()->where('status', 'open')->where('priority', 'urgent')->count() }}</p>
                     <div class="mt-3 h-1.5 bg-surface-2 rounded-full overflow-hidden">
                         <div class="h-full w-1/4 bg-gradient-to-r from-danger to-red-600 rounded-full"></div>
                     </div>
@@ -177,11 +177,11 @@
             </div>
 
             <!-- Assigned to Me -->
-            <div class="metric-card gradient-warning glass-card rounded-2xl p-6 animate-fade-in-up stagger-4 hover:scale-[1.02] transition-transform duration-300">
+            <div class="metric-card gradient-warning glass-card rounded-2xl p-4 animate-fade-in-up stagger-4 hover:scale-[1.02] transition-transform duration-300">
                 <div class="relative">
-                    <div class="flex items-start justify-between mb-4">
-                        <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-warning/20 to-warning/10 flex items-center justify-center">
-                            <svg class="w-7 h-7 text-warning" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div class="flex items-start justify-between mb-3">
+                        <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-warning/20 to-warning/10 flex items-center justify-center">
+                            <svg class="w-6 h-6 text-warning" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
                             </svg>
                         </div>
@@ -190,7 +190,7 @@
                         </span>
                     </div>
                     <p class="text-sm text-muted mb-1">Assigned to Me</p>
-                    <p class="text-3xl font-bold text-text">{{ \App\Models\Issue::query()->where('assigned_to_user_id', auth()->id())->where('status', 'open')->count() }}</p>
+                    <p class="text-2xl font-semibold text-text">{{ \App\Models\Issue::query()->where('assigned_to_user_id', auth()->id())->where('status', 'open')->count() }}</p>
                     <div class="mt-3 h-1.5 bg-surface-2 rounded-full overflow-hidden">
                         <div class="h-full w-2/3 bg-gradient-to-r from-warning to-amber-600 rounded-full"></div>
                     </div>
@@ -199,14 +199,14 @@
         </div>
 
         <!-- Main Content Grid -->
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
             <!-- Recent Issues & Activity (2/3 width) -->
-            <div class="lg:col-span-2 space-y-6">
+            <div class="lg:col-span-2 space-y-4">
                 <!-- Recent Issues -->
                 <div class="glass-card rounded-2xl animate-fade-in-up stagger-5">
-                    <div class="p-6 border-b border-border/50 flex items-center justify-between">
+                    <div class="p-4 border-b border-border/50 flex items-center justify-between">
                         <div>
-                            <h2 class="text-lg font-semibold text-text">Recent Issues</h2>
+                            <h2 class="text-base font-medium text-text">Recent Issues</h2>
                             <p class="text-sm text-muted mt-0.5">Latest updates from your team</p>
                         </div>
                         <a href="{{ route('issues.index') }}" class="text-sm text-accent hover:text-accent/80 font-medium flex items-center gap-1 transition-colors">
@@ -226,7 +226,7 @@
                     @if($recentIssues->count() > 0)
                         <div class="divide-y divide-border/50">
                             @foreach($recentIssues as $index => $issue)
-                                <div class="p-5 flex items-center gap-4 hover:bg-surface-2/50 transition-all duration-200 animate-slide-in" style="animation-delay: {{ $index * 0.1 }}s; opacity: 0;">
+                                <div class="p-4 flex items-center gap-4 hover:bg-surface-2/50 transition-all duration-200 animate-slide-in" style="animation-delay: {{ $index * 0.1 }}s; opacity: 0;">
                                     <!-- Priority Indicator -->
                                     <div class="w-2 h-12 rounded-full {{ match($issue->priority) {
                                         'urgent' => 'bg-danger',
@@ -260,7 +260,7 @@
                                     </div>
                                     <a href="{{ route('issues.show', $issue) }}"
                                        class="p-2 rounded-lg bg-surface-2 hover:bg-accent hover:text-white transition-all duration-200">
-                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
                                         </svg>
                                     </a>
@@ -269,13 +269,13 @@
                         </div>
                     @else
                         <div class="p-12 text-center">
-                            <div class="w-20 h-20 mx-auto mb-4 rounded-2xl bg-surface-2 flex items-center justify-center">
-                                <svg class="w-10 h-10 text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <div class="w-16 h-16 mx-auto mb-4 rounded-xl bg-surface-2 flex items-center justify-center">
+                                <svg class="w-8 h-8 text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
                                 </svg>
                             </div>
-                            <h3 class="text-lg font-medium text-text mb-2">No issues yet</h3>
-                            <p class="text-muted mb-4">Get started by creating your first issue.</p>
+                            <h3 class="text-base font-medium text-text mb-2">No issues yet</h3>
+                            <p class="text-sm text-muted mb-4">Get started by creating your first issue.</p>
                             @can('create', \App\Models\Issue::class)
                                 <a href="{{ route('issues.create') }}" class="inline-flex items-center gap-2 px-4 py-2 bg-accent text-white font-medium rounded-lg hover:bg-accent/90 transition-colors">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -289,10 +289,10 @@
                 </div>
 
                 <!-- Charts Section Placeholder -->
-                <div class="glass-card rounded-2xl p-6 animate-fade-in-up stagger-6">
-                    <div class="flex items-center justify-between mb-6">
+                <div class="glass-card rounded-2xl p-4 animate-fade-in-up stagger-6">
+                    <div class="flex items-center justify-between mb-4">
                         <div>
-                            <h2 class="text-lg font-semibold text-text">Issue Trends</h2>
+                            <h2 class="text-base font-medium text-text">Issue Trends</h2>
                             <p class="text-sm text-muted mt-0.5">Weekly activity overview</p>
                         </div>
                         <div class="flex items-center gap-2">
@@ -315,47 +315,47 @@
             </div>
 
             <!-- Sidebar (1/3 width) -->
-            <div class="space-y-6">
+            <div class="space-y-4">
                 <!-- Quick Actions -->
-                <div class="glass-card rounded-2xl p-6 animate-fade-in-up stagger-6">
-                    <h2 class="text-lg font-semibold text-text mb-4">Quick Actions</h2>
-                    <div class="space-y-2">
+                <div class="glass-card rounded-2xl p-4 animate-fade-in-up stagger-6">
+                    <h2 class="text-base font-medium text-text mb-3">Quick Actions</h2>
+                    <div class="space-y-1">
                         @can('create', \App\Models\Issue::class)
                             <a href="{{ route('issues.create') }}"
-                               class="flex items-center gap-3 p-3 rounded-xl hover:bg-surface-2/50 transition-all duration-200 group">
-                                <div class="w-10 h-10 rounded-lg bg-accent/10 flex items-center justify-center group-hover:bg-accent/20 transition-colors">
-                                    <svg class="w-5 h-5 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                               class="flex items-center gap-3 p-2.5 rounded-lg hover:bg-surface-2/50 transition-all duration-200 group">
+                                <div class="w-9 h-9 rounded-lg bg-accent/10 flex items-center justify-center group-hover:bg-accent/20 transition-colors">
+                                    <svg class="w-4 h-4 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
                                     </svg>
                                 </div>
                                 <div>
-                                    <p class="font-medium text-text">New Issue</p>
+                                    <p class="text-sm font-medium text-text">New Issue</p>
                                     <p class="text-xs text-muted">Create a new issue</p>
                                 </div>
                             </a>
                         @endcan
                         <a href="{{ route('issues.index') }}"
-                           class="flex items-center gap-3 p-3 rounded-xl hover:bg-surface-2/50 transition-all duration-200 group">
-                            <div class="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
-                                <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                           class="flex items-center gap-3 p-2.5 rounded-lg hover:bg-surface-2/50 transition-all duration-200 group">
+                            <div class="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
+                                <svg class="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
                                 </svg>
                             </div>
                             <div>
-                                <p class="font-medium text-text">Browse Issues</p>
+                                <p class="text-sm font-medium text-text">Browse Issues</p>
                                 <p class="text-xs text-muted">View all issues</p>
                             </div>
                         </a>
                         @can('viewAny', \App\Models\Issue::class)
                             <a href="{{ route('reports.index') }}"
-                               class="flex items-center gap-3 p-3 rounded-xl hover:bg-surface-2/50 transition-all duration-200 group">
-                                <div class="w-10 h-10 rounded-lg bg-success/10 flex items-center justify-center group-hover:bg-success/20 transition-colors">
-                                    <svg class="w-5 h-5 text-success" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                               class="flex items-center gap-3 p-2.5 rounded-lg hover:bg-surface-2/50 transition-all duration-200 group">
+                                <div class="w-9 h-9 rounded-lg bg-success/10 flex items-center justify-center group-hover:bg-success/20 transition-colors">
+                                    <svg class="w-4 h-4 text-success" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
                                     </svg>
                                 </div>
                                 <div>
-                                    <p class="font-medium text-text">Reports</p>
+                                    <p class="text-sm font-medium text-text">Reports</p>
                                     <p class="text-xs text-muted">View analytics</p>
                                 </div>
                             </a>
@@ -364,9 +364,9 @@
                 </div>
 
                 <!-- Priority Breakdown -->
-                <div class="glass-card rounded-2xl p-6 animate-fade-in-up stagger-6">
-                    <h2 class="text-lg font-semibold text-text mb-4">Priority Breakdown</h2>
-                    <div class="space-y-4">
+                <div class="glass-card rounded-2xl p-4 animate-fade-in-up stagger-6">
+                    <h2 class="text-base font-medium text-text mb-3">Priority Breakdown</h2>
+                    <div class="space-y-3">
                         @php
                             $urgentCount = \App\Models\Issue::query()->where('status', 'open')->where('priority', 'urgent')->count();
                             $highCount = \App\Models\Issue::query()->where('status', 'open')->where('priority', 'high')->count();
@@ -430,8 +430,8 @@
                 </div>
 
                 <!-- Recent Activity Timeline -->
-                <div class="glass-card rounded-2xl p-6 animate-fade-in-up stagger-6">
-                    <h2 class="text-lg font-semibold text-text mb-4">Recent Activity</h2>
+                <div class="glass-card rounded-2xl p-4 animate-fade-in-up stagger-6">
+                    <h2 class="text-base font-medium text-text mb-3">Recent Activity</h2>
                     @php
                         $activities = \App\Models\ActivityLog::query()
                             ->with(['actor', 'subject'])

@@ -13,10 +13,10 @@
     @endif
 
     <!-- Header -->
-    <div class="flex items-center justify-between mb-6">
+    <div class="flex items-center justify-between mb-4">
         <div>
-            <h1 class="text-2xl font-bold text-text">Roles</h1>
-            <p class="text-muted">Manage system roles and their permissions</p>
+            <h1 class="text-xl font-semibold text-text">Roles</h1>
+            <p class="text-sm text-muted">Manage system roles and their permissions</p>
         </div>
         @can('admin.roles.create')
             <a href="{{ route('admin.roles.create') }}" class="btn btn-primary">
@@ -29,15 +29,15 @@
     </div>
 
     <!-- Search -->
-    <div class="card mb-6">
+    <div class="card mb-4">
         <div class="p-4">
-            <div class="flex flex-col lg:flex-row gap-4">
+            <div class="flex flex-col lg:flex-row gap-3">
                 <div class="flex-1">
                     <input
                         type="text"
                         wire:model.live.debounce.300ms="search"
                         placeholder="Search roles by name or description..."
-                        class="w-full bg-surface-2 border border-border text-text placeholder-muted rounded-lg px-4 py-2 focus:border-primary focus:ring-primary"
+                        class="w-full bg-surface-2 border border-border text-sm text-text placeholder-muted rounded-lg px-3 py-1.5 focus:border-primary focus:ring-primary"
                     />
                 </div>
 
@@ -55,7 +55,7 @@
                 <table class="w-full">
                     <thead>
                         <tr class="border-b border-border">
-                            <th class="px-6 py-3 text-left text-xs font-medium text-muted uppercase tracking-wider cursor-pointer hover:text-text"
+                            <th class="px-4 py-2.5 text-left text-xs font-medium text-muted tracking-wider cursor-pointer hover:text-text"
                                 wire:click="sortBy('name')">
                                 <div class="flex items-center gap-1">
                                     Role
@@ -64,13 +64,13 @@
                                     </svg>
                                 </div>
                             </th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-muted uppercase tracking-wider">
+                            <th class="px-4 py-2.5 text-left text-xs font-medium text-muted tracking-wider">
                                 Description
                             </th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-muted uppercase tracking-wider">
+                            <th class="px-4 py-2.5 text-left text-xs font-medium text-muted tracking-wider">
                                 Permissions
                             </th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-muted uppercase tracking-wider cursor-pointer hover:text-text"
+                            <th class="px-4 py-2.5 text-left text-xs font-medium text-muted tracking-wider cursor-pointer hover:text-text"
                                 wire:click="sortBy('users_count')">
                                 <div class="flex items-center gap-1">
                                     Users
@@ -79,7 +79,7 @@
                                     </svg>
                                 </div>
                             </th>
-                            <th class="px-6 py-3 text-right text-xs font-medium text-muted uppercase tracking-wider">
+                            <th class="px-4 py-2.5 text-right text-xs font-medium text-muted tracking-wider">
                                 Actions
                             </th>
                         </tr>
@@ -87,7 +87,7 @@
                     <tbody class="divide-y divide-border">
                         @foreach($roles as $role)
                             <tr class="hover:bg-surface-2 transition-smooth">
-                                <td class="px-6 py-4">
+                                <td class="px-4 py-2.5">
                                     <div class="flex items-center gap-3">
                                         <div class="w-10 h-10 rounded-lg bg-primary/20 flex items-center justify-center text-primary font-semibold">
                                             {{ substr($role->name, 0, 2) }}
@@ -95,10 +95,10 @@
                                         <div class="font-medium text-text">{{ $role->name }}</div>
                                     </div>
                                 </td>
-                                <td class="px-6 py-4">
+                                <td class="px-4 py-2.5">
                                     <span class="text-sm text-muted">{{ $role->description ?? 'No description' }}</span>
                                 </td>
-                                <td class="px-6 py-4">
+                                <td class="px-4 py-2.5">
                                     <div class="flex flex-wrap gap-1">
                                         @if($role->permissions->count() > 0)
                                             @foreach($role->permissions->take(3) as $permission)
@@ -112,12 +112,12 @@
                                         @endif
                                     </div>
                                 </td>
-                                <td class="px-6 py-4">
-                                    <span class="badge badge-{{ $role->users_count > 0 ? 'info' : 'muted' }}">
+                                <td class="px-4 py-2.5">
+                                    <span class="badge badge-{{ $role->users_count > 0 ? 'info' : 'muted' }} text-xs">
                                         {{ $role->users_count }} user{{ $role->users_count != 1 ? 's' : '' }}
                                     </span>
                                 </td>
-                                <td class="px-6 py-4 text-right">
+                                <td class="px-4 py-2.5 text-right">
                                     <div class="flex items-center justify-end gap-2">
                                         @can('admin.roles.update')
                                             <a href="{{ route('admin.roles.edit', $role) }}"
@@ -139,16 +139,16 @@
             </div>
 
             <!-- Pagination -->
-            <div class="px-6 py-4 border-t border-border">
+            <div class="px-4 py-2.5 border-t border-border">
                 {{ $roles->links() }}
             </div>
         @else
-            <div class="p-12 text-center">
-                <svg class="w-16 h-16 mx-auto text-muted mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div class="p-8 text-center">
+                <svg class="h-12 w-12 mx-auto text-muted mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
                 </svg>
-                <h3 class="text-lg font-medium text-text mb-2">No roles found</h3>
-                <p class="text-muted mb-6">Get started by creating a new role.</p>
+                <h3 class="text-base font-medium text-text mb-2">No roles found</h3>
+                <p class="text-sm text-muted mb-4">Get started by creating a new role.</p>
                 @can('admin.roles.create')
                     <a href="{{ route('admin.roles.create') }}" class="btn btn-primary">Add Role</a>
                 @endcan

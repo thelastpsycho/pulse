@@ -13,10 +13,10 @@
     @endif
 
     <!-- Header -->
-    <div class="flex items-center justify-between mb-6">
+    <div class="flex items-center justify-between mb-4">
         <div>
-            <h1 class="text-2xl font-bold text-text">Issue Types</h1>
-            <p class="text-muted">Manage issue types for categorization</p>
+            <h1 class="text-xl font-semibold text-text">Issue Types</h1>
+            <p class="text-sm text-muted">Manage issue types for categorization</p>
         </div>
         @can('create', App\Models\IssueType::class)
             <a href="{{ route('admin.issue-types.create') }}" class="btn btn-primary">
@@ -29,13 +29,13 @@
     </div>
 
     <!-- Search -->
-    <div class="card mb-6">
+    <div class="card mb-4">
         <div class="p-4">
             <input
                 type="text"
                 wire:model.live.debounce.300ms="search"
                 placeholder="Search issue types..."
-                class="w-full bg-surface-2 border border-border text-text placeholder-muted rounded-lg px-4 py-2 focus:border-primary focus:ring-primary"
+                class="w-full bg-surface-2 border border-border text-sm text-text placeholder-muted rounded-lg px-3 py-1.5 focus:border-primary focus:ring-primary"
             />
         </div>
     </div>
@@ -47,7 +47,7 @@
                 <table class="w-full">
                     <thead>
                         <tr class="border-b border-border">
-                            <th class="px-6 py-3 text-left text-xs font-medium text-muted uppercase tracking-wider cursor-pointer hover:text-text"
+                            <th class="px-4 py-2.5 text-left text-xs font-medium text-muted tracking-wider cursor-pointer hover:text-text"
                                 wire:click="sortBy('name')">
                                 <div class="flex items-center gap-1">
                                     Name
@@ -56,13 +56,13 @@
                                     </svg>
                                 </div>
                             </th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-muted uppercase tracking-wider">
+                            <th class="px-4 py-2.5 text-left text-xs font-medium text-muted tracking-wider">
                                 Description
                             </th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-muted uppercase tracking-wider">
+                            <th class="px-4 py-2.5 text-left text-xs font-medium text-muted tracking-wider">
                                 Default Severity
                             </th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-muted uppercase tracking-wider cursor-pointer hover:text-text"
+                            <th class="px-4 py-2.5 text-left text-xs font-medium text-muted tracking-wider cursor-pointer hover:text-text"
                                 wire:click="sortBy('issues_count')">
                                 <div class="flex items-center gap-1">
                                     Issues
@@ -71,7 +71,7 @@
                                     </svg>
                                 </div>
                             </th>
-                            <th class="px-6 py-3 text-right text-xs font-medium text-muted uppercase tracking-wider">
+                            <th class="px-4 py-2.5 text-right text-xs font-medium text-muted tracking-wider">
                                 Actions
                             </th>
                         </tr>
@@ -79,21 +79,21 @@
                     <tbody class="divide-y divide-border">
                         @foreach($issueTypes as $issueType)
                             <tr class="hover:bg-surface-2 transition-smooth">
-                                <td class="px-6 py-4">
+                                <td class="px-4 py-2.5">
                                     <span class="font-medium text-text">{{ $issueType->name }}</span>
                                 </td>
-                                <td class="px-6 py-4">
+                                <td class="px-4 py-2.5">
                                     <span class="text-sm text-muted">{{ $issueType->description ?: '—' }}</span>
                                 </td>
-                                <td class="px-6 py-4">
-                                    <span class="badge {{ $this->getPriorityBadge($issueType->default_severity) }}">
+                                <td class="px-4 py-2.5">
+                                    <span class="badge {{ $this->getPriorityBadge($issueType->default_severity) }} text-xs">
                                         {{ ucfirst($issueType->default_severity) }}
                                     </span>
                                 </td>
-                                <td class="px-6 py-4">
-                                    <span class="badge badge-muted">{{ $issueType->issues_count }} issues</span>
+                                <td class="px-4 py-2.5">
+                                    <span class="badge badge-muted text-xs">{{ $issueType->issues_count }} issues</span>
                                 </td>
-                                <td class="px-6 py-4 text-right">
+                                <td class="px-4 py-2.5 text-right">
                                     <div class="flex items-center justify-end gap-2">
                                         @can('update', $issueType)
                                             <a href="{{ route('admin.issue-types.edit', $issueType) }}"
@@ -117,16 +117,16 @@
             </div>
 
             <!-- Pagination -->
-            <div class="px-6 py-4 border-t border-border">
+            <div class="px-4 py-2.5 border-t border-border">
                 {{ $issueTypes->links() }}
             </div>
         @else
-            <div class="p-12 text-center">
-                <svg class="w-16 h-16 mx-auto text-muted mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div class="p-8 text-center">
+                <svg class="h-12 w-12 mx-auto text-muted mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
                 </svg>
-                <h3 class="text-lg font-medium text-text mb-2">No issue types found</h3>
-                <p class="text-muted mb-6">Get started by creating a new issue type.</p>
+                <h3 class="text-base font-medium text-text mb-2">No issue types found</h3>
+                <p class="text-sm text-muted mb-4">Get started by creating a new issue type.</p>
                 @can('create', App\Models\IssueType::class)
                     <a href="{{ route('admin.issue-types.create') }}" class="btn btn-primary">Add Issue Type</a>
                 @endcan

@@ -19,12 +19,12 @@
           x-data="{ isDark() { return document.documentElement.classList.contains('dark') } }">
         <div class="w-full max-w-md">
             <!-- Logo -->
-            <div class="text-center mb-8">
+            <div class="text-center mb-6">
                 <a href="/">
-                    <svg class="w-16 h-16 mx-auto text-primary" viewBox="0 0 24 24" fill="currentColor">
+                    <svg class="w-12 h-12 mx-auto text-primary" viewBox="0 0 24 24" fill="currentColor">
                         <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
                     </svg>
-                    <h1 class="mt-4 text-2xl font-bold text-text">{{ config('app.name') }}</h1>
+                    <h1 class="mt-3 text-xl font-semibold text-text">{{ config('app.name') }}</h1>
                 </a>
             </div>
 

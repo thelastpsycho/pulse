@@ -60,10 +60,10 @@
     @endif
 
     <!-- Page Header with Stats -->
-    <div class="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
+    <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div class="flex items-center gap-3">
             <div>
-                <h1 class="text-3xl font-bold text-text font-heading">
+                <h1 class="text-2xl font-semibold text-text font-heading">
                     {{ match($tab) {
                         'all' => 'All Issues',
                         'open' => 'Open Issues',
@@ -71,79 +71,73 @@
                         default => 'Issues'
                     } }}
                 </h1>
-                <p class="mt-1 text-muted">
-                    {{ $issues->total() }} {{ Str::plural('issue', $issues->total()) }} found
+                <p class="mt-0.5 text-sm text-muted">
+                    {{ $issues->total() }} {{ Str::plural('issue', $issues->total()) }}
                 </p>
             </div>
         </div>
-        <x-view-toggle :viewMode="$viewMode" />
-        <div class="flex items-center gap-2">
-            <!-- Keyboard Shortcuts Help Button -->
-            <button
-                @click="showKeyboardShortcuts = true"
-                class="inline-flex items-center gap-1.5 rounded-xl border border-border/50 bg-surface-2/50 px-3 py-2 text-sm text-muted transition-all duration-200 hover:border-primary/50 hover:text-text"
-                title="Keyboard shortcuts (?)"
-            >
-                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
-                </svg>
-                <span class="hidden sm:inline">Shortcuts</span>
-                <kbd class="rounded bg-surface px-1.5 py-0.5 text-xs font-mono">?</kbd>
-            </button>
-            @can('viewAny', \App\Models\Issue::class)
-                <button wire:click="exportCSV" class="btn btn-outline inline-flex items-center gap-2">
-                    <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+        <div class="flex items-center gap-3">
+            <x-view-toggle :viewMode="$viewMode" />
+            <div class="flex items-center gap-2">
+                <!-- Keyboard Shortcuts Help Button -->
+                <button
+                    @click="showKeyboardShortcuts = true"
+                    class="inline-flex items-center gap-1.5 rounded-lg border border-border/50 bg-surface-2/50 px-3 py-2 text-sm text-muted transition-all duration-200 hover:border-primary/50 hover:text-text"
+                    title="Keyboard shortcuts (?)"
+                >
+                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
                     </svg>
-                    Export CSV
+                    <span class="hidden sm:inline">Shortcuts</span>
+                    <kbd class="rounded bg-surface px-1 py-0.5 text-xs font-mono">?</kbd>
                 </button>
-            @endcan
-            @can('create', \App\Models\Issue::class)
-                <a href="{{ route('issues.create') }}" class="btn btn-primary inline-flex items-center gap-2">
-                    <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-                    </svg>
-                    New Issue
-                </a>
-            @endcan
+                @can('viewAny', \App\Models\Issue::class)
+                    <button wire:click="exportCSV" class="btn btn-outline inline-flex items-center gap-2">
+                        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                        <span class="hidden sm:inline">Export</span>
+                    </button>
+                @endcan
+                @can('create', \App\Models\Issue::class)
+                    <a href="{{ route('issues.create') }}" class="btn btn-primary inline-flex items-center gap-2">
+                        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                        </svg>
+                        <span class="hidden sm:inline">New Issue</span>
+                        <span class="sm:hidden">New</span>
+                    </a>
+                @endcan
+            </div>
         </div>
     </div>
 
     <!-- Tabs - Enhanced Design -->
-    <div class="glass rounded-2xl p-1.5">
+    <div class="glass rounded-xl p-1">
         <div class="flex gap-1">
             <button
                 wire:click="setTab('all')"
-                class="{{ $tab === 'all' ? 'bg-primary text-white shadow-lg' : 'text-muted hover:text-text hover:bg-surface-2' }} relative flex-1 rounded-xl px-4 py-4 text-sm font-semibold transition-all duration-200">
-                <span class="flex items-center justify-center gap-2">
+                class="{{ $tab === 'all' ? 'bg-primary text-white shadow-md' : 'text-muted hover:text-text hover:bg-surface-2/50' }} relative flex-1 rounded-lg px-3 py-2 text-sm font-medium transition-all duration-200">
+                <span class="flex items-center justify-center gap-1.5">
                     All
-                    <span class="{{ $tab === 'all' ? 'bg-white/20' : 'bg-muted/20' }} rounded-full px-2 py-0.5 text-xs">{{ \App\Models\Issue::count() }}</span>
+                    <span class="{{ $tab === 'all' ? 'bg-white/20' : 'bg-muted/10' }} rounded-full px-1.5 py-0.5 text-xs">{{ \App\Models\Issue::count() }}</span>
                 </span>
-                @if($tab === 'all')
-                    <div class="absolute bottom-1 left-1/2 h-0.5 w-8 -translate-x-1/2 rounded-full bg-white/50"></div>
-                @endif
             </button>
             <button
                 wire:click="setTab('open')"
-                class="{{ $tab === 'open' ? 'bg-success text-white shadow-lg' : 'text-muted hover:text-text hover:bg-surface-2' }} relative flex-1 rounded-xl px-4 py-4 text-sm font-semibold transition-all duration-200">
-                <span class="flex items-center justify-center gap-2">
+                class="{{ $tab === 'open' ? 'bg-success text-white shadow-md' : 'text-muted hover:text-text hover:bg-surface-2/50' }} relative flex-1 rounded-lg px-3 py-2 text-sm font-medium transition-all duration-200">
+                <span class="flex items-center justify-center gap-1.5">
                     Open
-                    <span class="{{ $tab === 'open' ? 'bg-white/20' : 'bg-muted/20' }} rounded-full px-2 py-0.5 text-xs">{{ \App\Models\Issue::open()->count() }}</span>
+                    <span class="{{ $tab === 'open' ? 'bg-white/20' : 'bg-muted/10' }} rounded-full px-1.5 py-0.5 text-xs">{{ \App\Models\Issue::open()->count() }}</span>
                 </span>
-                @if($tab === 'open')
-                    <div class="absolute bottom-1 left-1/2 h-0.5 w-8 -translate-x-1/2 rounded-full bg-white/50"></div>
-                @endif
             </button>
             <button
                 wire:click="setTab('closed')"
-                class="{{ $tab === 'closed' ? 'bg-muted text-white shadow-lg' : 'text-muted hover:text-text hover:bg-surface-2' }} relative flex-1 rounded-xl px-4 py-4 text-sm font-semibold transition-all duration-200">
-                <span class="flex items-center justify-center gap-2">
+                class="{{ $tab === 'closed' ? 'bg-muted-foreground text-white shadow-md' : 'text-muted hover:text-text hover:bg-surface-2/50' }} relative flex-1 rounded-lg px-3 py-2 text-sm font-medium transition-all duration-200">
+                <span class="flex items-center justify-center gap-1.5">
                     Closed
-                    <span class="{{ $tab === 'closed' ? 'bg-white/20' : 'bg-muted/20' }} rounded-full px-2 py-0.5 text-xs">{{ \App\Models\Issue::closed()->count() }}</span>
+                    <span class="{{ $tab === 'closed' ? 'bg-white/20' : 'bg-muted/10' }} rounded-full px-1.5 py-0.5 text-xs">{{ \App\Models\Issue::closed()->count() }}</span>
                 </span>
-                @if($tab === 'closed')
-                    <div class="absolute bottom-1 left-1/2 h-0.5 w-8 -translate-x-1/2 rounded-full bg-white/50"></div>
-                @endif
             </button>
         </div>
     </div>
@@ -153,33 +147,33 @@
         <div class="border-b border-border/50 p-4">
             <!-- Saved Filters (Enhanced) -->
             @if(count($this->savedFilters) > 0)
-                <div class="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <div class="mb-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                     <div class="flex flex-wrap items-center gap-2">
-                        <span class="text-sm font-medium text-muted flex items-center gap-1.5">
-                            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <span class="text-xs font-medium text-muted flex items-center gap-1">
+                            <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
                             </svg>
                             Saved Filters
                         </span>
                     </div>
-                    <div class="flex flex-wrap gap-2 overflow-x-auto pb-2 sm:pb-0">
+                    <div class="flex flex-wrap gap-1.5 overflow-x-auto pb-1.5 sm:pb-0">
                         @foreach($this->savedFilters as $savedFilter)
                         <div class="group relative inline-flex flex-shrink-0">
                             <button
                                 wire:click="loadFilter({{ $savedFilter['id'] }})"
-                                class="inline-flex items-center gap-2 rounded-lg border border-border/50 bg-surface-2/50 px-4 py-2 text-sm font-medium text-text transition-all duration-200 hover:border-primary/50 hover:bg-surface-2 hover:shadow-sm"
+                                class="inline-flex items-center gap-1.5 rounded-md border border-border/50 bg-surface-2/50 px-3 py-1.5 text-xs font-medium text-text transition-all duration-200 hover:border-primary/50 hover:bg-surface-2"
                             >
-                                <svg class="h-3.5 w-3.5 text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg class="h-3 w-3 text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
                                 </svg>
-                                <span class="max-w-[150px] truncate">{{ $savedFilter['name'] }}</span>
+                                <span class="max-w-[120px] truncate">{{ $savedFilter['name'] }}</span>
                             </button>
                             <button
                                 wire:click="deleteFilter({{ $savedFilter['id'] }})"
-                                class="absolute -right-1.5 -top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-danger text-white opacity-0 transition-all duration-200 group-hover:opacity-100 hover:bg-danger/80"
+                                class="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-danger text-white opacity-0 transition-all duration-200 group-hover:opacity-100 hover:bg-danger/80"
                                 title="Delete filter '{{ $savedFilter['name'] }}'"
                             >
-                                <svg class="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg class="h-2.5 w-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                                 </svg>
                             </button>
@@ -188,47 +182,47 @@
                     </div>
                 </div>
             @endif
-            <div class="flex flex-col gap-4 lg:flex-row">
+            <div class="flex flex-col gap-3 lg:flex-row">
                 <!-- Search -->
                 <div class="flex-1">
                     <div class="relative">
-                        <svg class="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg class="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                         </svg>
                         <input
                             type="text"
                             wire:model.live.debounce.300ms="search"
                             placeholder="Search issues..."
-                            class="w-full rounded-xl border border-border/50 bg-surface-2/50 py-4 pl-12 pr-12 text-text placeholder-muted transition-all duration-200 focus:border-primary focus:ring-2 focus:ring-primary/20"
+                            class="w-full rounded-lg border border-border/50 bg-surface-2/50 py-2 pl-9 pr-8 text-sm text-text placeholder-muted transition-all duration-200 focus:border-primary focus:ring-2 focus:ring-primary/20"
                         />
-                        <kbd class="absolute right-3 top-1/2 -translate-y-1/2 rounded bg-surface px-1.5 py-0.5 text-xs font-mono text-muted border border-border">/</kbd>
+                        <kbd class="absolute right-2 top-1/2 -translate-y-1/2 rounded bg-surface px-1 py-0.5 text-[10px] font-mono text-muted border border-border">/</kbd>
                     </div>
                 </div>
 
                 <!-- Filters -->
                 <div class="flex flex-wrap gap-2">
-                    <select wire:model.live="department_id" class="rounded-xl border border-border/50 bg-surface-2/50 px-4 py-4 text-text transition-all duration-200 focus:border-primary focus:ring-2 focus:ring-primary/20">
+                    <select wire:model.live="department_id" class="rounded-lg border border-border/50 bg-surface-2/50 px-3 py-2 text-sm text-text transition-all duration-200 focus:border-primary focus:ring-2 focus:ring-primary/20">
                         <option value="">All Departments</option>
                         @foreach($this->departments as $id => $name)
                             <option value="{{ $id }}">{{ $name }}</option>
                         @endforeach
                     </select>
 
-                    <select wire:model.live="issue_type_id" class="rounded-xl border border-border/50 bg-surface-2/50 px-4 py-4 text-text transition-all duration-200 focus:border-primary focus:ring-2 focus:ring-primary/20">
+                    <select wire:model.live="issue_type_id" class="rounded-lg border border-border/50 bg-surface-2/50 px-3 py-2 text-sm text-text transition-all duration-200 focus:border-primary focus:ring-2 focus:ring-primary/20">
                         <option value="">All Types</option>
                         @foreach($this->issueTypes as $id => $name)
                             <option value="{{ $id }}">{{ $name }}</option>
                         @endforeach
                     </select>
 
-                    <select wire:model.live="priority" class="rounded-xl border border-border/50 bg-surface-2/50 px-4 py-4 text-text transition-all duration-200 focus:border-primary focus:ring-2 focus:ring-primary/20">
+                    <select wire:model.live="priority" class="rounded-lg border border-border/50 bg-surface-2/50 px-3 py-2 text-sm text-text transition-all duration-200 focus:border-primary focus:ring-2 focus:ring-primary/20">
                         <option value="">All Priorities</option>
                         @foreach($this->priorities as $value => $label)
                             <option value="{{ $value }}">{{ $label }}</option>
                         @endforeach
                     </select>
 
-                    <select wire:model.live="assigned_to" class="rounded-xl border border-border/50 bg-surface-2/50 px-4 py-4 text-text transition-all duration-200 focus:border-primary focus:ring-2 focus:ring-primary/20">
+                    <select wire:model.live="assigned_to" class="rounded-lg border border-border/50 bg-surface-2/50 px-3 py-2 text-sm text-text transition-all duration-200 focus:border-primary focus:ring-2 focus:ring-primary/20">
                         <option value="">All Users</option>
                         @foreach($this->users as $id => $name)
                             <option value="{{ $id }}">{{ $name }}</option>
@@ -259,13 +253,13 @@
                         <button
                             @click="isOpen = !isOpen"
                             type="button"
-                            class="flex items-center gap-2 rounded-xl border border-border/50 bg-surface-2/50 px-4 py-4 text-text transition-all duration-200 hover:border-primary/50 focus:border-primary focus:ring-2 focus:ring-primary/20"
+                            class="flex items-center gap-1.5 rounded-lg border border-border/50 bg-surface-2/50 px-3 py-2 text-sm text-text transition-all duration-200 hover:border-primary/50 focus:border-primary focus:ring-2 focus:ring-primary/20"
                         >
-                            <svg class="h-5 w-5 text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg class="h-4 w-4 text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                             </svg>
-                            <span class="text-sm" x-text="dateFrom || dateTo ? (dateFrom + ' - ' + dateTo) : 'Date Range'"></span>
-                            <svg class="h-4 w-4 text-muted" :class="{'rotate-180': isOpen}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <span class="text-xs" x-text="dateFrom || dateTo ? (dateFrom + ' - ' + dateTo) : 'Date Range'"></span>
+                            <svg class="h-3 w-3 text-muted" :class="{'rotate-180': isOpen}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                             </svg>
                         </button>
@@ -279,18 +273,18 @@
                             x-transition:leave="transition ease-in duration-75"
                             x-transition:leave-start="transform opacity-100 scale-100"
                             x-transition:leave-end="transform opacity-0 scale-95"
-                            class="absolute right-0 z-50 mt-2 w-80 rounded-xl border border-border bg-surface shadow-lg"
+                            class="absolute right-0 z-50 mt-2 w-72 rounded-lg border border-border bg-surface shadow-lg"
                             style="display: none;"
                         >
-                            <div class="p-4">
-                                <h4 class="mb-3 text-sm font-semibold text-text">Date Range</h4>
-                                <div class="space-y-3">
+                            <div class="p-3">
+                                <h4 class="mb-2 text-sm font-semibold text-text">Date Range</h4>
+                                <div class="space-y-2">
                                     <div>
                                         <label class="mb-1 block text-xs text-muted">From</label>
                                         <input
                                             type="date"
                                             x-model="dateFrom"
-                                            class="w-full rounded-lg border border-border bg-surface-2 px-3 py-2 text-sm text-text focus:border-primary focus:outline-none"
+                                            class="w-full rounded-md border border-border bg-surface-2 px-2.5 py-1.5 text-sm text-text focus:border-primary focus:outline-none"
                                         />
                                     </div>
                                     <div>
@@ -298,22 +292,22 @@
                                         <input
                                             type="date"
                                             x-model="dateTo"
-                                            class="w-full rounded-lg border border-border bg-surface-2 px-3 py-2 text-sm text-text focus:border-primary focus:outline-none"
+                                            class="w-full rounded-md border border-border bg-surface-2 px-2.5 py-1.5 text-sm text-text focus:border-primary focus:outline-none"
                                         />
                                     </div>
                                 </div>
-                                <div class="mt-4 flex justify-end gap-2">
+                                <div class="mt-3 flex justify-end gap-2">
                                     <button
                                         @click="clear()"
                                         type="button"
-                                        class="rounded-lg px-3 py-1.5 text-xs font-medium text-muted hover:bg-surface-2"
+                                        class="rounded-md px-2.5 py-1 text-xs font-medium text-muted hover:bg-surface-2"
                                     >
                                         Clear
                                     </button>
                                     <button
                                         @click="apply()"
                                         type="button"
-                                        class="rounded-lg bg-primary px-3 py-1.5 text-xs font-medium text-white hover:bg-primary/90"
+                                        class="rounded-md bg-primary px-2.5 py-1 text-xs font-medium text-white hover:bg-primary/90"
                                     >
                                         Apply
                                     </button>
@@ -326,11 +320,11 @@
 
             <!-- Active Filters -->
             @if($search || $department_id || $issue_type_id || $priority || $assigned_to || $date_from || $date_to)
-                <div class="mt-4 flex flex-wrap items-center gap-2">
-                    <span class="text-sm text-muted">Active filters:</span>
+                <div class="mt-3 flex flex-wrap items-center gap-1.5">
+                    <span class="text-xs text-muted">Active filters:</span>
                     @if($search)
                         <span class="badge badge-muted flex items-center gap-1">
-                            <svg class="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg class="h-2.5 w-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                             </svg>
                             {{ $search }}
@@ -350,18 +344,18 @@
                     @endif
                     @if($date_from || $date_to)
                         <span class="badge badge-muted flex items-center gap-1">
-                            <svg class="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg class="h-2.5 w-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                             </svg>
                             {{ $date_from ?? '?' }} - {{ $date_to ?? '?' }}
                         </span>
                     @endif
-                    <button wire:click="clearFilters" class="ml-2 text-sm font-medium text-primary hover:underline">Clear all</button>
+                    <button wire:click="clearFilters" class="ml-1 text-xs font-medium text-primary hover:underline">Clear all</button>
                     @if($search || $department_id || $issue_type_id || $priority || $assigned_to || $date_from || $date_to)
                         @if(auth()->check() && auth()->user()->can('viewAny', \App\Models\Issue::class))
                         <button
                             wire:click="openSaveFilterModal"
-                            class="ml-2 inline-flex items-center gap-1.5 rounded-lg border border-primary/50 bg-primary/10 px-3 py-1.5 text-sm font-semibold text-primary hover:bg-primary/20 transition-all duration-200"
+                            class="ml-2 inline-flex items-center gap-1 rounded-md border border-primary/50 bg-primary/10 px-2.5 py-1 text-xs font-medium text-primary hover:bg-primary/20 transition-all duration-200"
                             title="Save current filters"
                         >
                             <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -403,40 +397,40 @@
             <table class="w-full">
                 <thead>
                     <tr class="border-b border-border/50 bg-surface-2/30">
-                        <th class="px-4 py-3 text-left text-xs font-semibold text-muted uppercase">Select</th>
-                        <th class="px-4 py-3 text-left text-xs font-semibold text-muted uppercase">Issue</th>
-                        <th class="px-4 py-3 text-left text-xs font-semibold text-muted uppercase">Status</th>
-                        <th class="px-4 py-3 text-left text-xs font-semibold text-muted uppercase">Priority</th>
-                        <th class="px-4 py-3 text-left text-xs font-semibold text-muted uppercase">Department</th>
-                        <th class="px-4 py-3 text-left text-xs font-semibold text-muted uppercase">Assigned</th>
-                        <th class="px-4 py-3 text-left text-xs font-semibold text-muted uppercase">Actions</th>
+                        <th class="px-4 py-2.5 text-left text-xs font-medium text-muted">Select</th>
+                        <th class="px-4 py-2.5 text-left text-xs font-medium text-muted">Issue</th>
+                        <th class="px-4 py-2.5 text-left text-xs font-medium text-muted">Status</th>
+                        <th class="px-4 py-2.5 text-left text-xs font-medium text-muted">Priority</th>
+                        <th class="px-4 py-2.5 text-left text-xs font-medium text-muted">Department</th>
+                        <th class="px-4 py-2.5 text-left text-xs font-medium text-muted">Assigned</th>
+                        <th class="px-4 py-2.5 text-left text-xs font-medium text-muted">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach($issues as $issue)
                     <tr class="border-b border-border/30 hover:bg-surface-2/30 transition-colors">
                         <!-- Checkbox cell -->
-                        <td class="px-4 py-3">
+                        <td class="px-4 py-2.5">
                             <input type="checkbox" wire:model.live="selectedIssues" value="{{ $issue->id }}"
-                                class="h-4 w-4 rounded border-border bg-surface-2 text-primary focus:ring-2 focus:ring-primary/20" />
+                                class="h-3.5 w-3.5 rounded border-border bg-surface-2 text-primary focus:ring-2 focus:ring-primary/20" />
                         </td>
                         <!-- Title and description -->
-                        <td class="px-4 py-3">
-                            <a href="{{ route('issues.show', $issue) }}" class="font-medium text-text hover:text-primary">
+                        <td class="px-4 py-2.5">
+                            <a href="{{ route('issues.show', $issue) }}" class="text-sm font-medium text-text hover:text-primary">
                                 {{ $issue->title }}
                             </a>
                             @if($issue->description)
-                            <p class="mt-1 text-sm text-muted line-clamp-1">{{ \Illuminate\Support\Str::limit($issue->description, 80) }}</p>
+                            <p class="mt-0.5 text-xs text-muted line-clamp-1">{{ \Illuminate\Support\Str::limit($issue->description, 80) }}</p>
                             @endif
                         </td>
                         <!-- Status badge -->
-                        <td class="px-4 py-3">
+                        <td class="px-4 py-2.5">
                             <x-badge variant="{{ $issue->isClosed() ? 'success' : 'muted' }}">
                                 {{ $issue->isClosed() ? 'Closed' : 'Open' }}
                             </x-badge>
                         </td>
                         <!-- Priority badge -->
-                        <td class="px-4 py-3">
+                        <td class="px-4 py-2.5">
                             <x-badge variant="{{ match($issue->priority) {
                                 'urgent' => 'danger',
                                 'high' => 'warning',
@@ -446,17 +440,17 @@
                             </x-badge>
                         </td>
                         <!-- Department badge -->
-                        <td class="px-4 py-3">
+                        <td class="px-4 py-2.5">
                             @foreach($issue->departments->take(1) as $department)
                             <x-badge variant="muted">{{ $department->name }}</x-badge>
                             @endforeach
                         </td>
                         <!-- Assigned user -->
-                        <td class="px-4 py-3 text-sm text-muted">
+                        <td class="px-4 py-2.5 text-xs text-muted">
                             {{ $issue->assignedTo?->name ?? 'Unassigned' }}
                         </td>
                         <!-- Inline action buttons -->
-                        <td class="px-4 py-3">
+                        <td class="px-4 py-2.5">
                             <div class="flex items-center gap-1">
                                 @if($tab === 'all' || $tab === 'open')
                                     @can('close', $issue)
@@ -505,20 +499,20 @@
         </div>
 
         <!-- Mobile Card View -->
-        <div class="block md:hidden space-y-3">
+        <div class="block md:hidden space-y-2">
             @foreach($issues as $index => $issue)
                 <div wire:key="{{ $issue->id }}" class="issue-card animate-fade-in" style="animation-delay: {{ $index * 0.05 }}s">
-                    <div class="flex items-start gap-4">
+                    <div class="flex items-start gap-3">
                         <!-- Checkbox -->
-                        <div class="pt-1">
-                            <label class="relative flex h-6 w-6 cursor-pointer items-center justify-center">
+                        <div class="pt-0.5">
+                            <label class="relative flex h-5 w-5 cursor-pointer items-center justify-center">
                                 <input
                                     type="checkbox"
                                     wire:model.live="selectedIssues"
                                     value="{{ $issue->id }}"
-                                    class="peer h-5 w-5 rounded-md border-2 border-border/50 bg-surface-2/50 text-primary transition-all duration-200 focus:ring-2 focus:ring-primary/20"
+                                    class="peer h-4 w-4 rounded-md border-2 border-border/50 bg-surface-2/50 text-primary transition-all duration-200 focus:ring-2 focus:ring-primary/20"
                                 />
-                                <svg class="pointer-events-none absolute h-3.5 w-3.5 text-white opacity-0 peer-checked:opacity-100" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg class="pointer-events-none absolute h-3 w-3 text-white opacity-0 peer-checked:opacity-100" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
                                 </svg>
                             </label>
@@ -527,7 +521,7 @@
                         <!-- Content -->
                         <div class="flex-1 min-w-0">
                             <!-- Priority & Meta Badges -->
-                            <div class="mb-2 flex flex-wrap items-center gap-2">
+                            <div class="mb-1.5 flex flex-wrap items-center gap-1.5">
                                 <span class="badge {{ match($issue->priority) {
                                     'urgent' => 'badge-danger',
                                     'high' => 'badge-warning',
@@ -554,16 +548,16 @@
 
                             <!-- Title & Description -->
                             <a href="{{ route('issues.show', $issue) }}" class="group">
-                                <h3 class="text-lg font-semibold text-text transition-colors duration-200 group-hover:text-primary">
+                                <h3 class="text-base font-medium text-text transition-colors duration-200 group-hover:text-primary">
                                     {{ $issue->title }}
                                 </h3>
                             </a>
                             @if($issue->description)
-                                <p class="mt-1 text-sm text-muted line-clamp-2">{{ \Illuminate\Support\Str::limit($issue->description, 150) }}</p>
+                                <p class="mt-1 text-xs text-muted line-clamp-2">{{ \Illuminate\Support\Str::limit($issue->description, 150) }}</p>
                             @endif
 
                             <!-- Meta Info -->
-                            <div class="mt-3 flex flex-wrap items-center gap-4 text-xs text-muted">
+                            <div class="mt-2 flex flex-wrap items-center gap-3 text-[10px] text-muted">
                                 <span class="flex items-center gap-1.5">
                                     <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
@@ -632,18 +626,18 @@
         </div>
     @else
         <!-- Empty State -->
-        <div class="card flex flex-col items-center justify-center py-16 text-center">
-            <div class="relative mb-6">
-                <div class="absolute inset-0 animate-pulse rounded-full bg-primary/20 blur-2xl"></div>
-                <svg class="relative h-24 w-24 text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div class="card flex flex-col items-center justify-center py-12 text-center">
+            <div class="relative mb-4">
+                <div class="absolute inset-0 animate-pulse rounded-full bg-primary/20 blur-xl"></div>
+                <svg class="relative h-16 w-16 text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                 </svg>
             </div>
-            <h3 class="text-2xl font-bold text-text font-heading">No issues found</h3>
-            <p class="mt-2 text-muted">Get started by creating a new issue.</p>
+            <h3 class="text-lg font-semibold text-text font-heading">No issues found</h3>
+            <p class="mt-1.5 text-sm text-muted">Get started by creating a new issue.</p>
             @can('create', \App\Models\Issue::class)
-                <a href="{{ route('issues.create') }}" class="btn btn-primary mt-6">
-                    <svg class="mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <a href="{{ route('issues.create') }}" class="btn btn-primary mt-4">
+                    <svg class="mr-1.5 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                     </svg>
                     Create Issue

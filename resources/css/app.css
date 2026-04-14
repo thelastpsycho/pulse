@@ -50,7 +50,7 @@
 @layer components {
     /* Card Component - Enhanced with shadows and borders */
     .card {
-        @apply bg-surface border border-border rounded-2xl shadow-lg shadow-black/20;
+        @apply bg-surface border border-border rounded-xl shadow-md shadow-black/15 p-6;
         background: linear-gradient(145deg, rgba(var(--surface), 1) 0%, rgba(var(--surface), 0.8) 100%);
     }
 
@@ -61,7 +61,7 @@
 
     /* Button Components - Enhanced with gradients */
     .btn {
-        @apply inline-flex items-center justify-center rounded-xl px-5 py-2.5 text-sm font-semibold transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-background focus:ring-primary disabled:opacity-50 disabled:pointer-events-none;
+        @apply inline-flex items-center justify-center rounded-xl px-4 py-2 text-sm font-semibold transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-background focus:ring-primary disabled:opacity-50 disabled:pointer-events-none;
         font-family: 'Plus Jakarta Sans', sans-serif;
         letter-spacing: 0.01em;
     }
