@@ -28,13 +28,85 @@
                         <!-- Description -->
                         <div class="space-y-1.5">
                             <label class="text-sm font-medium text-text">Description</label>
-                            <textarea
-                                wire:model="description"
-                                rows="3"
-                                class="w-full bg-surface border border-border text-text placeholder:text-muted/60 rounded-lg px-3 py-2.5 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all resize-none"
-                                placeholder="Detailed description of the issue..."
-                            ></textarea>
+
+                            <div class="relative">
+                                <textarea
+                                    wire:model="description"
+                                    wire:key="description-{{ $description ?? 'empty' }}"
+                                    rows="3"
+                                    class="w-full pr-24 bg-surface border border-border text-text placeholder:text-muted/60 rounded-lg px-3 py-2.5 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all resize-none"
+                                    placeholder="Detailed description of the issue..."
+                                >{{ $description }}</textarea>
+
+                                <!-- AI Button -->
+                                @if($this->aiAvailable && !$aiLoading)
+                                    <button
+                                        type="button"
+                                        wire:click="assistWithAI"
+                                        wire:loading.attr="disabled"
+                                        class="absolute top-2 right-2 inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-white bg-primary rounded-lg hover:bg-primary/90 transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                                    >
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+                                        </svg>
+                                        <span>Enhance</span>
+                                    </button>
+                                @elseif($aiLoading)
+                                    <button
+                                        disabled
+                                        class="absolute top-2 right-2 inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-white bg-primary rounded-lg opacity-75"
+                                    >
+                                        <svg class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
+                                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                        </svg>
+                                        <span>Enhancing...</span>
+                                    </button>
+                                @else
+                                    <button
+                                        disabled
+                                        class="absolute top-2 right-2 inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-muted bg-surface-2 border border-border rounded-lg cursor-not-allowed"
+                                        title="{{ $this->aiError ? '⚠️ ' . $this->aiError : 'AI service unavailable' }}"
+                                    >
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                                        </svg>
+                                        <span>Unavailable</span>
+                                    </button>
+
+                                    <!-- Retry countdown -->
+                                    @if($this->aiRetryAfter)
+                                        <button
+                                            type="button"
+                                            wire:click="retryAI"
+                                            class="absolute top-10 right-2 text-xs text-primary hover:underline"
+                                        >
+                                            Retry in: {{ $this->aiRetryAfter }}
+                                        </button>
+                                    @endif
+                                @endif
+                            </div>
+
                             <x-input-error :messages="$errors->get('description')" />
+
+                            <!-- Flash messages -->
+                            @session('ai_success')
+                                <div class="mt-2 text-sm text-success flex items-center gap-1.5">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                                    </svg>
+                                    {{ $value }}
+                                </div>
+                            @endsession
+
+                            @session('ai_error')
+                                <div class="mt-2 text-sm text-danger flex items-center gap-1.5">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                    {{ $value }}
+                                </div>
+                            @endsession
                         </div>
 
                         <!-- Recovery Action -->
@@ -459,7 +531,7 @@
                             selected: @js($department_ids),
                             options: @js(array_map(fn($id, $name) => ['id' => $id, 'name' => $name], array_keys($this->departments), $this->departments)),
                             wireProperty: 'department_ids'
-                        })" x-init="init()">
+                        })" x-init="init()" wire:key="departments-{{ implode(',', $department_ids) }}">
                             <label class="text-sm font-medium text-text">Departments <span class="text-danger">*</span></label>
                             <div class="relative">
                                 <template x-for="id in selected" :key="id">
@@ -472,8 +544,24 @@
                                     class="w-full bg-surface border border-border text-text rounded-lg px-3 py-2.5 text-left flex items-center justify-between focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all hover:border-border/80"
                                     :class="{'border-primary ring-2 ring-primary/20': isOpen}"
                                 >
-                                    <span class="truncate" :class="{'text-muted/60': selected.length === 0}" x-text="selected.length > 0 ? `${selected.length} department${selected.length > 1 ? 's' : ''} selected` : 'Select departments'"></span>
-                                    <svg class="w-4 h-4 text-muted transition-transform" :class="{'rotate-180': isOpen}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <div class="flex items-center gap-1.5 flex-wrap">
+                                        <template x-for="id in selected" :key="id">
+                                            <span class="inline-flex items-center gap-1 px-2 py-0.5 text-xs font-medium text-primary bg-primary/10 rounded-full">
+                                                <span x-text="options.find(o => o.id === id)?.name"></span>
+                                                <button
+                                                    type="button"
+                                                    @click.stop="selected = selected.filter(s => s !== id)"
+                                                    class="hover:text-primary/70 focus:outline-none"
+                                                >
+                                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                                    </svg>
+                                                </button>
+                                            </span>
+                                        </template>
+                                        <span x-show="selected.length === 0" class="text-muted/60">Select departments</span>
+                                    </div>
+                                    <svg class="w-4 h-4 text-muted transition-transform flex-shrink-0" :class="{'rotate-180': isOpen}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                                     </svg>
                                 </button>
@@ -540,7 +628,7 @@
                             selected: @js($issue_type_ids),
                             options: @js(array_map(fn($id, $name) => ['id' => $id, 'name' => $name], array_keys($this->issueTypes), $this->issueTypes)),
                             wireProperty: 'issue_type_ids'
-                        })" x-init="init()">
+                        })" x-init="init()" wire:key="issue-types-{{ implode(',', $issue_type_ids) }}">
                             <label class="text-sm font-medium text-text">Issue Types <span class="text-danger">*</span></label>
                             <div class="relative">
                                 <template x-for="id in selected" :key="id">
@@ -553,8 +641,24 @@
                                     class="w-full bg-surface border border-border text-text rounded-lg px-3 py-2.5 text-left flex items-center justify-between focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all hover:border-border/80"
                                     :class="{'border-primary ring-2 ring-primary/20': isOpen}"
                                 >
-                                    <span class="truncate" :class="{'text-muted/60': selected.length === 0}" x-text="selected.length > 0 ? `${selected.length} type${selected.length > 1 ? 's' : ''} selected` : 'Select issue types'"></span>
-                                    <svg class="w-4 h-4 text-muted transition-transform" :class="{'rotate-180': isOpen}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <div class="flex items-center gap-1.5 flex-wrap">
+                                        <template x-for="id in selected" :key="id">
+                                            <span class="inline-flex items-center gap-1 px-2 py-0.5 text-xs font-medium text-primary bg-primary/10 rounded-full">
+                                                <span x-text="options.find(o => o.id === id)?.name"></span>
+                                                <button
+                                                    type="button"
+                                                    @click.stop="selected = selected.filter(s => s !== id)"
+                                                    class="hover:text-primary/70 focus:outline-none"
+                                                >
+                                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                                    </svg>
+                                                </button>
+                                            </span>
+                                        </template>
+                                        <span x-show="selected.length === 0" class="text-muted/60">Select issue types</span>
+                                    </div>
+                                    <svg class="w-4 h-4 text-muted transition-transform flex-shrink-0" :class="{'rotate-180': isOpen}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                                     </svg>
                                 </button>

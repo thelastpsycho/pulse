@@ -7,6 +7,8 @@ use App\Models\Department;
 use App\Models\IssueType;
 use App\Models\User;
 use App\Services\IssueService;
+use App\Services\IssueAIService;
+use App\Exceptions\AIException;
 use Livewire\Component;
 use Livewire\Attributes\Rule;
 
@@ -68,11 +70,16 @@ class Form extends Component
 
     public bool $isEditing = false;
 
-    protected IssueService $issueService;
+    // AI-related properties
+    public bool $aiLoading = false;
 
-    public function boot(IssueService $issueService): void
+    protected IssueService $issueService;
+    protected IssueAIService $aiService;
+
+    public function boot(IssueService $issueService, IssueAIService $aiService): void
     {
         $this->issueService = $issueService;
+        $this->aiService = $aiService;
     }
 
     public function mount(?Issue $issue = null): void
@@ -166,6 +173,119 @@ class Form extends Component
         }
 
         return $this->redirectRoute('issues.index');
+    }
+
+    public function assistWithAI(): void
+    {
+        // Validate description length
+        if (empty($this->description) || strlen($this->description) < 10) {
+            session()->flash('ai_error', '⚠️ Please enter at least 10 characters in the description before using AI enhancement.');
+            return;
+        }
+
+        $this->aiLoading = true;
+
+        try {
+            // Store original values for rollback
+            $originalDescription = $this->description;
+            $originalIssueTypes = $this->issue_type_ids;
+            $originalDepartments = $this->department_ids;
+
+            // Call AI service
+            $result = $this->aiService->analyzeAndEnhanceIssue(
+                $this->description ?? '',
+                $this->title
+            );
+
+            // Update form fields
+            $this->description = $result['enhanced_description'];
+            $this->issue_type_ids = $result['issue_type_ids'];
+            $this->department_ids = $result['department_ids'];
+
+            // Clear failure state
+            session()->forget(['ai_failure_time', 'ai_error']);
+
+            session()->flash('ai_success', '✨ Enhanced with AI!');
+
+        } catch (AIException $e) {
+            // Rollback to original values
+            $this->description = $originalDescription ?? null;
+            $this->issue_type_ids = $originalIssueTypes ?? [];
+            $this->department_ids = $originalDepartments ?? [];
+
+            // Mark AI as unavailable
+            session()->put('ai_failure_time', now());
+            session()->put('ai_error', $e->getType()->value);
+
+            session()->flash('ai_error', '⚠️ ' . $e->getUserMessage());
+
+            // Log for admin
+            \Log::warning('AI Enhancement Failed', [
+                'user_id' => auth()->id(),
+                'error' => $e->getMessage(),
+                'type' => $e->getType()->value,
+            ]);
+
+        } finally {
+            $this->aiLoading = false;
+        }
+    }
+
+    public function retryAI(): void
+    {
+        session()->forget(['ai_failure_time', 'ai_error']);
+        $this->assistWithAI();
+    }
+
+    public function getAiAvailableProperty(): bool
+    {
+        // Check if AI feature is enabled in config
+        if (!config('services.ai.enabled', true)) {
+            \Log::info('AI feature disabled in config');
+            return false;
+        }
+
+        // Check if API key is configured
+        if (empty(config('services.deepseek.api_key'))) {
+            \Log::warning('DeepSeek API key not configured');
+            return false;
+        }
+
+        $lastFailure = session()->get('ai_failure_time');
+        if (!$lastFailure) return true;
+
+        $cooldownMinutes = config('services.ai.failure_cooldown_minutes', 5);
+        $minutesSinceFailure = now()->diffInMinutes($lastFailure);
+
+        $available = $minutesSinceFailure > $cooldownMinutes;
+
+        // Auto-clear if cooldown passed
+        if ($available) {
+            session()->forget(['ai_failure_time', 'ai_error']);
+        }
+
+        return $available;
+    }
+
+    public function getAiErrorProperty(): ?string
+    {
+        return session()->get('ai_error');
+    }
+
+    public function getAiRetryAfterProperty(): ?string
+    {
+        $lastFailure = session()->get('ai_failure_time');
+        if (!$lastFailure) return null;
+
+        $cooldownMinutes = config('services.ai.failure_cooldown_minutes', 5);
+        $retryAt = $lastFailure->addMinutes($cooldownMinutes);
+
+        if (now()->gte($retryAt)) {
+            session()->forget('ai_failure_time');
+            return null;
+        }
+
+        return $retryAt->diffForHumans();
     }
 
     public function getDepartmentsProperty(): array

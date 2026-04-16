@@ -5,58 +5,66 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>Log in - {{ config('app.name', 'GuestPulse!') }}</title>
+    <title>Log in - {{ config('app.name', 'Pulse') }}</title>
 
     <!-- Fonts -->
-        <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
-    <link rel="preconnect" href="https://fonts.bunny.net">
-    <link href="https://fonts.bunny.net/css?family=nunito:400,500,600,700,800&display=swap" rel="stylesheet" />
+    <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
     <!-- Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="font-sans antialiased bg-background min-h-screen flex items-center justify-center px-4 py-12">
+<body class="min-h-screen flex items-center justify-center px-4 py-12 antialiased bg-background">
 
-    <div class="w-full max-w-sm">
+    <!-- Ambient Background Effects -->
+    <div class="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
+        <div class="absolute top-1/4 left-0 w-96 h-96 bg-primary/10 rounded-full blur-3xl animate-pulse"></div>
+        <div class="absolute bottom-0 right-1/4 w-80 h-80 bg-accent/10 rounded-full blur-3xl animate-pulse" style="animation-delay: 2s;"></div>
+    </div>
+
+    <div class="w-full max-w-sm relative z-10">
         <!-- Theme Toggle -->
-        <div class="flex justify-end mb-4">
+        <div class="flex justify-end mb-6">
             <button
                 onclick="toggleTheme()"
-                class="p-2 rounded-lg text-muted hover:text-text transition-colors"
+                class="p-2.5 rounded-xl glass text-muted hover:text-text transition-smooth cursor-pointer"
                 title="Toggle theme"
+                aria-label="Toggle dark/light theme"
             >
-                <svg class="theme-icon-dark w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg class="theme-icon-dark w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
                 </svg>
-                <svg class="theme-icon-light w-4 h-4 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg class="theme-icon-light w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
                 </svg>
             </button>
         </div>
 
         <!-- Header -->
-        <div class="text-center mb-6">
-            <div class="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-primary/10 mb-4">
-                <img src="{{ asset('images/logo/guestpulse_app_icon.svg') }}" alt="GuestPulse!" class="w-10 h-10">
+        <div class="text-center mb-8">
+            <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-primary/20 to-accent/20 mb-5 ring-1 ring-primary/30">
+                <img src="{{ asset('images/logo/guestpulse_app_icon.svg') }}" alt="Pulse Logo" class="w-10 h-10">
             </div>
-            <h1 class="text-xl font-semibold text-text">Welcome back</h1>
-            <p class="text-sm text-muted mt-1">Sign in to your GuestPulse! account</p>
+            <h1 class="text-3xl font-bold text-text mb-2 tracking-tight">Welcome back</h1>
+            <p class="text-base text-muted">Sign in to manage hotel operations</p>
         </div>
 
         <!-- Login Card -->
-        <div class="bg-surface rounded-xl border border-border p-5">
+        <div class="glass rounded-2xl p-6 mb-5">
             @if (session('status'))
-                <div class="mb-4 px-3 py-2 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-sm">
+                <div class="mb-4 px-4 py-3 rounded-xl bg-success/10 border border-success/30 text-success text-sm transition-smooth" role="alert">
                     {{ session('status') }}
                 </div>
             @endif
 
-            <form method="POST" action="{{ route('login') }}" class="space-y-3.5">
+            <form method="POST" action="{{ route('login') }}" class="space-y-4">
                 @csrf
 
                 <!-- Email -->
                 <div>
-                    <label for="email" class="block text-sm font-medium text-text mb-1">Email</label>
+                    <label for="email" class="block text-sm font-semibold text-text mb-2">Email</label>
                     <input
                         id="email"
                         type="email"
@@ -66,17 +74,22 @@
                         autofocus
                         autocomplete="username"
                         placeholder="you@example.com"
-                        class="w-full px-3 py-2 bg-surface-2 border border-border rounded-lg text-sm text-text placeholder-muted/60 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/30 transition-colors"
+                        class="w-full px-4 py-3 bg-surface-2 border border-border rounded-xl text-sm text-text placeholder-muted/60 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"
                     >
                     @error('email')
-                        <p class="mt-1 text-xs text-danger">{{ $message }}</p>
+                        <p class="mt-2 text-xs text-danger flex items-center gap-1.5" role="alert">
+                            <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                            </svg>
+                            {{ $message }}
+                        </p>
                     @enderror
                 </div>
 
                 <!-- Password -->
                 <div>
-                    <label for="password" class="block text-sm font-medium text-text mb-1">Password</label>
-                    <div class="flex items-center bg-surface-2 border border-border rounded-lg focus-within:border-primary focus-within:ring-1 focus-within:ring-primary/30 transition-colors">
+                    <label for="password" class="block text-sm font-semibold text-text mb-2">Password</label>
+                    <div class="relative">
                         <input
                             id="password"
                             type="password"
@@ -84,77 +97,56 @@
                             required
                             autocomplete="current-password"
                             placeholder="Enter your password"
-                            class="flex-1 px-3 py-2 bg-transparent border-none text-sm text-text placeholder-muted/60 focus:outline-none focus:ring-0"
+                            class="w-full px-4 py-3 pr-12 bg-surface-2 border border-border rounded-xl text-sm text-text placeholder-muted/60 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"
                         >
                         <button
                             type="button"
                             onclick="togglePassword()"
-                            class="px-3 text-muted hover:text-text transition-colors"
+                            class="absolute right-3 top-1/2 -translate-y-1/2 p-2 text-muted hover:text-text transition-smooth cursor-pointer"
+                            aria-label="Toggle password visibility"
                         >
-                            <svg id="eye-open" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg id="eye-open" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
                             </svg>
-                            <svg id="eye-closed" class="w-4 h-4 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg id="eye-closed" class="w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"/>
                             </svg>
                         </button>
                     </div>
                     @error('password')
-                        <p class="mt-1.5 text-xs text-danger">{{ $message }}</p>
+                        <p class="mt-2 text-xs text-danger flex items-center gap-1.5" role="alert">
+                            <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                            </svg>
+                            {{ $message }}
+                        </p>
                     @enderror
                 </div>
 
                 <!-- Remember & Forgot -->
-                <div class="flex items-center justify-between">
-                    <label class="flex items-center gap-2 cursor-pointer">
-                        <input type="checkbox" name="remember" class="w-3.5 h-3.5 rounded border-border bg-surface-2 text-primary focus:ring-primary focus:ring-offset-0 focus:ring-1">
-                        <span class="text-xs text-muted">Remember me</span>
+                <div class="flex items-center justify-between pt-1">
+                    <label class="flex items-center gap-2.5 cursor-pointer group">
+                        <input type="checkbox" name="remember" class="w-4 h-4 rounded border-border bg-surface-2 text-primary focus:ring-primary/50 focus:ring-offset-0 cursor-pointer">
+                        <span class="text-sm text-muted group-hover:text-text transition-smooth">Remember me</span>
                     </label>
                     @if (Route::has('password.request'))
-                        <a href="{{ route('password.request') }}" class="text-xs text-primary hover:underline">Forgot password?</a>
+                        <a href="{{ route('password.request') }}" class="text-sm text-primary hover:text-primary/80 font-medium transition-smooth cursor-pointer">Forgot password?</a>
                     @endif
                 </div>
 
                 <!-- Submit -->
-                <button type="submit" class="w-full py-2.5 bg-primary hover:bg-primary/90 text-primary-foreground text-sm font-semibold rounded-lg transition-colors">
+                <button type="submit" class="btn w-full py-3.5">
                     Sign in
                 </button>
             </form>
         </div>
 
-        <!-- Demo Accounts -->
-        <div class="mt-5">
-            <div class="flex items-center gap-3 mb-3">
-                <div class="flex-1 h-px bg-border"></div>
-                <span class="text-[11px] text-muted uppercase tracking-wide">Demo accounts</span>
-                <div class="flex-1 h-px bg-border"></div>
-            </div>
-
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
-                <button type="button" onclick="fillDemo('superadmin@example.com', 'password')" class="flex flex-col items-center gap-1.5 px-3 py-2.5 rounded-lg bg-surface border border-border hover:border-primary/40 transition-colors group">
-                    <span class="w-8 h-8 rounded-full bg-rose-500/10 text-rose-500 flex items-center justify-center text-xs font-bold">SA</span>
-                    <span class="text-[11px] text-muted group-hover:text-text transition-colors">Super Admin</span>
-                </button>
-
-                <button type="button" onclick="fillDemo('admin@example.com', 'password')" class="flex flex-col items-center gap-1.5 px-3 py-2.5 rounded-lg bg-surface border border-border hover:border-primary/40 transition-colors group">
-                    <span class="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center text-xs font-bold">A</span>
-                    <span class="text-[11px] text-muted group-hover:text-text transition-colors">Admin</span>
-                </button>
-
-                <button type="button" onclick="fillDemo('staff@example.com', 'password')" class="flex flex-col items-center gap-1.5 px-3 py-2.5 rounded-lg bg-surface border border-border hover:border-primary/40 transition-colors group">
-                    <span class="w-8 h-8 rounded-full bg-emerald-500/10 text-emerald-500 flex items-center justify-center text-xs font-bold">S</span>
-                    <span class="text-[11px] text-muted group-hover:text-text transition-colors">Staff</span>
-                </button>
-            </div>
-        </div>
-
         <!-- Footer -->
-        <p class="text-center text-xs text-muted/60 mt-6">
-            &copy; {{ now()->year }} GuestPulse!
+        <p class="text-center text-xs text-muted/60 mt-8">
+            &copy; {{ now()->year }} Pulse — Hotel Operations System
         </p>
     </div>
-
 
     <script>
         function togglePassword() {
@@ -173,28 +165,41 @@
             }
         }
 
-        function fillDemo(email, password) {
-            document.getElementById('email').value = email;
-            document.getElementById('password').value = password;
-        }
-
         function toggleTheme() {
-            const isDark = document.documentElement.classList.contains('dark');
+            const html = document.documentElement;
+            const isDark = html.classList.contains('dark');
+
             if (isDark) {
-                document.documentElement.classList.remove('dark');
-                document.documentElement.classList.add('light');
+                html.classList.remove('dark');
+                html.classList.add('light');
                 localStorage.setItem('theme', 'light');
             } else {
-                document.documentElement.classList.remove('light');
-                document.documentElement.classList.add('dark');
+                html.classList.remove('light');
+                html.classList.add('dark');
                 localStorage.setItem('theme', 'dark');
             }
+
+            // Update theme icons
             const darkIcons = document.querySelectorAll('.theme-icon-dark');
             const lightIcons = document.querySelectorAll('.theme-icon-light');
-            const shouldBeDark = document.documentElement.classList.contains('dark');
+            const shouldBeDark = html.classList.contains('dark');
+
             darkIcons.forEach(icon => icon.classList.toggle('hidden', !shouldBeDark));
             lightIcons.forEach(icon => icon.classList.toggle('hidden', shouldBeDark));
         }
+
+        // Initialize theme from localStorage or system preference
+        (function() {
+            const savedTheme = localStorage.getItem('theme');
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+            if (savedTheme === 'light' || (!savedTheme && !prefersDark)) {
+                document.documentElement.classList.remove('dark');
+                document.documentElement.classList.add('light');
+                document.querySelectorAll('.theme-icon-dark').forEach(icon => icon.classList.add('hidden'));
+                document.querySelectorAll('.theme-icon-light').forEach(icon => icon.classList.remove('hidden'));
+            }
+        })();
     </script>
 </body>
 </html>

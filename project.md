@@ -609,6 +609,77 @@ API endpoints `/api/reports/month` and `/api/reports/year` must return JSON suit
   - redis (optional)
 - `php artisan migrate:fresh --seed`
 
+### Data Migration Commands
+The app includes custom console commands for migrating data from the legacy dmlog database:
+
+#### Available Commands
+
+**1. `php artisan dmlog:migrate-issues`**
+Migrates issues from the legacy `dmlog` database to the new `dm-log` system.
+
+Options:
+- `--dry-run` : Show what would be migrated without actually inserting data
+- `--limit=N` : Limit number of records to migrate (for testing)
+
+Features:
+- Connects to legacy `dmlog.issues` table via MySQL connection
+- Maps old schema to new structure
+- Handles date fixes (0000-00-00 → null)
+- Maps status values (Open/open → open, Closed/closed → closed, etc.)
+- Auto-determines priority based on urgent keywords (emergency, urgent, police, ambulance, fire, medical, doctor)
+- Validates foreign key constraints for user IDs
+- Does NOT categorize issues (leaves `issue_type_id` as null)
+- Provides progress bar and statistics
+
+**2. `php artisan issues:categorize-deepseek`**
+Automatically categorizes issues using DeepSeek AI API.
+
+Options:
+- `--limit=N` : Limit number of issues to categorize
+- `--api-key=KEY` : DeepSeek API key (or set `DEEPSEEK_API_KEY` env var)
+
+Features:
+- Processes all issues where `issue_type_id` is null
+- Uses DeepSeek Chat API for intelligent categorization
+- Assigns 1-3 issue types per issue
+- Assigns 1-2 departments per issue
+- Updates both `issue_type_id` (primary) and pivot tables (`issue_issue_type`, `department_issue`)
+- Shows progress every 10 categorizations
+- Rate-limited (1 second pause every 50 requests)
+- Displays final distribution statistics
+
+#### Recommended Migration Workflow
+
+```bash
+# 1. Fresh start - drop all tables and recreate
+php artisan migrate:fresh --seed
+
+# 2. Test migration (dry run)
+php artisan dmlog:migrate-issues --dry-run --limit=10
+
+# 3. Run actual migration (with optional limit for testing)
+php artisan dmlog:migrate-issues --limit=50
+
+# 4. Categorize migrated issues with AI
+php artisan issues:categorize-deepseek --limit=50
+
+# 5. Full migration (when ready)
+php artisan dmlog:migrate-issues
+php artisan issues:categorize-deepseek
+```
+
+#### Requirements
+
+For `dmlog:migrate-issues`:
+- MySQL connection configured in `config/database.php` named `mysql`
+- Legacy database `dmlog` must be accessible
+- At least one admin user exists (defaults to `admin@example.com`)
+
+For `issues:categorize-deepseek`:
+- DeepSeek API key set in `.env` as `DEEPSEEK_API_KEY`
+- Issue types and departments must exist (seeded)
+- Internet connectivity for API calls
+
 ---
 
 ## 13) Testing Requirements

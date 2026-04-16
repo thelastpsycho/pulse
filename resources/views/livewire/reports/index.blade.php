@@ -49,6 +49,48 @@
         </div>
     </div>
 
+    <!-- Quick Links -->
+    <div class="glass-card rounded-xl mb-6">
+        <div class="p-4 border-b border-border/50">
+            <h3 class="text-base font-medium text-text flex items-center gap-2">
+                <svg class="w-4 h-4 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/>
+                </svg>
+                Quick Links
+            </h3>
+        </div>
+        <div class="p-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <a href="{{ route('reports.logbook') }}" class="flex items-center gap-3 p-4 rounded-xl bg-surface-2/50 hover:bg-accent/10 hover:border-accent/30 border border-transparent transition-all group cursor-pointer">
+                <div class="w-10 h-10 rounded-lg bg-accent/10 flex items-center justify-center group-hover:bg-accent/20 transition-colors">
+                    <svg class="w-5 h-5 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+                    </svg>
+                </div>
+                <div class="flex-1">
+                    <p class="font-medium text-text">Logbook</p>
+                    <p class="text-xs text-muted">Printable report</p>
+                </div>
+                <svg class="w-5 h-5 text-muted group-hover:text-accent group-hover:translate-x-1 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                </svg>
+            </a>
+            <a href="{{ route('issues.index') }}" class="flex items-center gap-3 p-4 rounded-xl bg-surface-2/50 hover:bg-primary/10 hover:border-primary/30 border border-transparent transition-all group cursor-pointer">
+                <div class="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
+                    <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                    </svg>
+                </div>
+                <div class="flex-1">
+                    <p class="font-medium text-text">All Issues</p>
+                    <p class="text-xs text-muted">View & manage</p>
+                </div>
+                <svg class="w-5 h-5 text-muted group-hover:text-primary group-hover:translate-x-1 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                </svg>
+            </a>
+        </div>
+    </div>
+
     <!-- Filters -->
     <div class="glass-card rounded-xl p-4 mb-6">
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
@@ -488,89 +530,44 @@
             </div>
         </div>
 
-        <!-- Status Distribution & Quick Links -->
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
-            <!-- Status Distribution -->
-            <div class="lg:col-span-2 glass-card rounded-xl">
-                <div class="p-4 border-b border-border/50">
-                    <h3 class="text-base font-medium text-text flex items-center gap-2">
-                        <svg class="w-4 h-4 text-success" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"/>
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z"/>
-                        </svg>
-                        Status Distribution
-                    </h3>
-                </div>
-                <div class="p-4">
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                        <!-- Open -->
-                        <a href="{{ route('issues.index', ['tab' => 'open', 'date_from' => $report['date_from'], 'date_to' => $report['date_to']]) }}" target="_blank" class="flex items-center gap-4 group chart-clickable">
-                            <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-warning/20 to-warning/5 flex items-center justify-center">
-                                <span class="text-2xl font-bold text-warning">{{ $report['by_status']['open'] ?? 0 }}</span>
-                            </div>
-                            <div class="flex-1">
-                                <p class="text-sm font-medium text-text group-hover:text-warning transition-colors">Open Issues</p>
-                                <div class="mt-2 h-2 bg-surface-2 rounded-full overflow-hidden">
-                                    <div class="h-full bg-gradient-to-r from-warning to-amber-600 rounded-full"
-                                         style="width: {{ max((($report['by_status']['open'] ?? 0) / max($report['total_issues'], 1)) * 100, 2) }}%"></div>
-                                </div>
-                            </div>
-                        </a>
-                        <!-- Closed -->
-                        <a href="{{ route('issues.index', ['tab' => 'closed', 'date_from' => $report['date_from'], 'date_to' => $report['date_to']]) }}" target="_blank" class="flex items-center gap-4 group chart-clickable">
-                            <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-success/20 to-success/5 flex items-center justify-center">
-                                <span class="text-2xl font-bold text-success">{{ $report['by_status']['closed'] ?? 0 }}</span>
-                            </div>
-                            <div class="flex-1">
-                                <p class="text-sm font-medium text-text group-hover:text-success transition-colors">Closed Issues</p>
-                                <div class="mt-2 h-2 bg-surface-2 rounded-full overflow-hidden">
-                                    <div class="h-full bg-gradient-to-r from-success to-emerald-600 rounded-full"
-                                         style="width: {{ max((($report['by_status']['closed'] ?? 0) / max($report['total_issues'], 1)) * 100, 2) }}%"></div>
-                                </div>
-                            </div>
-                        </a>
-                    </div>
-                </div>
+        <!-- Status Distribution -->
+        <div class="glass-card rounded-xl">
+            <div class="p-4 border-b border-border/50">
+                <h3 class="text-base font-medium text-text flex items-center gap-2">
+                    <svg class="w-4 h-4 text-success" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z"/>
+                    </svg>
+                    Status Distribution
+                </h3>
             </div>
-
-            <!-- Quick Links -->
-            <div class="glass-card rounded-xl">
-                <div class="p-4 border-b border-border/50">
-                    <h3 class="text-base font-medium text-text flex items-center gap-2">
-                        <svg class="w-4 h-4 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/>
-                        </svg>
-                        Quick Links
-                    </h3>
-                </div>
-                <div class="p-4 space-y-2">
-                    <a href="{{ route('reports.logbook') }}" class="flex items-center gap-3 p-4 rounded-xl bg-surface-2/50 hover:bg-accent/10 hover:border-accent/30 border border-transparent transition-all group">
-                        <div class="w-10 h-10 rounded-lg bg-accent/10 flex items-center justify-center group-hover:bg-accent/20 transition-colors">
-                            <svg class="w-5 h-5 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
-                            </svg>
+            <div class="p-4">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                    <!-- Open -->
+                    <a href="{{ route('issues.index', ['tab' => 'open', 'date_from' => $report['date_from'], 'date_to' => $report['date_to']]) }}" target="_blank" class="flex items-center gap-4 group chart-clickable cursor-pointer">
+                        <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-warning/20 to-warning/5 flex items-center justify-center">
+                            <span class="text-2xl font-bold text-warning">{{ $report['by_status']['open'] ?? 0 }}</span>
                         </div>
-                        <div>
-                            <p class="font-medium text-text">Logbook</p>
-                            <p class="text-xs text-muted">Printable report</p>
+                        <div class="flex-1">
+                            <p class="text-sm font-medium text-text group-hover:text-warning transition-colors">Open Issues</p>
+                            <div class="mt-2 h-2 bg-surface-2 rounded-full overflow-hidden">
+                                <div class="h-full bg-gradient-to-r from-warning to-amber-600 rounded-full"
+                                     style="width: {{ max((($report['by_status']['open'] ?? 0) / max($report['total_issues'], 1)) * 100, 2) }}%"></div>
+                            </div>
                         </div>
-                        <svg class="w-5 h-5 text-muted ml-auto group-hover:text-accent group-hover:translate-x-1 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-                        </svg>
                     </a>
-                    <a href="{{ route('issues.index') }}" class="flex items-center gap-3 p-4 rounded-xl bg-surface-2/50 hover:bg-primary/10 hover:border-primary/30 border border-transparent transition-all group">
-                        <div class="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
-                            <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
-                            </svg>
+                    <!-- Closed -->
+                    <a href="{{ route('issues.index', ['tab' => 'closed', 'date_from' => $report['date_from'], 'date_to' => $report['date_to']]) }}" target="_blank" class="flex items-center gap-4 group chart-clickable cursor-pointer">
+                        <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-success/20 to-success/5 flex items-center justify-center">
+                            <span class="text-2xl font-bold text-success">{{ $report['by_status']['closed'] ?? 0 }}</span>
                         </div>
-                        <div>
-                            <p class="font-medium text-text">All Issues</p>
-                            <p class="text-xs text-muted">View & manage</p>
+                        <div class="flex-1">
+                            <p class="text-sm font-medium text-text group-hover:text-success transition-colors">Closed Issues</p>
+                            <div class="mt-2 h-2 bg-surface-2 rounded-full overflow-hidden">
+                                <div class="h-full bg-gradient-to-r from-success to-emerald-600 rounded-full"
+                                     style="width: {{ max((($report['by_status']['closed'] ?? 0) / max($report['total_issues'], 1)) * 100, 2) }}%"></div>
+                            </div>
                         </div>
-                        <svg class="w-5 h-5 text-muted ml-auto group-hover:text-primary group-hover:translate-x-1 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-                        </svg>
                     </a>
                 </div>
             </div>
