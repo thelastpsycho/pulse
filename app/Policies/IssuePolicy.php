@@ -90,6 +90,14 @@ class IssuePolicy
     }
 
     /**
+     * Determine if the user can export open issues.
+     */
+    public function exportOpen(User $user): bool
+    {
+        return $user->can('issues.export.open');
+    }
+
+    /**
      * Determine if the user can categorize issues (assign departments and issue types).
      * Can be done regardless of issue status.
      */

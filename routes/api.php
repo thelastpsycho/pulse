@@ -32,6 +32,10 @@ use Illuminate\Support\Facades\Route;
 // Route::post('/login', [AuthController::class, 'login']);
 
 // Protected API Routes
+
+#public route for issues
+Route::get('/all-issues', [IssueController::class, 'index'])->name('api.issues.index');
+
 Route::middleware(['auth'])->group(function () {
     // Reports API (returns JSON for charts)
     Route::get('/reports/month', [ReportController::class, 'month'])->name('api.reports.month');

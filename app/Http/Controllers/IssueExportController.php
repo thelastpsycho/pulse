@@ -20,4 +20,16 @@ class IssueExportController extends Controller
 
         return $this->exportService->exportIssue($issue);
     }
+
+    public function exportOpenIssuesPDF()
+    {
+        $this->authorize('issues.export.open');
+
+        $issues = Issue::open()
+            ->with(['departments', 'issueTypes', 'createdBy', 'updatedBy', 'closedBy', 'assignedTo', 'comments'])
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return $this->exportService->exportOpenIssuesPDF($issues);
+    }
 }

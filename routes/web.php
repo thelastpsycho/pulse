@@ -23,9 +23,11 @@ use App\Livewire\Statistics\Index as StatisticsIndex;
 use App\Livewire\Graphs\Issues as GraphsIssues;
 use Illuminate\Support\Facades\Route;
 
-// Public routes
+// Public routes - redirect to dashboard if authenticated, otherwise login
 Route::get('/', function () {
-    return redirect()->route('issues.index');
+    return auth()->check()
+        ? redirect()->route('dashboard')
+        : redirect()->route('login');
 });
 
 // Public API Documentation
@@ -45,6 +47,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/{issue}', Show::class)->name('show');
         Route::get('/{issue}/edit', Form::class)->name('edit');
         Route::get('/{issue}/export/pdf', [IssueExportController::class, 'exportPDF'])->name('export.pdf');
+        Route::get('/export/open-issues/pdf', [IssueExportController::class, 'exportOpenIssuesPDF'])->name('export.open.pdf');
     });
 
     // Profile

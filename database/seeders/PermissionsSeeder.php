@@ -26,6 +26,7 @@ class PermissionsSeeder extends Seeder
             ['name' => 'issues.close', 'description' => 'Close issues'],
             ['name' => 'issues.reopen', 'description' => 'Reopen closed issues'],
             ['name' => 'issues.export', 'description' => 'Export issues to PDF'],
+            ['name' => 'issues.export.open', 'description' => 'Export open issues to PDF'],
 
             // Users
             ['name' => 'admin.users.view', 'description' => 'View users'],
@@ -102,6 +103,7 @@ class PermissionsSeeder extends Seeder
                 'issues.update.own',
                 'issues.close',
                 'issues.reopen',
+                'issues.export.open',
                 'reports.view',
                 'reports.monthly',
                 'reports.yearly',

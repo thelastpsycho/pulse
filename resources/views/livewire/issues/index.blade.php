@@ -142,231 +142,319 @@
         </div>
     </div>
 
-    <!-- Search & Filters -->
+    <!-- Search & Filters - Redesigned -->
     <div class="card overflow-hidden">
-        <div class="border-b border-border/50 p-4">
-            <!-- Saved Filters (Enhanced) -->
-            @if(count($this->savedFilters) > 0)
-                <div class="mb-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                    <div class="flex flex-wrap items-center gap-2">
-                        <span class="text-xs font-medium text-muted flex items-center gap-1">
-                            <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
-                            </svg>
-                            Saved Filters
-                        </span>
-                    </div>
-                    <div class="flex flex-wrap gap-1.5 overflow-x-auto pb-1.5 sm:pb-0">
-                        @foreach($this->savedFilters as $savedFilter)
-                        <div class="group relative inline-flex flex-shrink-0">
-                            <button
-                                wire:click="loadFilter({{ $savedFilter['id'] }})"
-                                class="inline-flex items-center gap-1.5 rounded-md border border-border/50 bg-surface-2/50 px-3 py-1.5 text-xs font-medium text-text transition-all duration-200 hover:border-primary/50 hover:bg-surface-2"
-                            >
-                                <svg class="h-3 w-3 text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
-                                </svg>
-                                <span class="max-w-[120px] truncate">{{ $savedFilter['name'] }}</span>
-                            </button>
-                            <button
-                                wire:click="deleteFilter({{ $savedFilter['id'] }})"
-                                class="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-danger text-white opacity-0 transition-all duration-200 group-hover:opacity-100 hover:bg-danger/80"
-                                title="Delete filter '{{ $savedFilter['name'] }}'"
-                            >
-                                <svg class="h-2.5 w-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                                </svg>
-                            </button>
-                        </div>
-                        @endforeach
-                    </div>
-                </div>
-            @endif
-            <div class="flex flex-col gap-3 lg:flex-row">
-                <!-- Search -->
-                <div class="flex-1">
-                    <div class="relative">
-                        <svg class="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                        </svg>
-                        <input
-                            type="text"
-                            wire:model.live.debounce.300ms="search"
-                            placeholder="Search issues..."
-                            class="w-full rounded-lg border border-border/50 bg-surface-2/50 py-2 pl-9 pr-8 text-sm text-text placeholder-muted transition-all duration-200 focus:border-primary focus:ring-2 focus:ring-primary/20"
-                        />
-                        <kbd class="absolute right-2 top-1/2 -translate-y-1/2 rounded bg-surface px-1 py-0.5 text-[10px] font-mono text-muted border border-border">/</kbd>
-                    </div>
-                </div>
+        <div class="border-b border-border/50 p-4 sm:p-6">
+            <div x-data="{
+                filtersOpen: false,
+                hasActiveFilters: {{ ($search || $department_id || $issue_type_id || $priority || $assigned_to || $date_from || $date_to) ? 'true' : 'false' }}
+            }" class="space-y-4">
 
-                <!-- Filters -->
-                <div class="flex flex-wrap gap-2">
-                    <select wire:model.live="department_id" class="rounded-lg border border-border/50 bg-surface-2/50 px-3 py-2 text-sm text-text transition-all duration-200 focus:border-primary focus:ring-2 focus:ring-primary/20">
-                        <option value="">All Departments</option>
-                        @foreach($this->departments as $id => $name)
-                            <option value="{{ $id }}">{{ $name }}</option>
-                        @endforeach
-                    </select>
-
-                    <select wire:model.live="issue_type_id" class="rounded-lg border border-border/50 bg-surface-2/50 px-3 py-2 text-sm text-text transition-all duration-200 focus:border-primary focus:ring-2 focus:ring-primary/20">
-                        <option value="">All Types</option>
-                        @foreach($this->issueTypes as $id => $name)
-                            <option value="{{ $id }}">{{ $name }}</option>
-                        @endforeach
-                    </select>
-
-                    <select wire:model.live="priority" class="rounded-lg border border-border/50 bg-surface-2/50 px-3 py-2 text-sm text-text transition-all duration-200 focus:border-primary focus:ring-2 focus:ring-primary/20">
-                        <option value="">All Priorities</option>
-                        @foreach($this->priorities as $value => $label)
-                            <option value="{{ $value }}">{{ $label }}</option>
-                        @endforeach
-                    </select>
-
-                    <select wire:model.live="assigned_to" class="rounded-lg border border-border/50 bg-surface-2/50 px-3 py-2 text-sm text-text transition-all duration-200 focus:border-primary focus:ring-2 focus:ring-primary/20">
-                        <option value="">All Users</option>
-                        @foreach($this->users as $id => $name)
-                            <option value="{{ $id }}">{{ $name }}</option>
-                        @endforeach
-                    </select>
-
-                    <!-- Date Range Picker -->
-                    <div x-data="{
-                        isOpen: false,
-                        dateFrom: '{{ $date_from ?? '' }}',
-                        dateTo: '{{ $date_to ?? '' }}',
-                        apply() {
-                            @this.set('date_from', this.dateFrom);
-                            @this.set('date_to', this.dateTo);
-                            this.close();
-                        },
-                        clear() {
-                            this.dateFrom = '';
-                            this.dateTo = '';
-                            @this.set('date_from', '');
-                            @this.set('date_to', '');
-                            this.close();
-                        },
-                        close() {
-                            this.isOpen = false;
-                        }
-                    }" class="relative">
+                <!-- Search Bar - Always Visible -->
+                <div class="relative">
+                    <svg class="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                    <input
+                        type="text"
+                        wire:model.live.debounce.300ms="search"
+                        placeholder="Search issues..."
+                        class="w-full rounded-lg border border-border/50 bg-surface-2/50 py-2.5 pl-10 pr-24 text-sm text-text placeholder-muted transition-all duration-200 focus:border-primary focus:ring-2 focus:ring-primary/20 min-h-[44px]"
+                    />
+                    <div class="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-2">
                         <button
-                            @click="isOpen = !isOpen"
+                            @click="filtersOpen = !filtersOpen"
                             type="button"
-                            class="flex items-center gap-1.5 rounded-lg border border-border/50 bg-surface-2/50 px-3 py-2 text-sm text-text transition-all duration-200 hover:border-primary/50 focus:border-primary focus:ring-2 focus:ring-primary/20"
+                            class="inline-flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-medium transition-all duration-200 hover:bg-surface-2"
+                            :class="filtersOpen || hasActiveFilters ? 'bg-primary/10 text-primary' : 'text-muted hover:text-text'"
                         >
-                            <svg class="h-4 w-4 text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
                             </svg>
-                            <span class="text-xs" x-text="dateFrom || dateTo ? (dateFrom + ' - ' + dateTo) : 'Date Range'"></span>
-                            <svg class="h-3 w-3 text-muted" :class="{'rotate-180': isOpen}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                            </svg>
+                            <span class="hidden sm:inline">Filters</span>
+                            @if($search || $department_id || $issue_type_id || $priority || $assigned_to || $date_from || $date_to)
+                                <span class="flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-white">●</span>
+                            @endif
                         </button>
+                        <kbd class="hidden sm:block rounded bg-surface px-1.5 py-0.5 text-[10px] font-mono text-muted border border-border">/</kbd>
+                    </div>
+                </div>
 
-                        <div
-                            x-show="isOpen"
-                            @click.away="close()"
-                            x-transition:enter="transition ease-out duration-100"
-                            x-transition:enter-start="transform opacity-0 scale-95"
-                            x-transition:enter-end="transform opacity-100 scale-100"
-                            x-transition:leave="transition ease-in duration-75"
-                            x-transition:leave-start="transform opacity-100 scale-100"
-                            x-transition:leave-end="transform opacity-0 scale-95"
-                            class="absolute right-0 z-50 mt-2 w-72 rounded-lg border border-border bg-surface shadow-lg"
-                            style="display: none;"
-                        >
-                            <div class="p-3">
-                                <h4 class="mb-2 text-sm font-semibold text-text">Date Range</h4>
-                                <div class="space-y-2">
-                                    <div>
-                                        <label class="mb-1 block text-xs text-muted">From</label>
-                                        <input
-                                            type="date"
-                                            x-model="dateFrom"
-                                            class="w-full rounded-md border border-border bg-surface-2 px-2.5 py-1.5 text-sm text-text focus:border-primary focus:outline-none"
-                                        />
+                <!-- Collapsible Filters Section -->
+                <div
+                    x-show="filtersOpen || hasActiveFilters"
+                    x-transition:enter="transition ease-out duration-200"
+                    x-transition:enter-start="opacity-0 -translate-y-2"
+                    x-transition:enter-end="opacity-100 translate-y-0"
+                    x-transition:leave="transition ease-in duration-150"
+                    x-transition:leave-start="opacity-100 translate-y-0"
+                    x-transition:leave-end="opacity-0 -translate-y-2"
+                    class="space-y-4"
+                    style="display: none;"
+                >
+                    <!-- Filter Grid -->
+                    <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                        <!-- Department Filter -->
+                        <div class="space-y-1">
+                            <label class="block text-xs font-medium text-muted">Department</label>
+                            <select wire:model.live="department_id" class="w-full rounded-lg border border-border/50 bg-surface-2/50 px-3 py-2 text-sm text-text transition-all duration-200 focus:border-primary focus:ring-2 focus:ring-primary/20 min-h-[44px]">
+                                <option value="">All Departments</option>
+                                @foreach($this->departments as $id => $name)
+                                    <option value="{{ $id }}">{{ $name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <!-- Issue Type Filter -->
+                        <div class="space-y-1">
+                            <label class="block text-xs font-medium text-muted">Issue Type</label>
+                            <select wire:model.live="issue_type_id" class="w-full rounded-lg border border-border/50 bg-surface-2/50 px-3 py-2 text-sm text-text transition-all duration-200 focus:border-primary focus:ring-2 focus:ring-primary/20 min-h-[44px]">
+                                <option value="">All Types</option>
+                                @foreach($this->issueTypes as $id => $name)
+                                    <option value="{{ $id }}">{{ $name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <!-- Priority Filter -->
+                        <div class="space-y-1">
+                            <label class="block text-xs font-medium text-muted">Priority</label>
+                            <select wire:model.live="priority" class="w-full rounded-lg border border-border/50 bg-surface-2/50 px-3 py-2 text-sm text-text transition-all duration-200 focus:border-primary focus:ring-2 focus:ring-primary/20 min-h-[44px]">
+                                <option value="">All Priorities</option>
+                                @foreach($this->priorities as $value => $label)
+                                    <option value="{{ $value }}">{{ $label }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <!-- Assigned To Filter -->
+                        <div class="space-y-1">
+                            <label class="block text-xs font-medium text-muted">Assigned To</label>
+                            <select wire:model.live="assigned_to" class="w-full rounded-lg border border-border/50 bg-surface-2/50 px-3 py-2 text-sm text-text transition-all duration-200 focus:border-primary focus:ring-2 focus:ring-primary/20 min-h-[44px]">
+                                <option value="">All Users</option>
+                                @foreach($this->users as $id => $name)
+                                    <option value="{{ $id }}">{{ $name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Date Range & Actions Row -->
+                    <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                        <!-- Date Range Picker -->
+                        <div x-data="{
+                            isOpen: false,
+                            dateFrom: '{{ $date_from ?? '' }}',
+                            dateTo: '{{ $date_to ?? '' }}',
+                            dropdownStyle: '',
+                            toggleDropdown($event) {
+                                this.isOpen = !this.isOpen;
+                                if (this.isOpen) {
+                                    this.$nextTick(() => {
+                                        const button = $event.currentTarget;
+                                        const rect = button.getBoundingClientRect();
+                                        const dropdownWidth = 288; // w-72 in pixels
+
+                                        // Default: align right edge with right edge of button
+                                        let left = rect.right - dropdownWidth;
+
+                                        // Check if it would go off left edge of screen
+                                        if (left < 8) {
+                                            left = 8; // Minimum margin from left edge
+                                        }
+
+                                        // Check if it would go off right edge of screen
+                                        if (left + dropdownWidth > window.innerWidth - 8) {
+                                            left = window.innerWidth - dropdownWidth - 8;
+                                        }
+
+                                        this.dropdownStyle = `position: fixed; top: ${rect.bottom + 8}px; left: ${left}px;`;
+                                    });
+                                }
+                            },
+                            apply() {
+                                @this.set('date_from', this.dateFrom);
+                                @this.set('date_to', this.dateTo);
+                                this.close();
+                            },
+                            clear() {
+                                this.dateFrom = '';
+                                this.dateTo = '';
+                                @this.set('date_from', '');
+                                @this.set('date_to', '');
+                                this.close();
+                            },
+                            close() {
+                                this.isOpen = false;
+                            }
+                        }" class="sm:flex-1">
+                            <button
+                                @click="toggleDropdown()"
+                                type="button"
+                                class="flex w-full items-center gap-2 rounded-lg border border-border/50 bg-surface-2/50 px-3 py-2 text-sm text-text transition-all duration-200 hover:border-primary/50 focus:border-primary focus:ring-2 focus:ring-primary/20 min-h-[44px]"
+                            >
+                                <svg class="h-4 w-4 text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                </svg>
+                                <span class="flex-1 text-left" x-text="dateFrom || dateTo ? (dateFrom + ' - ' + dateTo) : 'Date Range'"></span>
+                                <svg class="h-3 w-3 text-muted transition-transform duration-200" :class="{'rotate-180': isOpen}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                </svg>
+                            </button>
+
+                            <div
+                                x-show="isOpen"
+                                @click.away="close()"
+                                x-transition:enter="transition ease-out duration-100"
+                                x-transition:enter-start="transform opacity-0 scale-95"
+                                x-transition:enter-end="transform opacity-100 scale-100"
+                                x-transition:leave="transition ease-in duration-75"
+                                x-transition:leave-start="transform opacity-100 scale-100"
+                                x-transition:leave-end="transform opacity-0 scale-95"
+                                class="z-[9999] mt-2 w-72 rounded-lg border border-border bg-surface shadow-xl"
+                                x-bind:style="dropdownStyle"
+                                style="display: none;"
+                            >
+                                <div class="p-4">
+                                    <h4 class="mb-3 text-sm font-semibold text-text">Date Range</h4>
+                                    <div class="space-y-3">
+                                        <div>
+                                            <label class="mb-1.5 block text-xs font-medium text-muted">From</label>
+                                            <input
+                                                type="date"
+                                                x-model="dateFrom"
+                                                class="w-full rounded-lg border border-border bg-surface-2 px-3 py-2 text-sm text-text focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label class="mb-1.5 block text-xs font-medium text-muted">To</label>
+                                            <input
+                                                type="date"
+                                                x-model="dateTo"
+                                                class="w-full rounded-lg border border-border bg-surface-2 px-3 py-2 text-sm text-text focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+                                            />
+                                        </div>
                                     </div>
-                                    <div>
-                                        <label class="mb-1 block text-xs text-muted">To</label>
-                                        <input
-                                            type="date"
-                                            x-model="dateTo"
-                                            class="w-full rounded-md border border-border bg-surface-2 px-2.5 py-1.5 text-sm text-text focus:border-primary focus:outline-none"
-                                        />
+                                    <div class="mt-4 flex justify-end gap-2">
+                                        <button
+                                            @click="clear()"
+                                            type="button"
+                                            class="rounded-lg px-3 py-1.5 text-xs font-medium text-muted hover:bg-surface-2 transition-colors"
+                                        >
+                                            Clear
+                                        </button>
+                                        <button
+                                            @click="apply()"
+                                            type="button"
+                                            class="rounded-lg bg-primary px-3 py-1.5 text-xs font-medium text-white hover:bg-primary/90 transition-colors"
+                                        >
+                                            Apply
+                                        </button>
                                     </div>
-                                </div>
-                                <div class="mt-3 flex justify-end gap-2">
-                                    <button
-                                        @click="clear()"
-                                        type="button"
-                                        class="rounded-md px-2.5 py-1 text-xs font-medium text-muted hover:bg-surface-2"
-                                    >
-                                        Clear
-                                    </button>
-                                    <button
-                                        @click="apply()"
-                                        type="button"
-                                        class="rounded-md bg-primary px-2.5 py-1 text-xs font-medium text-white hover:bg-primary/90"
-                                    >
-                                        Apply
-                                    </button>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                </div>
-            </div>
 
-            <!-- Active Filters -->
-            @if($search || $department_id || $issue_type_id || $priority || $assigned_to || $date_from || $date_to)
-                <div class="mt-3 flex flex-wrap items-center gap-1.5">
-                    <span class="text-xs text-muted">Active filters:</span>
-                    @if($search)
-                        <span class="badge badge-muted flex items-center gap-1">
-                            <svg class="h-2.5 w-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                            </svg>
-                            {{ $search }}
-                        </span>
-                    @endif
-                    @if($department_id)
-                        <span class="badge badge-muted">{{ $this->departments[$department_id] ?? '' }}</span>
-                    @endif
-                    @if($issue_type_id)
-                        <span class="badge badge-muted">{{ $this->issueTypes[$issue_type_id] ?? '' }}</span>
-                    @endif
-                    @if($priority)
-                        <span class="badge badge-{{ $priority === 'urgent' ? 'danger' : ($priority === 'high' ? 'warning' : 'muted') }}">{{ ucfirst($priority) }}</span>
-                    @endif
-                    @if($assigned_to)
-                        <span class="badge badge-muted">{{ $this->users[$assigned_to] ?? '' }}</span>
-                    @endif
-                    @if($date_from || $date_to)
-                        <span class="badge badge-muted flex items-center gap-1">
-                            <svg class="h-2.5 w-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                            </svg>
-                            {{ $date_from ?? '?' }} - {{ $date_to ?? '?' }}
-                        </span>
-                    @endif
-                    <button wire:click="clearFilters" class="ml-1 text-xs font-medium text-primary hover:underline">Clear all</button>
+                        <!-- Action Buttons -->
+                        <div class="flex items-center gap-2">
+                            @if($search || $department_id || $issue_type_id || $priority || $assigned_to || $date_from || $date_to)
+                                <button
+                                    wire:click="clearFilters"
+                                    class="inline-flex items-center gap-1.5 rounded-lg border border-border/50 px-3 py-2 text-sm font-medium text-muted transition-all duration-200 hover:border-danger/50 hover:text-danger hover:bg-danger/10 min-h-[44px]"
+                                >
+                                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                    </svg>
+                                    Clear All
+                                </button>
+
+                                @if(auth()->check() && auth()->user()->can('viewAny', \App\Models\Issue::class))
+                                <button
+                                    wire:click="openSaveFilterModal"
+                                    class="inline-flex items-center gap-1.5 rounded-lg border border-primary/50 bg-primary/10 px-3 py-2 text-sm font-medium text-primary transition-all duration-200 hover:bg-primary/20 min-h-[44px]"
+                                >
+                                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+                                    </svg>
+                                    Save Filter
+                                </button>
+                                @endif
+                            @endif
+                        </div>
+                    </div>
+
+                    <!-- Active Filters Display -->
                     @if($search || $department_id || $issue_type_id || $priority || $assigned_to || $date_from || $date_to)
-                        @if(auth()->check() && auth()->user()->can('viewAny', \App\Models\Issue::class))
-                        <button
-                            wire:click="openSaveFilterModal"
-                            class="ml-2 inline-flex items-center gap-1 rounded-md border border-primary/50 bg-primary/10 px-2.5 py-1 text-xs font-medium text-primary hover:bg-primary/20 transition-all duration-200"
-                            title="Save current filters"
-                        >
-                            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <div class="flex flex-wrap items-center gap-2 rounded-lg bg-surface-2/30 p-3">
+                            <span class="text-xs font-medium text-muted">Active filters:</span>
+                            @if($search)
+                                <span class="badge badge-muted flex items-center gap-1">
+                                    <svg class="h-2.5 w-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                    </svg>
+                                    {{ $search }}
+                                </span>
+                            @endif
+                            @if($department_id)
+                                <span class="badge badge-muted">{{ $this->departments[$department_id] ?? '' }}</span>
+                            @endif
+                            @if($issue_type_id)
+                                <span class="badge badge-muted">{{ $this->issueTypes[$issue_type_id] ?? '' }}</span>
+                            @endif
+                            @if($priority)
+                                <span class="badge badge-{{ $priority === 'urgent' ? 'danger' : ($priority === 'high' ? 'warning' : 'muted') }}">{{ ucfirst($priority) }}</span>
+                            @endif
+                            @if($assigned_to)
+                                <span class="badge badge-muted">{{ $this->users[$assigned_to] ?? '' }}</span>
+                            @endif
+                            @if($date_from || $date_to)
+                                <span class="badge badge-muted flex items-center gap-1">
+                                    <svg class="h-2.5 w-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                    </svg>
+                                    {{ $date_from ?? '?' }} - {{ $date_to ?? '?' }}
+                                </span>
+                            @endif
+                        </div>
+                    @endif
+                </div>
+
+                <!-- Saved Filters - Always Visible When Available -->
+                @if(count($this->savedFilters) > 0)
+                    <div class="flex flex-col gap-3 rounded-lg bg-surface-2/30 p-3">
+                        <div class="flex items-center gap-2">
+                            <svg class="h-4 w-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
                             </svg>
-                            Save Filter
-                        </button>
-                        @endif
-                    @endif
-                </div>
-            @endif
+                            <span class="text-xs font-semibold text-text uppercase tracking-wide">Saved Filters</span>
+                        </div>
+                        <div class="flex flex-wrap gap-2">
+                            @foreach($this->savedFilters as $savedFilter)
+                            <div class="group relative inline-flex flex-shrink-0">
+                                <button
+                                    wire:click="loadFilter({{ $savedFilter['id'] }})"
+                                    class="inline-flex items-center gap-1.5 rounded-md border border-border/50 bg-surface px-3 py-1.5 text-xs font-medium text-text transition-all duration-200 hover:border-primary/50 hover:bg-primary/5 hover:text-primary cursor-pointer"
+                                >
+                                    <svg class="h-3 w-3 text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+                                    </svg>
+                                    <span class="max-w-[120px] truncate">{{ $savedFilter['name'] }}</span>
+                                </button>
+                                <button
+                                    wire:click="deleteFilter({{ $savedFilter['id'] }})"
+                                    class="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-danger text-white opacity-0 transition-all duration-200 group-hover:opacity-100 hover:bg-danger/80 cursor-pointer"
+                                    title="Delete filter '{{ $savedFilter['name'] }}'"
+                                >
+                                    <svg class="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                    </svg>
+                                </button>
+                            </div>
+                            @endforeach
+                        </div>
+                    </div>
+                @endif
+            </div>
         </div>
     </div>
 
@@ -400,9 +488,9 @@
                         <th class="px-4 py-2.5 text-left text-xs font-medium text-muted">Select</th>
                         <th class="px-4 py-2.5 text-left text-xs font-medium text-muted">Issue</th>
                         <th class="px-4 py-2.5 text-left text-xs font-medium text-muted">Status</th>
-                        <th class="px-4 py-2.5 text-left text-xs font-medium text-muted">Priority</th>
-                        <th class="px-4 py-2.5 text-left text-xs font-medium text-muted">Department</th>
-                        <th class="px-4 py-2.5 text-left text-xs font-medium text-muted">Assigned</th>
+                        <th class="px-4 py-2.5 text-left text-xs font-medium text-muted">Room Number</th>
+                        <th class="px-4 py-2.5 text-left text-xs font-medium text-muted">Issue Date</th>
+                        <th class="px-4 py-2.5 text-left text-xs font-medium text-muted">Guest Name</th>
                         <th class="px-4 py-2.5 text-left text-xs font-medium text-muted">Actions</th>
                     </tr>
                 </thead>
@@ -429,25 +517,17 @@
                                 {{ $issue->isClosed() ? 'Closed' : 'Open' }}
                             </x-badge>
                         </td>
-                        <!-- Priority badge -->
-                        <td class="px-4 py-2.5">
-                            <x-badge variant="{{ match($issue->priority) {
-                                'urgent' => 'danger',
-                                'high' => 'warning',
-                                default => 'muted'
-                            } }}">
-                                {{ ucfirst($issue->priority) }}
-                            </x-badge>
+                        <!-- Room Number -->
+                        <td class="px-4 py-2.5 text-xs text-text">
+                            {{ $issue->room_number ?? '-' }}
                         </td>
-                        <!-- Department badge -->
-                        <td class="px-4 py-2.5">
-                            @foreach($issue->departments->take(1) as $department)
-                            <x-badge variant="muted">{{ $department->name }}</x-badge>
-                            @endforeach
-                        </td>
-                        <!-- Assigned user -->
+                        <!-- Issue Date -->
                         <td class="px-4 py-2.5 text-xs text-muted">
-                            {{ $issue->assignedTo?->name ?? 'Unassigned' }}
+                            {{ $issue->issue_date?->format('M d, Y') ?? '-' }}
+                        </td>
+                        <!-- Guest Name -->
+                        <td class="px-4 py-2.5 text-xs text-text">
+                            {{ $issue->name ?? '-' }}
                         </td>
                         <!-- Inline action buttons -->
                         <td class="px-4 py-2.5">
@@ -520,28 +600,30 @@
 
                         <!-- Content -->
                         <div class="flex-1 min-w-0">
-                            <!-- Priority & Meta Badges -->
+                            <!-- Room Number & Meta Badges -->
                             <div class="mb-1.5 flex flex-wrap items-center gap-1.5">
-                                <span class="badge {{ match($issue->priority) {
-                                    'urgent' => 'badge-danger',
-                                    'high' => 'badge-warning',
-                                    'low' => 'badge-muted',
-                                    default => 'badge-muted'
-                                } }}">
-                                    {{ ucfirst($issue->priority) }}
-                                </span>
-                                @foreach($issue->departments->take(2) as $department)
-                                    <span class="badge badge-muted">{{ $department->name }}</span>
-                                @endforeach
-                                @if($issue->departments->count() > 2)
-                                    <span class="badge badge-muted">+{{ $issue->departments->count() - 2 }}</span>
+                                @if($issue->room_number)
+                                    <span class="badge badge-muted">
+                                        <svg class="h-3 w-3 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                                        </svg>
+                                        Room {{ $issue->room_number }}
+                                    </span>
                                 @endif
-                                @if($issue->assignedTo)
-                                    <span class="flex items-center gap-1 text-xs text-muted">
-                                        <svg class="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                @if($issue->issue_date)
+                                    <span class="badge badge-muted">
+                                        <svg class="h-3 w-3 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                        </svg>
+                                        {{ $issue->issue_date->format('M d, Y') }}
+                                    </span>
+                                @endif
+                                @if($issue->name)
+                                    <span class="badge badge-muted">
+                                        <svg class="h-3 w-3 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                                         </svg>
-                                        {{ $issue->assignedTo->name }}
+                                        {{ $issue->name }}
                                     </span>
                                 @endif
                             </div>
@@ -563,12 +645,6 @@
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                                     </svg>
                                     {{ $issue->createdBy->name ?? 'Unknown' }}
-                                </span>
-                                <span class="flex items-center gap-1.5">
-                                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                    </svg>
-                                    {{ $issue->issue_date?->diffForHumans() ?? 'N/A' }}
                                 </span>
                                 @if($issue->location)
                                     <span class="flex items-center gap-1.5">

@@ -76,6 +76,21 @@ class ExportService
     }
 
     /**
+     * Export open issues to PDF (logbook format).
+     */
+    public function exportOpenIssuesPDF(Collection $issues)
+    {
+        $pdf = PDF::loadView('exports.logbook', [
+            'issues' => $issues,
+            'filters' => ['status' => 'open'],
+        ]);
+
+        $filename = 'open-issues-' . now()->format('Ymd-His') . '.pdf';
+
+        return $pdf->download($filename);
+    }
+
+    /**
      * Export issues to CSV.
      */
     public function exportIssuesToCSV(Collection $issues): StreamedResponse

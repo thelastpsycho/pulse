@@ -5,5 +5,18 @@
         "600": "\/Users\/andikrisnatha\/project\/pulse\/storage\/fonts\/nunito_sans_600_a39dd09df21303c6c179d2838a66bbff",
         "bold": "nunito_sans_bold_d9b9587594396fa4e8a92430c097de1d",
         "800": "\/Users\/andikrisnatha\/project\/pulse\/storage\/fonts\/nunito_sans_800_2767ef555fdfc21258089eacc511ae11"
+    },
+    "fira code": {
+        "normal": "\/Users\/andikrisnatha\/project\/pulse\/storage\/fonts\/fira_code_normal_a78c1c80637106a5ae78ae24465575ab",
+        "500": "\/Users\/andikrisnatha\/project\/pulse\/storage\/fonts\/fira_code_500_2ca53134fa8590222766fb83f1ee6d67",
+        "600": "\/Users\/andikrisnatha\/project\/pulse\/storage\/fonts\/fira_code_600_7869b126a4b6a48a7a80a39f2a474593",
+        "bold": "fira_code_bold_afa2324e56a8027fe7cab182a00d4d45"
+    },
+    "fira sans": {
+        "300": "\/Users\/andikrisnatha\/project\/pulse\/storage\/fonts\/fira_sans_300_7cb760225530a4f8c1bf680903f7150a",
+        "normal": "\/Users\/andikrisnatha\/project\/pulse\/storage\/fonts\/fira_sans_normal_859260c14e0cc312dccf7f7aa86d815d",
+        "500": "\/Users\/andikrisnatha\/project\/pulse\/storage\/fonts\/fira_sans_500_b6e42c44c0cf2bb5cf59fada948da031",
+        "600": "\/Users\/andikrisnatha\/project\/pulse\/storage\/fonts\/fira_sans_600_55e12454b7311e9adc823480c02c700d",
+        "bold": "fira_sans_bold_efbc3f90f161cc1704de3c03ad76898b"
     }
 }

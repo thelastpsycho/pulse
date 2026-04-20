@@ -18,6 +18,19 @@
                 </div>
             </div>
 
+            <!-- Export Open Issues Button -->
+            @can('issues.export.open')
+            <div class="hidden sm:flex sm:items-center sm:ms-4">
+                <a href="{{ route('issues.export.open.pdf') }}" target="_blank" class="inline-flex items-center px-3 py-2 border border-transparent text-xs font-medium rounded-md text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800 hover:text-blue-600 dark:hover:text-blue-400 focus:outline-none transition ease-in-out duration-150">
+                    <svg class="w-4 h-4 me-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                    </svg>
+                    <span class="hidden md:inline">Export Open Issues</span>
+                    <span class="md:hidden">Export</span>
+                </a>
+            </div>
+            @endcan
+
             <!-- Settings Dropdown -->
             <div class="hidden sm:flex sm:items-center sm:ms-4">
                 <x-dropdown align="right" width="48">

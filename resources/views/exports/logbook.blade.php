@@ -3,12 +3,13 @@
 <head>
     <meta charset="utf-8">
     <title>Guest Issues - Report</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;500;600;700;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=Fira+Sans:wght@300;400;500;600;700&display=swap');
 
         @page {
             size: A4;
-            margin: 8mm 8mm 8mm 8mm;
+            margin: 10mm 10mm 10mm 10mm;
         }
 
         * {
@@ -18,10 +19,10 @@
         }
 
         body {
-            font-family: 'Nunito Sans', 'Segoe UI', sans-serif;
+            font-family: 'Fira Sans', 'Segoe UI', sans-serif;
             font-size: 10pt;
-            color: #2d3748;
-            background: #fff;
+            color: #1E3A8A;
+            background: #F8FAFC;
             line-height: 1.4;
         }
 
@@ -32,396 +33,387 @@
 
         /* Header */
         .header {
-            background: #fff;
-            border-bottom: 3px solid #1e40af;
-            padding: 8px 15px;
+            background: linear-gradient(135deg, #1E40AF 0%, #3B82F6 100%);
+            padding: 14px 24px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 12px;
+            margin-bottom: 20px;
+            border-radius: 0 0 8px 8px;
+            box-shadow: 0 2px 8px rgba(30, 64, 175, 0.15);
         }
 
         .header-left {
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 16px;
         }
 
         .logo {
             height: 40px;
             width: auto;
+            filter: brightness(0) invert(1);
         }
 
         .header-title {
+            font-family: 'Fira Code', monospace;
             font-size: 16pt;
-            font-weight: 700;
-            color: #1e40af;
-            letter-spacing: 0.5px;
+            font-weight: 600;
+            color: #ffffff;
+            letter-spacing: 0.3px;
+            text-transform: uppercase;
         }
 
         .header-date {
+            font-family: 'Fira Code', monospace;
             font-size: 9pt;
-            font-weight: 600;
-            color: #4a5568;
+            font-weight: 500;
+            color: rgba(255, 255, 255, 0.9);
+            background: rgba(255, 255, 255, 0.15);
+            padding: 6px 14px;
+            border-radius: 4px;
         }
 
         /* Summary Cards */
         .summary-section {
             display: flex;
-            gap: 10px;
-            margin-bottom: 15px;
+            gap: 14px;
+            margin-bottom: 24px;
         }
 
         .summary-card {
             flex: 1;
             text-align: center;
-            padding: 12px 8px;
+            padding: 18px 16px;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+            transition: transform 0.2s ease;
         }
 
         .summary-card.total {
-            background: #667eea;
-            color: #fff;
+            background: linear-gradient(135deg, #1E40AF 0%, #2563EB 100%);
+            color: #ffffff;
+            border: 1px solid #1E40AF;
         }
 
         .summary-card.open {
-            background: #ed8936;
-            color: #fff;
+            background: linear-gradient(135deg, #F59E0B 0%, #FBBF24 100%);
+            color: #ffffff;
+            border: 1px solid #F59E0B;
         }
 
         .summary-card.closed {
-            background: #48bb78;
-            color: #fff;
+            background: linear-gradient(135deg, #10B981 0%, #34D399 100%);
+            color: #ffffff;
+            border: 1px solid #10B981;
         }
 
         .summary-label {
+            font-family: 'Fira Code', monospace;
             font-size: 7pt;
             font-weight: 600;
-            letter-spacing: 0.5px;
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+            opacity: 0.95;
         }
 
         .summary-value {
-            font-size: 20pt;
-            font-weight: 800;
+            font-family: 'Fira Code', monospace;
+            font-size: 28pt;
+            font-weight: 700;
+            line-height: 1.2;
+            margin-top: 4px;
         }
 
         /* Filters */
         .filters {
-            background: #edf2f7;
-            padding: 8px 12px;
-            margin-bottom: 12px;
-            font-size: 8pt;
+            background: #ffffff;
+            border: 1px solid #E2E8F0;
+            border-left: 4px solid #3B82F6;
+            padding: 12px 18px;
+            margin-bottom: 18px;
+            font-size: 9pt;
             border-radius: 4px;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
         }
 
         .filters span {
-            margin-right: 15px;
+            margin-right: 24px;
+            display: inline-block;
+            margin-bottom: 6px;
         }
 
         .filters strong {
-            font-weight: 700;
-            color: #4a5568;
+            font-weight: 600;
+            color: #1E40AF;
         }
 
         /* Issue Card */
         .issue-card {
-            border: 1px solid #e2e8f0;
+            background: #ffffff;
+            border: 1px solid #E2E8F0;
             border-radius: 6px;
-            margin-bottom: 12px;
+            margin-bottom: 18px;
             page-break-inside: avoid;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+            overflow: hidden;
         }
 
         .issue-card.open {
-            border-left: 4px solid #ed8936;
+            border-left: 4px solid #F59E0B;
         }
 
         .issue-card.closed {
-            border-left: 4px solid #48bb78;
+            border-left: 4px solid #10B981;
         }
 
         /* Card Header */
         .card-header {
-            background: #f7fafc;
-            padding: 10px 15px;
-            border-bottom: 1px solid #e2e8f0;
+            background: linear-gradient(to bottom, #F8FAFC, #F1F5F9);
+            padding: 12px 16px;
+            border-bottom: 1px solid #E2E8F0;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
         }
 
         .room-number {
-            background: #4a5568;
-            color: #fff;
-            padding: 5px 10px;
+            background: linear-gradient(135deg, #1E40AF 0%, #2563EB 100%);
+            color: #ffffff;
+            padding: 5px 12px;
             border-radius: 4px;
             font-size: 10pt;
-            font-weight: 700;
+            font-weight: 600;
+            box-shadow: 0 1px 2px rgba(30, 64, 175, 0.2);
         }
 
         .case-id {
+            font-family: 'Fira Code', monospace;
             font-size: 8pt;
-            color: #718096;
-            font-weight: 600;
-            margin-left: 10px;
+            color: #64748B;
+            font-weight: 500;
+            margin-left: 12px;
         }
 
         .card-header-right {
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 12px;
+            flex-wrap: wrap;
         }
 
         .date-badge {
+            font-family: 'Fira Code', monospace;
             font-size: 8pt;
-            color: #4a5568;
+            color: #475569;
             font-weight: 500;
+            background: #F1F5F9;
+            padding: 4px 10px;
+            border-radius: 4px;
         }
 
         .status-badge {
             padding: 4px 12px;
-            border-radius: 15px;
+            border-radius: 4px;
             font-size: 8pt;
-            font-weight: 700;
+            font-weight: 600;
             text-transform: uppercase;
+            letter-spacing: 0.3px;
         }
 
         .status-badge.open {
-            background: #feebc8;
-            color: #c05621;
+            background: #FEF3C7;
+            color: #92400E;
+            border: 1px solid #F59E0B;
         }
 
         .status-badge.closed {
-            background: #c6f6d5;
-            color: #276749;
+            background: #D1FAE5;
+            color: #065F46;
+            border: 1px solid #10B981;
         }
 
         /* Card Body */
         .card-body {
-            padding: 12px 15px;
+            padding: 14px 16px;
         }
 
-        /* Guest & Meta Info */
+        /* Guest & Meta Info - Mobile-Friendly Stacked Layout */
         .guest-info {
             display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 16px;
+            padding-bottom: 14px;
+            border-bottom: 1px dashed #CBD5E1;
+        }
+
+        .guest-info-row {
+            display: flex;
             flex-wrap: wrap;
-            column-gap: 26px;
-            row-gap: 6px;
-            margin-bottom: 10px;
-            padding-bottom: 8px;
-            border-bottom: 1px dashed #e2e8f0;
+            gap: 18px;
         }
 
         .guest-info-item {
             display: flex;
             align-items: baseline;
-            gap: 6px;
+            gap: 8px;
+            flex: 1;
+            min-width: 140px;
         }
 
         .guest-info-label {
+            font-family: 'Fira Code', monospace;
             font-size: 7pt;
-            font-weight: 700;
-            color: #718096;
+            font-weight: 600;
+            color: #64748B;
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
 
         .guest-info-value {
             font-size: 9pt;
-            font-weight: 600;
-            color: #2d3748;
+            font-weight: 500;
+            color: #1E3A8A;
         }
 
         /* Description & Recovery - Stacked for maximum width */
         .content-row {
             display: flex;
             flex-direction: column;
-            gap: 8px;
+            gap: 14px;
         }
 
         .section-header {
+            font-family: 'Fira Code', monospace;
             font-size: 8pt;
-            font-weight: 700;
-            color: #4a5568;
+            font-weight: 600;
+            color: #3B82F6;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 5px;
+            letter-spacing: 0.6px;
+            margin-bottom: 6px;
         }
 
         .description-box {
-            background: #f7fafc;
-            border: 1px solid #e2e8f0;
+            background: #F8FAFC;
+            border: 1px solid #E2E8F0;
+            border-left: 3px solid #3B82F6;
             border-radius: 4px;
-            padding: 10px 12px;
+            padding: 12px 14px;
             font-size: 9pt;
-            color: #2d3748;
+            color: #1E3A8A;
             line-height: 1.5;
-            min-height: 40px;
+            min-height: 50px;
         }
 
         .recovery-box {
-            background: #fffbeb;
-            border: 1px solid #fbd38d;
+            background: #FFFBEB;
+            border: 1px solid #FDE68A;
+            border-left: 3px solid #F59E0B;
             border-radius: 4px;
-            padding: 10px 12px;
+            padding: 12px 14px;
             font-size: 9pt;
-            color: #975a16;
+            color: #92400E;
             line-height: 1.5;
-            min-height: 40px;
+            min-height: 50px;
         }
 
         /* Card Footer */
         .card-footer {
-            background: #f7fafc;
-            padding: 8px 15px;
-            border-top: 1px solid #e2e8f0;
+            background: #F8FAFC;
+            padding: 10px 16px;
+            border-top: 1px solid #E2E8F0;
             display: flex;
             justify-content: space-between;
             font-size: 8pt;
-            color: #718096;
+            color: #64748B;
+            flex-wrap: wrap;
+            gap: 8px;
         }
 
         .card-footer-label {
-            font-weight: 600;
+            font-weight: 500;
         }
 
         .card-footer-value {
             font-weight: 600;
-            color: #4a5568;
+            color: #1E40AF;
         }
 
         /* Empty State */
         .empty-state {
             text-align: center;
-            padding: 50px 20px;
-            color: #a0aec0;
+            padding: 60px 24px;
+            color: #94A3B8;
         }
 
-        /* Logbook Table Layout */
+        .empty-state p {
+            font-size: 10pt;
+            font-weight: 500;
+        }
+
+        /* Logbook Wrapper */
         .logbook-wrapper {
-            margin-top: 10px;
+            margin-top: 8px;
         }
 
         .logbook-title-row {
             display: flex;
             justify-content: space-between;
             align-items: baseline;
-            margin-bottom: 6px;
+            margin-bottom: 12px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #E2E8F0;
         }
 
         .logbook-title {
-            font-size: 11pt;
-            font-weight: 700;
-            letter-spacing: 0.5px;
-            color: #2d3748;
+            font-family: 'Fira Code', monospace;
+            font-size: 14pt;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+            color: #1E40AF;
         }
 
         .logbook-subtitle {
             font-size: 8pt;
-            color: #718096;
-        }
-
-        .logbook-table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 8pt;
-            table-layout: fixed;
-        }
-
-        .logbook-table thead {
-            background: #1e40af;
-            color: #fff;
-        }
-
-        .logbook-table th,
-        .logbook-table td {
-            border: 1px solid #e2e8f0;
-            padding: 5px 4px;
-            vertical-align: top;
-            word-wrap: break-word;
-        }
-
-        .logbook-table th {
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            font-size: 7pt;
-            text-align: left;
-        }
-
-        .logbook-table tbody tr:nth-child(even) {
-            background: #f9fafb;
-        }
-
-        .logbook-table tbody tr {
-            page-break-inside: avoid;
-        }
-
-        .logbook-table .col-case {
-            width: 6%;
-        }
-
-        .logbook-table .col-date {
-            width: 9%;
-        }
-
-        .logbook-table .col-status {
-            width: 7%;
-        }
-
-        .logbook-table .col-room {
-            width: 7%;
-        }
-
-        .logbook-table .col-guest {
-            width: 14%;
-        }
-
-        .logbook-table .col-nationality {
-            width: 10%;
-        }
-
-        .logbook-table .col-stay {
-            width: 12%;
-        }
-
-        .logbook-table .col-department {
-            width: 12%;
-        }
-
-        .logbook-table .col-description {
-            width: 16%;
-        }
-
-        .logbook-table .col-recovery {
-            width: 17%;
-        }
-
-        .logbook-table .col-cost {
-            width: 10%;
-            text-align: right;
-            white-space: nowrap;
-        }
-
-        .status-pill {
-            display: inline-block;
-            padding: 2px 8px;
-            border-radius: 999px;
-            font-size: 7pt;
-            font-weight: 700;
-            text-transform: uppercase;
-        }
-
-        .status-pill.open {
-            background: #feebc8;
-            color: #c05621;
-        }
-
-        .status-pill.closed {
-            background: #c6f6d5;
-            color: #276749;
+            color: #64748B;
+            font-weight: 500;
         }
 
         .text-muted {
-            color: #a0aec0;
+            color: #94A3B8;
+            font-size: 9pt;
+            font-style: italic;
+        }
+
+        /* New Location & Source Fields */
+        .location-source-info {
+            display: flex;
+            gap: 20px;
+            margin-top: 8px;
+            flex-wrap: wrap;
+        }
+
+        .location-source-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 8pt;
+        }
+
+        .location-source-label {
+            font-family: 'Fira Code', monospace;
+            font-weight: 600;
+            color: #64748B;
+            text-transform: uppercase;
+            font-size: 7pt;
+        }
+
+        .location-source-value {
+            font-weight: 500;
+            color: #1E3A8A;
         }
     </style>
 </head>
@@ -429,57 +421,11 @@
     <div class="container">
         <div class="header">
             <div class="header-left">
-                <img src="{{ asset('images/logo/guestpulse_horizontal_logo.svg') }}" alt="GuestPulse Logo" class="logo">
+                <!-- <img src="{{ asset('images/logo/guestpulse_horizontal_logo.svg') }}" alt="GuestPulse Logo" class="logo"> -->
                 <span class="header-title">GUEST ISSUES - REPORT</span>
             </div>
             <div class="header-date">Date: {{ now()->format('d/m/Y') }}</div>
         </div>
-
-        @if(!empty($filters))
-            <div class="filters">
-                @if(isset($filters['date_range']))
-                    <span><strong>Period:</strong> {{ $filters['date_range'] }}</span>
-                @else
-                    @if(isset($filters['date_from']))
-                        <span><strong>From:</strong> {{ $filters['date_from'] }}</span>
-                    @endif
-                    @if(isset($filters['date_to']))
-                        <span><strong>To:</strong> {{ $filters['date_to'] }}</span>
-                    @endif
-                @endif
-                @if(isset($filters['department']))
-                    <span><strong>Department:</strong> {{ $filters['department'] }}</span>
-                @endif
-                @if(isset($filters['issue_type']))
-                    <span><strong>Type:</strong> {{ $filters['issue_type'] }}</span>
-                @endif
-                @if(isset($filters['status']))
-                    <span><strong>Status:</strong> {{ $filters['status'] }}</span>
-                @endif
-            </div>
-        @endif
-
-        @php
-            $totalCases = $issues->count();
-            $openCases = $issues->whereNull('closed_at')->count();
-            $closedCases = $issues->whereNotNull('closed_at')->count();
-        @endphp
-
-        <div class="summary-section">
-            <div class="summary-card total">
-                <div class="summary-label">Total Cases</div>
-                <div class="summary-value">{{ $totalCases }}</div>
-            </div>
-            <div class="summary-card open">
-                <div class="summary-label">Open Cases</div>
-                <div class="summary-value">{{ $openCases }}</div>
-            </div>
-            <div class="summary-card closed">
-                <div class="summary-label">Closed Cases</div>
-                <div class="summary-value">{{ $closedCases }}</div>
-            </div>
-        </div>
-
         <div class="logbook-wrapper">
             @if($issues->count() > 0)
                 <div class="logbook-title-row">
@@ -508,46 +454,68 @@
 
                         <div class="card-body">
                             <div class="guest-info">
-                                @if($issue->name)
-                                    <div class="guest-info-item">
-                                        <span class="guest-info-label">Guest:</span>
-                                        <span class="guest-info-value">{{ $issue->name }}</span>
-                                    </div>
-                                @endif
+                                <div class="guest-info-row">
+                                    @if($issue->name)
+                                        <div class="guest-info-item">
+                                            <span class="guest-info-label">Guest:</span>
+                                            <span class="guest-info-value">{{ $issue->name }}</span>
+                                        </div>
+                                    @endif
 
-                                @if($issue->nationality)
-                                    <div class="guest-info-item">
-                                        <span class="guest-info-label">Nationality:</span>
-                                        <span class="guest-info-value">{{ $issue->nationality }}</span>
-                                    </div>
-                                @endif
-
-                                <div class="guest-info-item">
-                                    <span class="guest-info-label">Stay:</span>
-                                    <span class="guest-info-value">
-                                        {{ $issue->checkin_date?->format('d/m/Y') ?? '-' }}
-                                        &mdash;
-                                        {{ $issue->checkout_date?->format('d/m/Y') ?? '-' }}
-                                    </span>
+                                    @if($issue->nationality)
+                                        <div class="guest-info-item">
+                                            <span class="guest-info-label">Nationality:</span>
+                                            <span class="guest-info-value">{{ $issue->nationality }}</span>
+                                        </div>
+                                    @endif
                                 </div>
 
-                                @if($issue->departments->count() > 0)
-                                    <div class="guest-info-item">
-                                        <span class="guest-info-label">Department:</span>
-                                        <span class="guest-info-value">
-                                            {{ $issue->departments->pluck('name')->join(', ') }}
-                                        </span>
-                                    </div>
-                                @endif
+                                <div class="guest-info-row">
+                                    @if($issue->location)
+                                        <div class="guest-info-item">
+                                            <span class="guest-info-label">Location:</span>
+                                            <span class="guest-info-value">{{ $issue->location }}</span>
+                                        </div>
+                                    @endif
 
-                                @if($issue->recovery_cost !== null)
+                                    @if($issue->source)
+                                        <div class="guest-info-item">
+                                            <span class="guest-info-label">Source:</span>
+                                            <span class="guest-info-value">{{ $issue->source }}</span>
+                                        </div>
+                                    @endif
+                                </div>
+
+                                <div class="guest-info-row">
                                     <div class="guest-info-item">
-                                        <span class="guest-info-label">Cost:</span>
+                                        <span class="guest-info-label">Stay:</span>
                                         <span class="guest-info-value">
-                                            {{ number_format($issue->recovery_cost) }}
+                                            {{ $issue->checkin_date?->format('d/m/Y') ?? '-' }}
+                                            &mdash;
+                                            {{ $issue->checkout_date?->format('d/m/Y') ?? '-' }}
                                         </span>
                                     </div>
-                                @endif
+
+                                    @if($issue->departments->count() > 0)
+                                        <div class="guest-info-item">
+                                            <span class="guest-info-label">Department:</span>
+                                            <span class="guest-info-value">
+                                                {{ $issue->departments->pluck('name')->join(', ') }}
+                                            </span>
+                                        </div>
+                                    @endif
+                                </div>
+
+                                <div class="guest-info-row">
+                                    @if($issue->recovery_cost !== null)
+                                        <div class="guest-info-item">
+                                            <span class="guest-info-label">Cost:</span>
+                                            <span class="guest-info-value">
+                                                {{ number_format($issue->recovery_cost) }}
+                                            </span>
+                                        </div>
+                                    @endif
+                                </div>
                             </div>
 
                             <div class="content-row">
