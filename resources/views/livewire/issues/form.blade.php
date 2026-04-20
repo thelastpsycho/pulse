@@ -288,7 +288,7 @@
                     <!-- Date Row -->
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
                         <!-- Check-in / Check-out Date Range -->
-                        <div class="space-y-1.5" x-data="dateRangePicker({ startDate: @js($checkin_date), endDate: @js($checkout_date) })" x-init="$watch('startDate', val => @this.set('checkin_date', val)); $watch('endDate', val => @this.set('checkout_date', val))">
+                        <div class="space-y-1.5" x-data="dateRangePicker({ startDate: @js($checkin_date), endDate: @js($checkout_date), wirePropertyStart: 'checkin_date', wirePropertyEnd: 'checkout_date' })">
                             <label class="text-sm font-medium text-text flex items-center gap-1.5">
                                 <svg class="w-4 h-4 text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -296,8 +296,8 @@
                                 Check-in / Check-out
                             </label>
                             <div class="relative">
-                                <input type="hidden" wire:model="checkin_date" :value="startDate">
-                                <input type="hidden" wire:model="checkout_date" :value="endDate">
+                                <input type="hidden" :value="startDate">
+                                <input type="hidden" :value="endDate">
                                 <button
                                     type="button"
                                     @click="open()"
@@ -375,7 +375,7 @@
                         </div>
 
                         <!-- Issue Date -->
-                        <div class="space-y-1.5" x-data="datePicker({ value: @js($issue_date) })" x-init="$watch('value', val => @this.set('issue_date', val))">
+                        <div class="space-y-1.5" x-data="datePicker({ value: @js($issue_date), wireProperty: 'issue_date' })">
                             <label class="text-sm font-medium text-text flex items-center gap-1.5">
                                 <svg class="w-4 h-4 text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -383,7 +383,7 @@
                                 Issue Date
                             </label>
                             <div class="relative">
-                                <input type="hidden" wire:model="issue_date" :value="value">
+                                <input type="hidden" :value="value">
                                 <button
                                     type="button"
                                     @click="open()"
@@ -447,7 +447,7 @@
                                     </div>
 
                                     <div class="px-4 py-2 border-t border-border flex justify-between">
-                                        <button type="button" @click="value = ''; close()" class="text-xs text-muted hover:text-text">Clear</button>
+                                        <button type="button" @click="clear()" class="text-xs text-muted hover:text-text">Clear</button>
                                         <button type="button" @click="selectDay(today.getDate()); selectedMonth = today.getMonth(); selectedYear = today.getFullYear()" class="text-xs text-primary hover:underline">Today</button>
                                     </div>
                                 </div>

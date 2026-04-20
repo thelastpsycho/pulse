@@ -91,7 +91,7 @@ class Form extends Component
             $this->description = $issue->description;
             $this->priority = $issue->priority;
             $this->location = $issue->location;
-            $this->assigned_to = $issue->assigned_to;
+            $this->assigned_to = $issue->assigned_to_user_id;
             $this->department_ids = $issue->departments->pluck('id')->toArray();
             $this->issue_type_ids = $issue->issueTypes->pluck('id')->toArray();
 
@@ -128,15 +128,15 @@ class Form extends Component
             'description' => $this->description,
             'priority' => $this->priority,
             'location' => $this->location,
-            'assigned_to' => $this->assigned_to ?: null,
+            'assigned_to_user_id' => $this->assigned_to ?: null,
             'department_ids' => $this->department_ids,
             'issue_type_ids' => $this->issue_type_ids,
             // Guest details
             'name' => $this->name,
             'room_number' => $this->room_number,
-            'checkin_date' => $this->checkin_date,
-            'checkout_date' => $this->checkout_date,
-            'issue_date' => $this->issue_date,
+            'checkin_date' => $this->checkin_date ?: null,
+            'checkout_date' => $this->checkout_date ?: null,
+            'issue_date' => $this->issue_date ?: null,
             'source' => $this->source,
             'nationality' => $this->nationality,
             'contact' => $this->contact,

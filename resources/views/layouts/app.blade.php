@@ -442,6 +442,7 @@
                         selectedMonth: new Date().getMonth(),
                         selectedYear: new Date().getFullYear(),
                         today: new Date(),
+                        wireProperty: config.wireProperty || null,
 
                         get monthNames() {
                             return ['January', 'February', 'March', 'April', 'May', 'June',
@@ -486,10 +487,22 @@
                             this.isOpen = false;
                         },
 
+                        clear() {
+                            this.value = '';
+                            // Sync to Livewire
+                            if (this.$wire && this.wireProperty) {
+                                this.$wire.set(this.wireProperty, '');
+                            }
+                        },
+
                         selectDay(day) {
                             const month = String(this.selectedMonth + 1).padStart(2, '0');
                             const dayStr = String(day).padStart(2, '0');
                             this.value = `${this.selectedYear}-${month}-${dayStr}`;
+                            // Sync to Livewire
+                            if (this.$wire && this.wireProperty) {
+                                this.$wire.set(this.wireProperty, this.value);
+                            }
                             this.close();
                         },
 
@@ -536,6 +549,8 @@
                         selecting: 'start', // 'start' or 'end'
                         hoveredDate: null,
                         today: new Date(),
+                        wirePropertyStart: config.wirePropertyStart || null,
+                        wirePropertyEnd: config.wirePropertyEnd || null,
 
                         get firstMonth() {
                             return new Date(this.today.getFullYear(), this.today.getMonth(), 1);
@@ -639,6 +654,13 @@
                                 this.startDate = dateStr;
                                 this.endDate = '';
                                 this.selecting = 'end';
+                                // Sync to Livewire
+                                if (this.$wire && this.wirePropertyStart) {
+                                    this.$wire.set(this.wirePropertyStart, this.startDate);
+                                }
+                                if (this.$wire && this.wirePropertyEnd) {
+                                    this.$wire.set(this.wirePropertyEnd, '');
+                                }
                             } else {
                                 if (dateStr < this.startDate) {
                                     this.endDate = this.startDate;
@@ -647,6 +669,13 @@
                                     this.endDate = dateStr;
                                 }
                                 this.selecting = 'start';
+                                // Sync to Livewire
+                                if (this.$wire && this.wirePropertyStart) {
+                                    this.$wire.set(this.wirePropertyStart, this.startDate);
+                                }
+                                if (this.$wire && this.wirePropertyEnd) {
+                                    this.$wire.set(this.wirePropertyEnd, this.endDate);
+                                }
                             }
                         },
 
@@ -662,6 +691,13 @@
                             this.startDate = '';
                             this.endDate = '';
                             this.selecting = 'start';
+                            // Sync to Livewire
+                            if (this.$wire && this.wirePropertyStart) {
+                                this.$wire.set(this.wirePropertyStart, '');
+                            }
+                            if (this.$wire && this.wirePropertyEnd) {
+                                this.$wire.set(this.wirePropertyEnd, '');
+                            }
                         }
                     };
                 };
