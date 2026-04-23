@@ -125,23 +125,62 @@
                 <section id="authentication" class="mb-12">
                     <h2 class="text-3xl font-bold text-gray-900 mb-4">Authentication</h2>
                     <p class="text-gray-700 mb-4">
-                        All API endpoints require authentication using Laravel Sanctum tokens or session authentication.
+                        All API endpoints require authentication using Laravel Sanctum bearer tokens.
+                        Use the login endpoint to obtain your access token.
                     </p>
 
-                    <div class="bg-white border border-gray-200 rounded-lg p-6 mb-4">
-                        <h4 class="font-semibold text-gray-900 mb-3">Authentication Methods</h4>
-                        <ul class="list-disc list-inside space-y-2 text-gray-700">
-                            <li><strong>Token Authentication:</strong> Include Bearer token in Authorization header</li>
-                            <li><strong>Session Authentication:</strong> Use authenticated session cookies</li>
-                        </ul>
+                    <!-- Login Endpoint -->
+                    <div class="bg-white border border-gray-200 rounded-lg p-6 mb-6">
+                        <div class="flex items-center mb-4">
+                            <span class="bg-blue-600 text-white text-xs font-bold px-3 py-1 rounded mr-3">POST</span>
+                            <code class="text-lg font-mono text-gray-900">/api/login</code>
+                            <span class="ml-3 px-2 py-1 bg-green-100 text-green-800 text-xs rounded">Public</span>
+                        </div>
+                        <p class="text-gray-700 mb-4">Authenticate with email and password credentials to receive an API bearer token.</p>
+
+                        <h4 class="font-semibold text-gray-900 mb-3">Request Body</h4>
+                        <div class="bg-gray-900 rounded-lg p-4 mb-4">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-green-400 text-sm font-mono">Example Request</span>
+                                <button onclick="copyToClipboard(this)" class="text-gray-400 hover:text-white text-sm">Copy</button>
+                            </div>
+                            <pre><code class="language-json">{
+  "email": "user@example.com",
+  "password": "your_password",
+  "device_name": "iPhone App"
+}</code></pre>
+                        </div>
+
+                        <h4 class="font-semibold text-gray-900 mb-3">Response (200 OK)</h4>
+                        <div class="bg-gray-900 rounded-lg p-4">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-green-400 text-sm font-mono">Example Response</span>
+                                <button onclick="copyToClipboard(this)" class="text-gray-400 hover:text-white text-sm">Copy</button>
+                            </div>
+                            <pre><code class="language-json">{
+  "user": {
+    "id": 1,
+    "name": "John Doe",
+    "email": "john@example.com",
+    "is_active": true
+  },
+  "token": "20|XzAbC123DefG456HijK789MnoP012Qrs",
+  "token_type": "Bearer"
+}</code></pre>
+                        </div>
                     </div>
 
-                    <div class="bg-gray-900 rounded-lg p-4">
-                        <div class="flex items-center justify-between mb-2">
-                            <span class="text-green-400 text-sm font-mono">Authorization Header</span>
-                            <button onclick="copyToClipboard(this)" class="text-gray-400 hover:text-white text-sm">Copy</button>
+                    <div class="bg-white border border-gray-200 rounded-lg p-6 mb-4">
+                        <h4 class="font-semibold text-gray-900 mb-3">Using Your Token</h4>
+                        <p class="text-gray-700 mb-3">Include the bearer token in the Authorization header for all authenticated requests:</p>
+                        <div class="bg-gray-900 rounded-lg p-4">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-green-400 text-sm font-mono">Authorization Header</span>
+                                <button onclick="copyToClipboard(this)" class="text-gray-400 hover:text-white text-sm">Copy</button>
+                            </div>
+                            <pre><code class="language-bash">Authorization: Bearer 20|XzAbC123DefG456HijK789MnoP012Qrs
+Accept: application/json</code></pre>
                         </div>
-                        <pre><code class="language-bash">Authorization: Bearer {your_token}</code></pre>
                     </div>
                 </section>
 

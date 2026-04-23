@@ -442,14 +442,62 @@
             <section id="authentication">
                 <h2>Authentication</h2>
                 <p>
-                    All API endpoints require authentication using Laravel Sanctum tokens or session-based authentication.
-                    Include your authentication token in the request headers.
+                    All API endpoints require authentication using Laravel Sanctum tokens.
+                    Public endpoints are available for login operations. Include your authentication token in the request headers.
                 </p>
+
+                <h3>Login Endpoint</h3>
+                <p>Authenticate with email and password to receive an API bearer token.</p>
+
+                <div class="endpoint-block">
+                    <div class="endpoint-header">
+                        <span class="method post">POST</span>
+                        <span class="uri">/api/login</span>
+                    </div>
+                    <p class="endpoint-description">Public endpoint for user authentication</p>
+
+                    <h4>Request Body</h4>
+                    <div class="code-block">
+                        <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                        <pre><code class="language-json">{
+  "email": "user@example.com",
+  "password": "your_password",
+  "device_name": "My iPhone App"
+}</code></pre>
+                    </div>
+
+                    <h4>Response (200 OK)</h4>
+                    <div class="code-block">
+                        <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                        <pre><code class="language-json">{
+  "user": {
+    "id": 1,
+    "name": "John Doe",
+    "email": "john@example.com",
+    "is_active": true,
+    "created_at": "2024-01-15T10:30:00.000000Z",
+    "updated_at": "2024-01-15T10:30:00.000000Z"
+  },
+  "token": "20|XzAbC123DefG456HijK789MnoP012Qrs",
+  "token_type": "Bearer"
+}</code></pre>
+                    </div>
+                </div>
+
+                <h3>Using Your Token</h3>
+                <p>Include the bearer token in subsequent requests:</p>
+
+                <div class="code-block">
+                    <button class="copy-button" onclick="copyCode(this)">Copy</button>
+                    <pre><code class="language-bash">curl -X GET https://your-domain.com/api/me \
+  -H "Authorization: Bearer 20|XzAbC123DefG456HijK789MnoP012Qrs" \
+  -H "Accept: application/json"</code></pre>
+                </div>
 
                 <div class="code-block">
                     <button class="copy-button" onclick="copyCode(this)">Copy</button>
                     <pre><code class="language-json">{
-  "Authorization": "Bearer {your_token_here}",
+  "Authorization": "Bearer 20|XzAbC123DefG456HijK789MnoP012Qrs",
   "Accept": "application/json",
   "Content-Type": "application/json"
 }</code></pre>
@@ -457,8 +505,8 @@
 
                 <h3>Token Management</h3>
                 <p>
-                    Tokens can be generated through the user interface or API. Each token has specific permissions
-                    and can be revoked at any time through the user settings.
+                    Tokens can be revoked by calling the logout endpoint. Each token provides full access to the user's permissions
+                    and remains valid until revoked or the user account is deactivated.
                 </p>
             </section>
 

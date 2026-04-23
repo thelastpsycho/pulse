@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\ActivityLogController;
+use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\DepartmentController;
 use App\Http\Controllers\Api\DmLogBookController;
 use App\Http\Controllers\Api\ExportController;
@@ -28,8 +29,8 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-// Public routes (if needed for authentication)
-// Route::post('/login', [AuthController::class, 'login']);
+// Public routes for authentication
+Route::post('/login', [AuthController::class, 'login'])->name('api.login');
 
 // Protected API Routes
 
@@ -37,6 +38,10 @@ use Illuminate\Support\Facades\Route;
 Route::get('/all-issues', [IssueController::class, 'index'])->name('api.issues.index');
 
 Route::middleware(['auth'])->group(function () {
+    // Authentication routes
+    Route::post('/logout', [AuthController::class, 'logout'])->name('api.logout');
+    Route::get('/me', [AuthController::class, 'me'])->name('api.me');
+
     // Reports API (returns JSON for charts)
     Route::get('/reports/month', [ReportController::class, 'month'])->name('api.reports.month');
     Route::get('/reports/year', [ReportController::class, 'year'])->name('api.reports.year');

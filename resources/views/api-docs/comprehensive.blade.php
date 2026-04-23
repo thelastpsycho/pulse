@@ -129,21 +129,52 @@
                 <section id="authentication" class="mb-12">
                     <h2 class="text-3xl font-bold text-gray-900 mb-4">🔐 Authentication</h2>
                     <p class="text-gray-700 mb-4">
-                        All API endpoints require authentication. Pulse API supports two authentication methods:
+                        All API endpoints require authentication using Laravel Sanctum bearer tokens.
+                        Use the public login endpoint to obtain your access token.
                     </p>
 
                     <div class="space-y-4">
-                        <div class="bg-white border border-gray-200 rounded-lg p-6">
-                            <h4 class="font-semibold text-gray-900 mb-3">1. Token Authentication (Sanctum)</h4>
-                            <p class="text-gray-700 mb-3">Include your Bearer token in the Authorization header:</p>
-                            <div class="bg-gray-900 rounded-lg p-4">
-                                <pre><code class="language-bash">Authorization: Bearer {your_token_here}</code></pre>
+                        <!-- Login Endpoint -->
+                        <div class="bg-white border-2 border-blue-200 rounded-lg p-6">
+                            <div class="flex items-center mb-4">
+                                <span class="bg-blue-600 text-white text-xs font-bold px-3 py-1 rounded mr-3">POST</span>
+                                <code class="text-lg font-mono text-gray-900">/api/login</code>
+                                <span class="ml-3 px-2 py-1 bg-green-100 text-green-800 text-xs rounded">Public</span>
+                            </div>
+
+                            <p class="text-gray-700 mb-4">Authenticate with email and password to receive an API bearer token.</p>
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                                <div>
+                                    <h5 class="font-semibold text-gray-900 mb-2">Request</h5>
+                                    <div class="bg-gray-900 rounded-lg p-3">
+                                        <pre><code class="language-json">{
+  "email": "user@example.com",
+  "password": "password",
+  "device_name": "iPhone App"
+}</code></pre>
+                                    </div>
+                                </div>
+                                <div>
+                                    <h5 class="font-semibold text-gray-900 mb-2">Response (200)</h5>
+                                    <div class="bg-gray-900 rounded-lg p-3">
+                                        <pre><code class="language-json">{
+  "user": {...},
+  "token": "20|abc...",
+  "token_type": "Bearer"
+}</code></pre>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
                         <div class="bg-white border border-gray-200 rounded-lg p-6">
-                            <h4 class="font-semibold text-gray-900 mb-3">2. Session Authentication</h4>
-                            <p class="text-gray-700 mb-3">Use authenticated session cookies from web login.</p>
+                            <h4 class="font-semibold text-gray-900 mb-3">Using Your Token</h4>
+                            <p class="text-gray-700 mb-3">Include the bearer token in the Authorization header:</p>
+                            <div class="bg-gray-900 rounded-lg p-4">
+                                <pre><code class="language-bash">Authorization: Bearer 20|abc...
+Accept: application/json</code></pre>
+                            </div>
                         </div>
                     </div>
                 </section>

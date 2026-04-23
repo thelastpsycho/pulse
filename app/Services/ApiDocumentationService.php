@@ -12,7 +12,6 @@ class ApiDocumentationService
     protected array $excludePatterns = [
         'sanctum',
         'verification',
-        'login',
         'forgot-password',
         'reset-password',
         'register',
@@ -25,6 +24,12 @@ class ApiDocumentationService
     ];
 
     protected array $categoryMapping = [
+        'auth' => [
+            'name' => 'Authentication',
+            'icon' => '🔐',
+            'description' => 'User authentication and session management',
+            'color' => 'red',
+        ],
         'issues' => [
             'name' => 'Issues',
             'icon' => '',
@@ -183,6 +188,10 @@ class ApiDocumentationService
         $category = $segments[0] ?? 'other';
 
         // Handle special cases
+        if (in_array($category, ['login', 'logout', 'me'])) {
+            return 'auth';
+        }
+
         if (str_contains($category, 'issue-')) {
             return 'issues';
         }
@@ -227,6 +236,17 @@ class ApiDocumentationService
 
         $methodKey = strtolower($methods[0] ?? 'get');
 
+        // Special handling for authentication endpoints
+        if (str_contains($uri, '/login')) {
+            return "Authenticate a user with email and password credentials. Returns an API bearer token";
+        }
+        if (str_contains($uri, '/logout')) {
+            return "Revoke the current API bearer token and end the user's session";
+        }
+        if (str_contains($uri, '/me')) {
+            return "Retrieve the authenticated user's profile information and permissions";
+        }
+
         // Special handling for specific endpoints
         if (str_contains($uri, 'bulk/create')) {
             return "Create multiple resources in a single request. All items will be created atomically";
@@ -269,7 +289,7 @@ class ApiDocumentationService
         return "API endpoint for {$this->getResourceName($uri)} operations";
     }
 
-    protected function getActionFromMethods(array $methods): string
+    protected function getActionFromMethods(array $methods, ?string $uri = null): string
     {
         $method = strtolower($methods[0] ?? 'get');
 
