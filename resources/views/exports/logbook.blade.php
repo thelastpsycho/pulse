@@ -512,6 +512,15 @@
                                             </span>
                                         </div>
                                     @endif
+
+                                    @if($issue->issueTypes->count() > 0)
+                                        <div class="guest-info-item">
+                                            <span class="guest-info-label">Issue Type:</span>
+                                            <span class="guest-info-value">
+                                                {{ $issue->issueTypes->pluck('name')->join(', ') }}
+                                            </span>
+                                        </div>
+                                    @endif
                                 </div>
                             </div>
 
