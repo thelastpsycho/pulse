@@ -102,7 +102,7 @@
 </head>
 <body>
     <div class="header">
-        <h1>Issue #{{ $issue->id }}</h1>
+        <h1>Issue #{{ $issue->id }}{{ $issue->room_number ? ' - Room ' . $issue->room_number : '' }}</h1>
         <div class="meta">
             GuestPulse! Issue Tracking System • Generated: {{ now()->format('M d, Y H:i') }}
         </div>
@@ -113,6 +113,11 @@
         <div class="info-grid">
             <div class="info-label">Title:</div>
             <div class="info-value"><strong>{{ $issue->title }}</strong></div>
+
+            @if($issue->room_number)
+                <div class="info-label">Room Number:</div>
+                <div class="info-value"><strong>{{ $issue->room_number }}</strong></div>
+            @endif
 
             <div class="info-label">Status:</div>
             <div class="info-value">

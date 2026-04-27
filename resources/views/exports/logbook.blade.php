@@ -439,9 +439,6 @@
                     <div class="issue-card {{ $issue->closed_at ? 'closed' : 'open' }}">
                         <div class="card-header">
                             <div style="display: flex; align-items: center;">
-                                @if($issue->room_number)
-                                    <span class="room-number">Room {{ $issue->room_number }}</span>
-                                @endif
                                 <span class="case-id">Case #{{ $issue->id }}</span>
                             </div>
                             <div class="card-header-right">
@@ -507,11 +504,11 @@
                                 </div>
 
                                 <div class="guest-info-row">
-                                    @if($issue->recovery_cost !== null)
+                                    @if($issue->room_number)
                                         <div class="guest-info-item">
-                                            <span class="guest-info-label">Cost:</span>
+                                            <span class="guest-info-label">Room:</span>
                                             <span class="guest-info-value">
-                                                {{ number_format($issue->recovery_cost) }}
+                                                {{ $issue->room_number }}
                                             </span>
                                         </div>
                                     @endif

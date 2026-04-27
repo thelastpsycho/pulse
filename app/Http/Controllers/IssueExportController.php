@@ -26,6 +26,7 @@ class IssueExportController extends Controller
         $this->authorize('issues.export.open');
 
         $issues = Issue::open()
+            ->select('issues.*') // Explicitly select all columns from issues table
             ->with(['departments', 'issueTypes', 'createdBy', 'updatedBy', 'closedBy', 'assignedTo', 'comments'])
             ->orderBy('created_at', 'desc')
             ->get();
